@@ -236,6 +236,72 @@ func (rf *Raft) sendHeartBeats(server int, args *AppendEntriesArgs, reply *Appen
 }
 ```
 
+---
+
+## Lab 2B - Log
+
+日志复制
+
+**:cherry_blossom: 目标**：实现 leader 和 follower 的相关代码以实现日志追加, 完善请求投票中投票的判断
+
+Lab2A 中并未完整使用 Fig.2 中给出的所有字段, Lab2B 将进行进一步的完善
+### 数据结构
+
+同 Lab2A, 即 Fig.2 中给出的完整字段
+
+```go
+type Raft struct {
+	mu        sync.Mutex          
+	peers     []*labrpc.ClientEnd 
+	persister *Persister          
+	me        int             
+	dead      int32              
+	currentTerm int
+	voteFor     int
+	state       RuleState
+
+	// Lab2A 每用到的, 本 Lab 需要用到的字段
+	log         []LogEntry // 每个节点的日志
+	commitIndex int     // 已知要提交的
+	lastApplied int     // 已经应用到状态机上的
+	nextIndex   []int   // 仅 leader 使用, 保存要发送给其它节点的下一个日志下标
+	matchIndex  []int   // 仅 leader 使用, 保存其它服务器上已经提交的日志下标
+
+	electionStartTime time.Time
+}
+
+type AppendEntriesArgs struct {
+	Term         int
+	LeaderId     int
+	PrevLogIndex int        // leader 中保存的 nextIndex[peerID] - 1
+	PrevLogTerm  int        // leader 中保存的 log[PrevLogIndex].Term
+	Entries      []LogEntry // 发送的日志
+	LeaderCommit int        // 当前 leader 的 commitIndex
+}
+
+// RequestVote RPC 的参数和回复结构体
+type RequestVoteArgs struct {
+	Term         int
+	CandidateId  int
+	LastLogIndex int // candidate 的 len(log) - 1
+	LastLogTerm  int // candidate 的 log[LastLogIndex].Term
+}
+```
+Raft 中的 `nextIndex` 为乐观估计, 指代 leader 保留的对应 follower 的下一个需要传输的日志条目
+Raft 中的 `matchIndex` 为悲观估计, 指代 leader 已经传输给对应 follower 的日志条目下标，即 follower 目前所拥有的的总日志条目
+
+`commitIndex, lastApplied, nextIndex[], matchIndex[]` 共同组成了 leader 的提交规则. leader 总是最先提交的, 可以认为 leader 为这个集群的代表, leader 提交后, follower 才会提交
+
+> :lollipop: 提交新命令需要多少次 RPC 往返？
+
+:thought_balloon: 两个。第一轮领导者将下一个日志条目发送给追随者，并让追随者确认它们。当领导者处理对 AE 的回复时，它可以根据响应更新其提交索引。第二轮将向关注者发送更新的提交索引，然后关注者将这些条目标记为已提交并将它们发送到提交通道。
+
+
+
+
+
+
+
 
 
 ---
