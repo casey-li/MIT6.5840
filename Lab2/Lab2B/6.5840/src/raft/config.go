@@ -8,20 +8,24 @@ package raft
 // test with the original before submitting.
 //
 
-import "6.5840/labgob"
-import "6.5840/labrpc"
-import "bytes"
-import "log"
-import "sync"
-import "sync/atomic"
-import "testing"
-import "runtime"
-import "math/rand"
-import crand "crypto/rand"
-import "math/big"
-import "encoding/base64"
-import "time"
-import "fmt"
+import (
+	"bytes"
+	"log"
+	"math/rand"
+	"runtime"
+	"sync"
+	"sync/atomic"
+	"testing"
+
+	"6.5840/labgob"
+	"6.5840/labrpc"
+
+	crand "crypto/rand"
+	"encoding/base64"
+	"fmt"
+	"math/big"
+	"time"
+)
 
 func randstring(n int) string {
 	b := make([]byte, 2*n)
@@ -490,6 +494,7 @@ func (cfg *config) nCommitted(index int) (int, interface{}) {
 	var cmd interface{} = nil
 	for i := 0; i < len(cfg.rafts); i++ {
 		if cfg.applyErr[i] != "" {
+			fmt.Println("cfg.applyErr[i] != \"\"")
 			cfg.t.Fatal(cfg.applyErr[i])
 		}
 
@@ -558,6 +563,7 @@ func (cfg *config) one(cmd interface{}, expectedServers int, retry bool) int {
 	for time.Since(t0).Seconds() < 10 && cfg.checkFinished() == false {
 		// try all the servers, maybe one is the leader.
 		index := -1
+		// fmt.Println("1111")
 		for si := 0; si < cfg.n; si++ {
 			starts = (starts + 1) % cfg.n
 			var rf *Raft
@@ -574,13 +580,17 @@ func (cfg *config) one(cmd interface{}, expectedServers int, retry bool) int {
 				}
 			}
 		}
+		// fmt.Println("2222")
 
 		if index != -1 {
 			// somebody claimed to be the leader and to have
 			// submitted our command; wait a while for agreement.
+			// fmt.Printf("somebody submitted command at %d\n", index)
 			t1 := time.Now()
 			for time.Since(t1).Seconds() < 2 {
+				// fmt.Println("starts nCommited")
 				nd, cmd1 := cfg.nCommitted(index)
+				// fmt.Printf("nCommitted over, nd: [%v], cmd1[%v]\n", nd, cmd1)
 				if nd > 0 && nd >= expectedServers {
 					// committed
 					if cmd1 == cmd {
@@ -590,14 +600,18 @@ func (cfg *config) one(cmd interface{}, expectedServers int, retry bool) int {
 				}
 				time.Sleep(20 * time.Millisecond)
 			}
+			// fmt.Println("inner for over")
 			if retry == false {
+				fmt.Println("retry == false")
 				cfg.t.Fatalf("one(%v) failed to reach agreement", cmd)
 			}
 		} else {
 			time.Sleep(50 * time.Millisecond)
 		}
 	}
+	// fmt.Println("outer for over")
 	if cfg.checkFinished() == false {
+		fmt.Println("cfg.checkFinished() == false")
 		cfg.t.Fatalf("one(%v) failed to reach agreement", cmd)
 	}
 	return -1
