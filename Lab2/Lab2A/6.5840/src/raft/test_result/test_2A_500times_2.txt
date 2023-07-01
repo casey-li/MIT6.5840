@@ -1,0 +1,5000 @@
+Running the 1 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25514    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  804  158834    0
+PASS
+ok  	6.5840/raft	13.181s
+ 
+Running the 2 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25100    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  642  122692    0
+PASS
+ok  	6.5840/raft	13.047s
+ 
+Running the 3 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25456    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  624  118674    0
+PASS
+ok  	6.5840/raft	13.136s
+ 
+Running the 4 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25224    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  678  127140    0
+PASS
+ok  	6.5840/raft	13.145s
+ 
+Running the 5 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14778    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25492    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  666  126162    0
+PASS
+ok  	6.5840/raft	13.102s
+ 
+Running the 6 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25566    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  125744    0
+PASS
+ok  	6.5840/raft	13.204s
+ 
+Running the 7 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  148   28458    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  876  170032    0
+PASS
+ok  	6.5840/raft	13.949s
+ 
+Running the 8 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26272    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  588  106242    0
+PASS
+ok  	6.5840/raft	13.046s
+ 
+Running the 9 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25140    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  804  153422    0
+PASS
+ok  	6.5840/raft	13.207s
+ 
+Running the 10 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   24980    0
+Test (2A): multiple elections ...
+  ... Passed --   5.8  7  678  127366    0
+PASS
+ok  	6.5840/raft	13.498s
+ 
+Running the 11 tests iteration
+Test (2A): initial election ...
+warning: term changed even though there were no failures  ... Passed --   3.0  3   48   12168    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  126   24344    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  672  126158    0
+PASS
+ok  	6.5840/raft	13.330s
+ 
+Running the 12 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25112    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  648  120934    0
+PASS
+ok  	6.5840/raft	13.056s
+ 
+Running the 13 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24536    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  714  136462    0
+PASS
+ok  	6.5840/raft	13.074s
+ 
+Running the 14 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25682    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  672  126414    0
+PASS
+ok  	6.5840/raft	13.762s
+ 
+Running the 15 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.5  3  162   31330    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  600  115140    0
+PASS
+ok  	6.5840/raft	14.533s
+ 
+Running the 16 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25392    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  612  112978    0
+PASS
+ok  	6.5840/raft	12.836s
+ 
+Running the 17 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  138   26234    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  750  144536    0
+PASS
+ok  	6.5840/raft	13.136s
+ 
+Running the 18 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   62   15826    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  148   28530    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  738  139904    0
+PASS
+ok  	6.5840/raft	13.910s
+ 
+Running the 19 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15302    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  124   23650    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  582  107408    0
+PASS
+ok  	6.5840/raft	13.126s
+ 
+Running the 20 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  136   26438    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  122986    0
+PASS
+ok  	6.5840/raft	13.259s
+ 
+Running the 21 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25154    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  690  129384    0
+PASS
+ok  	6.5840/raft	12.909s
+ 
+Running the 22 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25682    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  684  132076    0
+PASS
+ok  	6.5840/raft	13.105s
+ 
+Running the 23 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  126   24666    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  630  114540    0
+PASS
+ok  	6.5840/raft	13.120s
+ 
+Running the 24 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25406    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  780  154156    0
+PASS
+ok  	6.5840/raft	13.113s
+ 
+Running the 25 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25628    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  684  127996    0
+PASS
+ok  	6.5840/raft	13.271s
+ 
+Running the 26 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  138   27002    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  119498    0
+PASS
+ok  	6.5840/raft	13.153s
+ 
+Running the 27 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  152   29444    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  684  132094    0
+PASS
+ok  	6.5840/raft	13.484s
+ 
+Running the 28 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24536    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  594  114262    0
+PASS
+ok  	6.5840/raft	13.103s
+ 
+Running the 29 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14778    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25342    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  558  103064    0
+PASS
+ok  	6.5840/raft	13.217s
+ 
+Running the 30 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26558    0
+Test (2A): multiple elections ...
+  ... Passed --   5.8  7  594  113398    0
+PASS
+ok  	6.5840/raft	13.507s
+ 
+Running the 31 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26500    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  618  116384    0
+PASS
+ok  	6.5840/raft	13.050s
+ 
+Running the 32 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26622    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  642  122178    0
+PASS
+ok  	6.5840/raft	13.267s
+ 
+Running the 33 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25104    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  570  108150    0
+PASS
+ok  	6.5840/raft	13.104s
+ 
+Running the 34 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24704    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  654  125450    0
+PASS
+ok  	6.5840/raft	12.920s
+ 
+Running the 35 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24958    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  124176    0
+PASS
+ok  	6.5840/raft	13.005s
+ 
+Running the 36 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26082    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  570  113688    0
+PASS
+ok  	6.5840/raft	12.990s
+ 
+Running the 37 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25726    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  732  145562    0
+PASS
+ok  	6.5840/raft	13.405s
+ 
+Running the 38 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26152    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  738  142592    0
+PASS
+ok  	6.5840/raft	13.379s
+ 
+Running the 39 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24060    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  708  136574    0
+PASS
+ok  	6.5840/raft	13.098s
+ 
+Running the 40 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25312    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  660  125686    0
+PASS
+ok  	6.5840/raft	13.064s
+ 
+Running the 41 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25082    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  588  110110    0
+PASS
+ok  	6.5840/raft	12.963s
+ 
+Running the 42 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25662    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  552  104372    0
+PASS
+ok  	6.5840/raft	13.041s
+ 
+Running the 43 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24122    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  594  112874    0
+PASS
+ok  	6.5840/raft	13.126s
+ 
+Running the 44 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25088    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  540   94684    0
+PASS
+ok  	6.5840/raft	13.021s
+ 
+Running the 45 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24280    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  720  138952    0
+PASS
+ok  	6.5840/raft	12.958s
+ 
+Running the 46 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  150   29102    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  684  130692    0
+PASS
+ok  	6.5840/raft	13.786s
+ 
+Running the 47 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24172    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  696  134224    0
+PASS
+ok  	6.5840/raft	13.178s
+ 
+Running the 48 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25180    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  123240    0
+PASS
+ok  	6.5840/raft	13.193s
+ 
+Running the 49 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25158    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  132036    0
+PASS
+ok  	6.5840/raft	13.041s
+ 
+Running the 50 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25610    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  123546    0
+PASS
+ok  	6.5840/raft	13.186s
+ 
+Running the 51 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25192    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  624  114602    0
+PASS
+ok  	6.5840/raft	12.854s
+ 
+Running the 52 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25154    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  726  144664    0
+PASS
+ok  	6.5840/raft	13.053s
+ 
+Running the 53 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  702  134204    0
+PASS
+ok  	6.5840/raft	13.167s
+ 
+Running the 54 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25620    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  113616    0
+PASS
+ok  	6.5840/raft	13.180s
+ 
+Running the 55 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25700    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  708  137914    0
+PASS
+ok  	6.5840/raft	13.129s
+ 
+Running the 56 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25958    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  594  105598    0
+PASS
+ok  	6.5840/raft	13.173s
+ 
+Running the 57 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25638    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  696  128522    0
+PASS
+ok  	6.5840/raft	13.718s
+ 
+Running the 58 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25640    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  630  122972    0
+PASS
+ok  	6.5840/raft	12.978s
+ 
+Running the 59 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25784    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  588  111876    0
+PASS
+ok  	6.5840/raft	13.274s
+ 
+Running the 60 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26024    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  588  109578    0
+PASS
+ok  	6.5840/raft	13.027s
+ 
+Running the 61 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  138   26998    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  702  137208    0
+PASS
+ok  	6.5840/raft	13.207s
+ 
+Running the 62 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25798    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  582  110710    0
+PASS
+ok  	6.5840/raft	12.949s
+ 
+Running the 63 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24620    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  552  100244    0
+PASS
+ok  	6.5840/raft	12.955s
+ 
+Running the 64 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24122    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  594  112910    0
+PASS
+ok  	6.5840/raft	12.888s
+ 
+Running the 65 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26458    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  672  124396    0
+PASS
+ok  	6.5840/raft	13.567s
+ 
+Running the 66 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  672  128582    0
+PASS
+ok  	6.5840/raft	13.221s
+ 
+Running the 67 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25478    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  546   99732    0
+PASS
+ok  	6.5840/raft	13.050s
+ 
+Running the 68 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15306    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24930    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  528   99338    0
+PASS
+ok  	6.5840/raft	13.019s
+ 
+Running the 69 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25316    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  119862    0
+PASS
+ok  	6.5840/raft	13.135s
+ 
+Running the 70 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24770    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  522   97526    0
+PASS
+ok  	6.5840/raft	12.909s
+ 
+Running the 71 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25104    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  124530    0
+PASS
+ok  	6.5840/raft	13.069s
+ 
+Running the 72 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25598    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  534  100516    0
+PASS
+ok  	6.5840/raft	12.894s
+ 
+Running the 73 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15306    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24758    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  546  104120    0
+PASS
+ok  	6.5840/raft	13.195s
+ 
+Running the 74 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  146   28490    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  122634    0
+PASS
+ok  	6.5840/raft	13.661s
+ 
+Running the 75 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25612    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  600  114816    0
+PASS
+ok  	6.5840/raft	13.030s
+ 
+Running the 76 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25202    0
+Test (2A): multiple elections ...
+  ... Passed --   5.2  7  654  126328    0
+PASS
+ok  	6.5840/raft	12.843s
+ 
+Running the 77 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25304    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  672  127618    0
+PASS
+ok  	6.5840/raft	12.999s
+ 
+Running the 78 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26158    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  612  116562    0
+PASS
+ok  	6.5840/raft	13.061s
+ 
+Running the 79 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24228    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  119402    0
+PASS
+ok  	6.5840/raft	12.979s
+ 
+Running the 80 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26722    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  762  148592    0
+PASS
+ok  	6.5840/raft	13.213s
+ 
+Running the 81 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24234    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  780  151554    0
+PASS
+ok  	6.5840/raft	12.918s
+ 
+Running the 82 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24246    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  630  121234    0
+PASS
+ok  	6.5840/raft	12.901s
+ 
+Running the 83 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25414    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  588  110228    0
+PASS
+ok  	6.5840/raft	12.958s
+ 
+Running the 84 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25108    0
+Test (2A): multiple elections ...
+  ... Passed --   6.3  7  828  155728    0
+PASS
+ok  	6.5840/raft	13.894s
+ 
+Running the 85 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24946    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  552  103522    0
+PASS
+ok  	6.5840/raft	13.041s
+ 
+Running the 86 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24056    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  133498    0
+PASS
+ok  	6.5840/raft	13.029s
+ 
+Running the 87 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25114    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  630  121992    0
+PASS
+ok  	6.5840/raft	13.091s
+ 
+Running the 88 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   62   15710    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25708    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  115140    0
+PASS
+ok  	6.5840/raft	13.138s
+ 
+Running the 89 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  116626    0
+PASS
+ok  	6.5840/raft	13.099s
+ 
+Running the 90 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26436    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  738  141838    0
+PASS
+ok  	6.5840/raft	13.640s
+ 
+Running the 91 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25104    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  582  112446    0
+PASS
+ok  	6.5840/raft	13.235s
+ 
+Running the 92 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.3  3  126   24096    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  594  114212    0
+PASS
+ok  	6.5840/raft	12.917s
+ 
+Running the 93 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  134   25770    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  684  132004    0
+PASS
+ok  	6.5840/raft	12.941s
+ 
+Running the 94 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25644    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  522   97434    0
+PASS
+ok  	6.5840/raft	13.156s
+ 
+Running the 95 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  138   26854    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  690  126480    0
+PASS
+ok  	6.5840/raft	13.318s
+ 
+Running the 96 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  146   28306    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  564  102892    0
+PASS
+ok  	6.5840/raft	13.454s
+ 
+Running the 97 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24812    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  630  118174    0
+PASS
+ok  	6.5840/raft	13.109s
+ 
+Running the 98 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24508    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  714  138626    0
+PASS
+ok  	6.5840/raft	13.122s
+ 
+Running the 99 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  146   28120    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  120316    0
+PASS
+ok  	6.5840/raft	13.612s
+ 
+Running the 100 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25180    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  624  119346    0
+PASS
+ok  	6.5840/raft	13.197s
+ 
+Running the 101 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26096    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  528   99082    0
+PASS
+ok  	6.5840/raft	12.906s
+ 
+Running the 102 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25634    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  110396    0
+PASS
+ok  	6.5840/raft	12.996s
+ 
+Running the 103 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25842    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  606  117026    0
+PASS
+ok  	6.5840/raft	13.629s
+ 
+Running the 104 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25392    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  618  115536    0
+PASS
+ok  	6.5840/raft	13.109s
+ 
+Running the 105 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25558    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  672  121252    0
+PASS
+ok  	6.5840/raft	13.294s
+ 
+Running the 106 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25904    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  534   97026    0
+PASS
+ok  	6.5840/raft	13.235s
+ 
+Running the 107 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26620    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  564  110940    0
+PASS
+ok  	6.5840/raft	13.327s
+ 
+Running the 108 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24230    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  654  121128    0
+PASS
+ok  	6.5840/raft	13.188s
+ 
+Running the 109 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25880    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  768  154336    0
+PASS
+ok  	6.5840/raft	12.978s
+ 
+Running the 110 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24690    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  127614    0
+PASS
+ok  	6.5840/raft	13.069s
+ 
+Running the 111 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24598    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  666  128210    0
+PASS
+ok  	6.5840/raft	13.210s
+ 
+Running the 112 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26452    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  678  129518    0
+PASS
+ok  	6.5840/raft	13.369s
+ 
+Running the 113 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  148   28764    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  678  129878    0
+PASS
+ok  	6.5840/raft	13.633s
+ 
+Running the 114 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.3  3  126   24168    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  534  101620    0
+PASS
+ok  	6.5840/raft	13.037s
+ 
+Running the 115 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  134   25938    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  564  107040    0
+PASS
+ok  	6.5840/raft	12.970s
+ 
+Running the 116 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25166    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  618  119244    0
+PASS
+ok  	6.5840/raft	13.269s
+ 
+Running the 117 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25216    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  600  113264    0
+PASS
+ok  	6.5840/raft	12.984s
+ 
+Running the 118 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24242    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  678  128556    0
+PASS
+ok  	6.5840/raft	13.113s
+ 
+Running the 119 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25100    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  624  117002    0
+PASS
+ok  	6.5840/raft	13.021s
+ 
+Running the 120 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24656    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  117756    0
+PASS
+ok  	6.5840/raft	12.919s
+ 
+Running the 121 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25442    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  120492    0
+PASS
+ok  	6.5840/raft	12.997s
+ 
+Running the 122 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24584    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  654  124884    0
+PASS
+ok  	6.5840/raft	13.051s
+ 
+Running the 123 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  124   23846    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  570  108494    0
+PASS
+ok  	6.5840/raft	13.003s
+ 
+Running the 124 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24692    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  654  121928    0
+PASS
+ok  	6.5840/raft	13.155s
+ 
+Running the 125 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14782    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24554    0
+Test (2A): multiple elections ...
+  ... Passed --   6.5  7  732  132970    0
+PASS
+ok  	6.5840/raft	14.032s
+ 
+Running the 126 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  128   25160    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  714  136028    0
+PASS
+ok  	6.5840/raft	13.374s
+ 
+Running the 127 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15306    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  124   23766    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  684  134116    0
+PASS
+ok  	6.5840/raft	13.130s
+ 
+Running the 128 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  690  130786    0
+PASS
+ok  	6.5840/raft	12.888s
+ 
+Running the 129 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25288    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  564  104270    0
+PASS
+ok  	6.5840/raft	13.162s
+ 
+Running the 130 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25224    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  666  130504    0
+PASS
+ok  	6.5840/raft	13.303s
+ 
+Running the 131 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26000    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  119004    0
+PASS
+ok  	6.5840/raft	13.227s
+ 
+Running the 132 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25694    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  588  105824    0
+PASS
+ok  	6.5840/raft	13.167s
+ 
+Running the 133 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  630  125534    0
+PASS
+ok  	6.5840/raft	13.089s
+ 
+Running the 134 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25296    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  618  119900    0
+PASS
+ok  	6.5840/raft	13.187s
+ 
+Running the 135 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26096    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  606  112692    0
+PASS
+ok  	6.5840/raft	13.292s
+ 
+Running the 136 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25420    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  654  125228    0
+PASS
+ok  	6.5840/raft	13.121s
+ 
+Running the 137 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25216    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  840  155502    0
+PASS
+ok  	6.5840/raft	13.610s
+ 
+Running the 138 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25176    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  684  130836    0
+PASS
+ok  	6.5840/raft	13.128s
+ 
+Running the 139 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15306    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  600  112948    0
+PASS
+ok  	6.5840/raft	13.010s
+ 
+Running the 140 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25138    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  120256    0
+PASS
+ok  	6.5840/raft	12.870s
+ 
+Running the 141 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24104    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  570  106076    0
+PASS
+ok  	6.5840/raft	13.192s
+ 
+Running the 142 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24722    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  630  126460    0
+PASS
+ok  	6.5840/raft	13.115s
+ 
+Running the 143 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25184    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  612  116202    0
+PASS
+ok  	6.5840/raft	13.175s
+ 
+Running the 144 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24122    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  576  103692    0
+PASS
+ok  	6.5840/raft	13.079s
+ 
+Running the 145 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24504    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  570  103466    0
+PASS
+ok  	6.5840/raft	13.128s
+ 
+Running the 146 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24722    0
+Test (2A): multiple elections ...
+  ... Passed --   6.2  7  828  161554    0
+PASS
+ok  	6.5840/raft	13.701s
+ 
+Running the 147 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25542    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  552  101614    0
+PASS
+ok  	6.5840/raft	13.045s
+ 
+Running the 148 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  654  125358    0
+PASS
+ok  	6.5840/raft	13.122s
+ 
+Running the 149 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26056    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  636  123940    0
+PASS
+ok  	6.5840/raft	12.842s
+ 
+Running the 150 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  146   28128    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  720  138308    0
+PASS
+ok  	6.5840/raft	13.642s
+ 
+Running the 151 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25976    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  738  141186    0
+PASS
+ok  	6.5840/raft	13.599s
+ 
+Running the 152 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24692    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  119254    0
+PASS
+ok  	6.5840/raft	12.937s
+ 
+Running the 153 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25624    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  720  141568    0
+PASS
+ok  	6.5840/raft	13.001s
+ 
+Running the 154 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25078    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  678  128452    0
+PASS
+ok  	6.5840/raft	13.207s
+ 
+Running the 155 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24162    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  600  113176    0
+PASS
+ok  	6.5840/raft	12.923s
+ 
+Running the 156 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25166    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  684  128110    0
+PASS
+ok  	6.5840/raft	13.172s
+ 
+Running the 157 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14782    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  148   28524    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  660  124150    0
+PASS
+ok  	6.5840/raft	13.519s
+ 
+Running the 158 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15302    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25682    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  612  113178    0
+PASS
+ok  	6.5840/raft	13.239s
+ 
+Running the 159 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24874    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  792  154884    0
+PASS
+ok  	6.5840/raft	13.206s
+ 
+Running the 160 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  136   26500    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  119808    0
+PASS
+ok  	6.5840/raft	13.264s
+ 
+Running the 161 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25836    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  111744    0
+PASS
+ok  	6.5840/raft	13.138s
+ 
+Running the 162 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25514    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  121004    0
+PASS
+ok  	6.5840/raft	13.183s
+ 
+Running the 163 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26220    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  672  124612    0
+PASS
+ok  	6.5840/raft	13.331s
+ 
+Running the 164 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25114    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  112428    0
+PASS
+ok  	6.5840/raft	13.168s
+ 
+Running the 165 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  144   27636    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  114412    0
+PASS
+ok  	6.5840/raft	13.535s
+ 
+Running the 166 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  138   26980    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  124048    0
+PASS
+ok  	6.5840/raft	13.233s
+ 
+Running the 167 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25510    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  125994    0
+PASS
+ok  	6.5840/raft	13.197s
+ 
+Running the 168 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25304    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  708  131498    0
+PASS
+ok  	6.5840/raft	13.630s
+ 
+Running the 169 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24518    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  702  134680    0
+PASS
+ok  	6.5840/raft	13.069s
+ 
+Running the 170 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24308    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  516   96718    0
+PASS
+ok  	6.5840/raft	13.024s
+ 
+Running the 171 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25340    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  733  133808    0
+PASS
+ok  	6.5840/raft	13.260s
+ 
+Running the 172 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26540    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  612  111660    0
+PASS
+ok  	6.5840/raft	13.257s
+ 
+Running the 173 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25904    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  732  139198    0
+PASS
+ok  	6.5840/raft	13.235s
+ 
+Running the 174 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25620    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  624  118014    0
+PASS
+ok  	6.5840/raft	13.077s
+ 
+Running the 175 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25398    0
+Test (2A): multiple elections ...
+  ... Passed --   5.8  7  636  117226    0
+PASS
+ok  	6.5840/raft	13.447s
+ 
+Running the 176 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   26178    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  119566    0
+PASS
+ok  	6.5840/raft	13.105s
+ 
+Running the 177 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25558    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  750  147466    0
+PASS
+ok  	6.5840/raft	13.628s
+ 
+Running the 178 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25100    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  654  121036    0
+PASS
+ok  	6.5840/raft	13.165s
+ 
+Running the 179 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24180    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  540  104766    0
+PASS
+ok  	6.5840/raft	13.013s
+ 
+Running the 180 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24350    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  594  112972    0
+PASS
+ok  	6.5840/raft	13.068s
+ 
+Running the 181 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26224    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  588  108912    0
+PASS
+ok  	6.5840/raft	13.232s
+ 
+Running the 182 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25046    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  564  104036    0
+PASS
+ok  	6.5840/raft	12.958s
+ 
+Running the 183 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26154    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  540  100508    0
+PASS
+ok  	6.5840/raft	13.117s
+ 
+Running the 184 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15454    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26326    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  128296    0
+PASS
+ok  	6.5840/raft	13.274s
+ 
+Running the 185 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   25240    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  588  111108    0
+PASS
+ok  	6.5840/raft	13.004s
+ 
+Running the 186 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25022    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  684  130138    0
+PASS
+ok  	6.5840/raft	13.128s
+ 
+Running the 187 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24572    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  594  113066    0
+PASS
+ok  	6.5840/raft	12.977s
+ 
+Running the 188 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24784    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  738  146216    0
+PASS
+ok  	6.5840/raft	13.111s
+ 
+Running the 189 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.8  3  142   27102    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  750  140726    0
+PASS
+ok  	6.5840/raft	13.956s
+ 
+Running the 190 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24348    0
+Test (2A): multiple elections ...
+  ... Passed --   5.8  7  696  131144    0
+PASS
+ok  	6.5840/raft	13.263s
+ 
+Running the 191 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   25182    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  600  109252    0
+PASS
+ok  	6.5840/raft	13.122s
+ 
+Running the 192 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26020    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  118526    0
+PASS
+ok  	6.5840/raft	13.104s
+ 
+Running the 193 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25900    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  708  129606    0
+PASS
+ok  	6.5840/raft	13.756s
+ 
+Running the 194 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24184    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  696  130104    0
+PASS
+ok  	6.5840/raft	13.116s
+ 
+Running the 195 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  123262    0
+PASS
+ok  	6.5840/raft	13.072s
+ 
+Running the 196 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  148   28586    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  606  109588    0
+PASS
+ok  	6.5840/raft	13.319s
+ 
+Running the 197 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  136   26398    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  552   98936    0
+PASS
+ok  	6.5840/raft	13.014s
+ 
+Running the 198 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25936    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  654  119754    0
+PASS
+ok  	6.5840/raft	13.111s
+ 
+Running the 199 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   62   15830    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24198    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  125436    0
+PASS
+ok  	6.5840/raft	13.181s
+ 
+Running the 200 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24652    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  133264    0
+PASS
+ok  	6.5840/raft	13.046s
+ 
+Running the 201 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25100    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  114314    0
+PASS
+ok  	6.5840/raft	13.045s
+ 
+Running the 202 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24762    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  708  132856    0
+PASS
+ok  	6.5840/raft	13.048s
+ 
+Running the 203 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25740    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  714  136462    0
+PASS
+ok  	6.5840/raft	13.678s
+ 
+Running the 204 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26602    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  588  111464    0
+PASS
+ok  	6.5840/raft	13.262s
+ 
+Running the 205 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26478    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  726  144166    0
+PASS
+ok  	6.5840/raft	13.128s
+ 
+Running the 206 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25030    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  624  118296    0
+PASS
+ok  	6.5840/raft	13.124s
+ 
+Running the 207 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25300    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  129668    0
+PASS
+ok  	6.5840/raft	13.000s
+ 
+Running the 208 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25740    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  630  124410    0
+PASS
+ok  	6.5840/raft	13.182s
+ 
+Running the 209 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  150   29002    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  110722    0
+PASS
+ok  	6.5840/raft	13.651s
+ 
+Running the 210 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24416    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  702  137148    0
+PASS
+ok  	6.5840/raft	13.077s
+ 
+Running the 211 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24460    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  726  138548    0
+PASS
+ok  	6.5840/raft	13.074s
+ 
+Running the 212 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25104    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  774  146708    0
+PASS
+ok  	6.5840/raft	13.516s
+ 
+Running the 213 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26100    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  564  109136    0
+PASS
+ok  	6.5840/raft	13.086s
+ 
+Running the 214 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25378    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  720  138096    0
+PASS
+ok  	6.5840/raft	13.019s
+ 
+Running the 215 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  148   28738    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  702  132498    0
+PASS
+ok  	6.5840/raft	13.631s
+ 
+Running the 216 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24638    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  594  106084    0
+PASS
+ok  	6.5840/raft	13.156s
+ 
+Running the 217 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25988    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  119684    0
+PASS
+ok  	6.5840/raft	13.149s
+ 
+Running the 218 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25610    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  546  103812    0
+PASS
+ok  	6.5840/raft	13.022s
+ 
+Running the 219 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  124   23598    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  606  118936    0
+PASS
+ok  	6.5840/raft	13.121s
+ 
+Running the 220 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25276    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  702  133646    0
+PASS
+ok  	6.5840/raft	12.915s
+ 
+Running the 221 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24776    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  129154    0
+PASS
+ok  	6.5840/raft	13.032s
+ 
+Running the 222 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25220    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  666  128224    0
+PASS
+ok  	6.5840/raft	13.070s
+ 
+Running the 223 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26082    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  540   97044    0
+PASS
+ok  	6.5840/raft	13.096s
+ 
+Running the 224 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  144   27668    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  726  143392    0
+PASS
+ok  	6.5840/raft	13.551s
+ 
+Running the 225 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14670    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25490    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  594  110642    0
+PASS
+ok  	6.5840/raft	13.150s
+ 
+Running the 226 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24584    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  594  114222    0
+PASS
+ok  	6.5840/raft	13.026s
+ 
+Running the 227 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  122   23522    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  558  108218    0
+PASS
+ok  	6.5840/raft	12.909s
+ 
+Running the 228 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25180    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  702  136222    0
+PASS
+ok  	6.5840/raft	13.185s
+ 
+Running the 229 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  112898    0
+PASS
+ok  	6.5840/raft	13.055s
+ 
+Running the 230 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   24952    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  642  119560    0
+PASS
+ok  	6.5840/raft	13.123s
+ 
+Running the 231 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25700    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  618  115810    0
+PASS
+ok  	6.5840/raft	13.085s
+ 
+Running the 232 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  606  116554    0
+PASS
+ok  	6.5840/raft	13.180s
+ 
+Running the 233 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25614    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  690  129516    0
+PASS
+ok  	6.5840/raft	12.994s
+ 
+Running the 234 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26184    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  696  132948    0
+PASS
+ok  	6.5840/raft	13.322s
+ 
+Running the 235 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  144   28164    0
+Test (2A): multiple elections ...
+  ... Passed --   5.2  7  624  114322    0
+PASS
+ok  	6.5840/raft	13.432s
+ 
+Running the 236 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25158    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  750  143976    0
+PASS
+ok  	6.5840/raft	13.243s
+ 
+Running the 237 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25322    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  546  101884    0
+PASS
+ok  	6.5840/raft	13.077s
+ 
+Running the 238 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  124   23846    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  834  168998    0
+PASS
+ok  	6.5840/raft	13.144s
+ 
+Running the 239 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24386    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  570  109130    0
+PASS
+ok  	6.5840/raft	12.921s
+ 
+Running the 240 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25358    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  558  105538    0
+PASS
+ok  	6.5840/raft	13.050s
+ 
+Running the 241 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25398    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  690  130770    0
+PASS
+ok  	6.5840/raft	12.952s
+ 
+Running the 242 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24572    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  114622    0
+PASS
+ok  	6.5840/raft	13.106s
+ 
+Running the 243 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   23810    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  120540    0
+PASS
+ok  	6.5840/raft	12.990s
+ 
+Running the 244 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25660    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  636  122406    0
+PASS
+ok  	6.5840/raft	13.157s
+ 
+Running the 245 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  666  122140    0
+PASS
+ok  	6.5840/raft	13.344s
+ 
+Running the 246 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   6.6  7  702  129694    0
+PASS
+ok  	6.5840/raft	14.308s
+ 
+Running the 247 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  134   26286    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  714  138248    0
+PASS
+ok  	6.5840/raft	13.396s
+ 
+Running the 248 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25180    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  126832    0
+PASS
+ok  	6.5840/raft	13.186s
+ 
+Running the 249 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  146   28052    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  600  112952    0
+PASS
+ok  	6.5840/raft	13.494s
+ 
+Running the 250 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24704    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  684  128564    0
+PASS
+ok  	6.5840/raft	13.687s
+ 
+Running the 251 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  138   27144    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  630  117094    0
+PASS
+ok  	6.5840/raft	13.361s
+ 
+Running the 252 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  150   29040    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  738  144694    0
+PASS
+ok  	6.5840/raft	13.367s
+ 
+Running the 253 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24292    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  786  152502    0
+PASS
+ok  	6.5840/raft	13.278s
+ 
+Running the 254 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24576    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  582  107756    0
+PASS
+ok  	6.5840/raft	12.957s
+ 
+Running the 255 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  136   26398    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  612  115662    0
+PASS
+ok  	6.5840/raft	12.990s
+ 
+Running the 256 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24132    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  119834    0
+PASS
+ok  	6.5840/raft	13.037s
+ 
+Running the 257 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26024    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  127308    0
+PASS
+ok  	6.5840/raft	13.100s
+ 
+Running the 258 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25294    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  558  102646    0
+PASS
+ok  	6.5840/raft	13.127s
+ 
+Running the 259 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25584    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  117888    0
+PASS
+ok  	6.5840/raft	13.148s
+ 
+Running the 260 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24480    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  732  140434    0
+PASS
+ok  	6.5840/raft	13.018s
+ 
+Running the 261 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14782    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25704    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  810  153752    0
+PASS
+ok  	6.5840/raft	13.530s
+ 
+Running the 262 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15306    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25122    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  576  109314    0
+PASS
+ok  	6.5840/raft	13.291s
+ 
+Running the 263 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25092    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  522  100160    0
+PASS
+ok  	6.5840/raft	12.895s
+ 
+Running the 264 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24296    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  504   97388    0
+PASS
+ok  	6.5840/raft	12.985s
+ 
+Running the 265 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24824    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  654  122604    0
+PASS
+ok  	6.5840/raft	12.870s
+ 
+Running the 266 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25154    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  660  129758    0
+PASS
+ok  	6.5840/raft	13.164s
+ 
+Running the 267 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25762    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  558  106332    0
+PASS
+ok  	6.5840/raft	12.992s
+ 
+Running the 268 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25758    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  696  133482    0
+PASS
+ok  	6.5840/raft	13.015s
+ 
+Running the 269 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26224    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  116580    0
+PASS
+ok  	6.5840/raft	13.203s
+ 
+Running the 270 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26500    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  804  157514    0
+PASS
+ok  	6.5840/raft	13.246s
+ 
+Running the 271 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25798    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  684  130070    0
+PASS
+ok  	6.5840/raft	13.083s
+ 
+Running the 272 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25274    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  582  109478    0
+PASS
+ok  	6.5840/raft	13.059s
+ 
+Running the 273 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.3  3  124   23508    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  684  135564    0
+PASS
+ok  	6.5840/raft	12.820s
+ 
+Running the 274 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25976    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  618  116110    0
+PASS
+ok  	6.5840/raft	12.985s
+ 
+Running the 275 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25242    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  582  109878    0
+PASS
+ok  	6.5840/raft	13.234s
+ 
+Running the 276 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25278    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  109634    0
+PASS
+ok  	6.5840/raft	13.072s
+ 
+Running the 277 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  119094    0
+PASS
+ok  	6.5840/raft	13.051s
+ 
+Running the 278 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   25116    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  678  125808    0
+PASS
+ok  	6.5840/raft	13.162s
+ 
+Running the 279 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25416    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  630  115170    0
+PASS
+ok  	6.5840/raft	13.225s
+ 
+Running the 280 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24624    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  630  123374    0
+PASS
+ok  	6.5840/raft	13.026s
+ 
+Running the 281 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  136   26192    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  119686    0
+PASS
+ok  	6.5840/raft	13.083s
+ 
+Running the 282 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24820    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  120740    0
+PASS
+ok  	6.5840/raft	13.123s
+ 
+Running the 283 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26410    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  564  103188    0
+PASS
+ok  	6.5840/raft	13.123s
+ 
+Running the 284 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  774  150912    0
+PASS
+ok  	6.5840/raft	12.944s
+ 
+Running the 285 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25624    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  702  128652    0
+PASS
+ok  	6.5840/raft	13.696s
+ 
+Running the 286 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15302    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25662    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  780  150100    0
+PASS
+ok  	6.5840/raft	13.093s
+ 
+Running the 287 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15306    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25976    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  600  114762    0
+PASS
+ok  	6.5840/raft	13.354s
+ 
+Running the 288 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  114240    0
+PASS
+ok  	6.5840/raft	13.147s
+ 
+Running the 289 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15306    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24108    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  834  164450    0
+PASS
+ok  	6.5840/raft	13.098s
+ 
+Running the 290 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25962    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  552  106220    0
+PASS
+ok  	6.5840/raft	13.020s
+ 
+Running the 291 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  612  116482    0
+PASS
+ok  	6.5840/raft	13.346s
+ 
+Running the 292 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24256    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  522   95606    0
+PASS
+ok  	6.5840/raft	12.831s
+ 
+Running the 293 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25900    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  708  136250    0
+PASS
+ok  	6.5840/raft	13.320s
+ 
+Running the 294 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25042    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  654  121972    0
+PASS
+ok  	6.5840/raft	12.951s
+ 
+Running the 295 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25038    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  732  138000    0
+PASS
+ok  	6.5840/raft	13.028s
+ 
+Running the 296 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24508    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  570  102334    0
+PASS
+ok  	6.5840/raft	13.116s
+ 
+Running the 297 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24622    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  576  109066    0
+PASS
+ok  	6.5840/raft	12.984s
+ 
+Running the 298 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26002    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  570  103754    0
+PASS
+ok  	6.5840/raft	13.353s
+ 
+Running the 299 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25682    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  690  126936    0
+PASS
+ok  	6.5840/raft	13.668s
+ 
+Running the 300 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  558  104534    0
+PASS
+ok  	6.5840/raft	13.011s
+ 
+Running the 301 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25162    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  756  145404    0
+PASS
+ok  	6.5840/raft	13.067s
+ 
+Running the 302 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25068    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  696  135568    0
+PASS
+ok  	6.5840/raft	13.095s
+ 
+Running the 303 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25216    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  660  121388    0
+PASS
+ok  	6.5840/raft	13.215s
+ 
+Running the 304 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14782    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24696    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  624  114374    0
+PASS
+ok  	6.5840/raft	13.147s
+ 
+Running the 305 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25364    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  552  104152    0
+PASS
+ok  	6.5840/raft	12.920s
+ 
+Running the 306 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  138   27038    0
+Test (2A): multiple elections ...
+  ... Passed --   6.1  7  828  165018    0
+PASS
+ok  	6.5840/raft	13.839s
+ 
+Running the 307 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26210    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  630  122434    0
+PASS
+ok  	6.5840/raft	13.234s
+ 
+Running the 308 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26016    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  696  132926    0
+PASS
+ok  	6.5840/raft	13.365s
+ 
+Running the 309 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24656    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  576  110620    0
+PASS
+ok  	6.5840/raft	13.127s
+ 
+Running the 310 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26722    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  119156    0
+PASS
+ok  	6.5840/raft	13.220s
+ 
+Running the 311 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25638    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  648  127000    0
+PASS
+ok  	6.5840/raft	13.341s
+ 
+Running the 312 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24830    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  624  119716    0
+PASS
+ok  	6.5840/raft	13.147s
+ 
+Running the 313 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24722    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  726  144708    0
+PASS
+ok  	6.5840/raft	13.167s
+ 
+Running the 314 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25314    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  744  147470    0
+PASS
+ok  	6.5840/raft	13.093s
+ 
+Running the 315 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25220    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  702  137814    0
+PASS
+ok  	6.5840/raft	12.892s
+ 
+Running the 316 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  150   29212    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  612  115618    0
+PASS
+ok  	6.5840/raft	13.585s
+ 
+Running the 317 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24070    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  654  127380    0
+PASS
+ok  	6.5840/raft	12.905s
+ 
+Running the 318 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25824    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  660  121790    0
+PASS
+ok  	6.5840/raft	13.436s
+ 
+Running the 319 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25678    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  570  109948    0
+PASS
+ok  	6.5840/raft	13.065s
+ 
+Running the 320 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24172    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  594  109232    0
+PASS
+ok  	6.5840/raft	13.075s
+ 
+Running the 321 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15302    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24784    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  122110    0
+PASS
+ok  	6.5840/raft	13.039s
+ 
+Running the 322 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25304    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  118836    0
+PASS
+ok  	6.5840/raft	13.084s
+ 
+Running the 323 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25264    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  744  144674    0
+PASS
+ok  	6.5840/raft	13.252s
+ 
+Running the 324 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  126   24920    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  121828    0
+PASS
+ok  	6.5840/raft	13.108s
+ 
+Running the 325 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26118    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  110926    0
+PASS
+ok  	6.5840/raft	13.089s
+ 
+Running the 326 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26136    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  109156    0
+PASS
+ok  	6.5840/raft	13.068s
+ 
+Running the 327 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24816    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  105690    0
+PASS
+ok  	6.5840/raft	13.102s
+ 
+Running the 328 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   25324    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  828  162362    0
+PASS
+ok  	6.5840/raft	13.084s
+ 
+Running the 329 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24656    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  864  165044    0
+PASS
+ok  	6.5840/raft	13.475s
+ 
+Running the 330 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  600  112930    0
+PASS
+ok  	6.5840/raft	12.984s
+ 
+Running the 331 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25060    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  582  109884    0
+PASS
+ok  	6.5840/raft	13.273s
+ 
+Running the 332 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24660    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  130364    0
+PASS
+ok  	6.5840/raft	12.936s
+ 
+Running the 333 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25994    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  672  128020    0
+PASS
+ok  	6.5840/raft	12.965s
+ 
+Running the 334 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25744    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  126878    0
+PASS
+ok  	6.5840/raft	13.096s
+ 
+Running the 335 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25542    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  552  104314    0
+PASS
+ok  	6.5840/raft	12.935s
+ 
+Running the 336 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25884    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  618  116692    0
+PASS
+ok  	6.5840/raft	13.223s
+ 
+Running the 337 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26136    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  720  134906    0
+PASS
+ok  	6.5840/raft	13.170s
+ 
+Running the 338 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26162    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  612  115594    0
+PASS
+ok  	6.5840/raft	13.286s
+ 
+Running the 339 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25492    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  804  154526    0
+PASS
+ok  	6.5840/raft	13.224s
+ 
+Running the 340 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26082    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  738  140298    0
+PASS
+ok  	6.5840/raft	13.161s
+ 
+Running the 341 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25612    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  600  112606    0
+PASS
+ok  	6.5840/raft	13.007s
+ 
+Running the 342 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  146   28032    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  576  105842    0
+PASS
+ok  	6.5840/raft	13.538s
+ 
+Running the 343 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24704    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  618  117578    0
+PASS
+ok  	6.5840/raft	13.040s
+ 
+Running the 344 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15302    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24624    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  750  151154    0
+PASS
+ok  	6.5840/raft	12.988s
+ 
+Running the 345 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24180    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  138498    0
+PASS
+ok  	6.5840/raft	12.941s
+ 
+Running the 346 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25438    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  106756    0
+PASS
+ok  	6.5840/raft	13.132s
+ 
+Running the 347 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  534  100344    0
+PASS
+ok  	6.5840/raft	13.162s
+ 
+Running the 348 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24692    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  726  134840    0
+PASS
+ok  	6.5840/raft	13.415s
+ 
+Running the 349 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25238    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  732  143094    0
+PASS
+ok  	6.5840/raft	12.857s
+ 
+Running the 350 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26420    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  612  118324    0
+PASS
+ok  	6.5840/raft	13.273s
+ 
+Running the 351 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24110    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  122672    0
+PASS
+ok  	6.5840/raft	13.072s
+ 
+Running the 352 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25514    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  546   97882    0
+PASS
+ok  	6.5840/raft	12.967s
+ 
+Running the 353 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24474    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  594  109422    0
+PASS
+ok  	6.5840/raft	13.187s
+ 
+Running the 354 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  124   23802    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  672  119746    0
+PASS
+ok  	6.5840/raft	13.401s
+ 
+Running the 355 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25636    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  654  125844    0
+PASS
+ok  	6.5840/raft	12.878s
+ 
+Running the 356 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24416    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  666  125170    0
+PASS
+ok  	6.5840/raft	12.938s
+ 
+Running the 357 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25638    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  564  106250    0
+PASS
+ok  	6.5840/raft	13.304s
+ 
+Running the 358 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  132   25708    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  588  108868    0
+PASS
+ok  	6.5840/raft	13.252s
+ 
+Running the 359 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26682    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  630  119396    0
+PASS
+ok  	6.5840/raft	13.239s
+ 
+Running the 360 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25956    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  696  133002    0
+PASS
+ok  	6.5840/raft	13.258s
+ 
+Running the 361 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25680    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  612  112078    0
+PASS
+ok  	6.5840/raft	12.990s
+ 
+Running the 362 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26096    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  678  125674    0
+PASS
+ok  	6.5840/raft	12.988s
+ 
+Running the 363 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24686    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  630  123622    0
+PASS
+ok  	6.5840/raft	13.004s
+ 
+Running the 364 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  150   29040    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  576  110048    0
+PASS
+ok  	6.5840/raft	13.506s
+ 
+Running the 365 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25556    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  612  110954    0
+PASS
+ok  	6.5840/raft	13.291s
+ 
+Running the 366 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   24942    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  708  137450    0
+PASS
+ok  	6.5840/raft	13.152s
+ 
+Running the 367 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  150   29108    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  129752    0
+PASS
+ok  	6.5840/raft	13.638s
+ 
+Running the 368 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  148   28826    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  127532    0
+PASS
+ok  	6.5840/raft	13.685s
+ 
+Running the 369 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15302    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25196    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  642  124260    0
+PASS
+ok  	6.5840/raft	13.018s
+ 
+Running the 370 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25154    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  612  111232    0
+PASS
+ok  	6.5840/raft	13.110s
+ 
+Running the 371 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  714  136730    0
+PASS
+ok  	6.5840/raft	13.110s
+ 
+Running the 372 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26096    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  624  118424    0
+PASS
+ok  	6.5840/raft	13.171s
+ 
+Running the 373 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25216    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  738  144790    0
+PASS
+ok  	6.5840/raft	13.341s
+ 
+Running the 374 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25558    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  119108    0
+PASS
+ok  	6.5840/raft	13.064s
+ 
+Running the 375 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  148   28524    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  678  130794    0
+PASS
+ok  	6.5840/raft	13.489s
+ 
+Running the 376 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25242    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  666  122856    0
+PASS
+ok  	6.5840/raft	12.934s
+ 
+Running the 377 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   24912    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  708  132506    0
+PASS
+ok  	6.5840/raft	12.903s
+ 
+Running the 378 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25212    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  110912    0
+PASS
+ok  	6.5840/raft	13.003s
+ 
+Running the 379 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  128   25338    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  588  110256    0
+PASS
+ok  	6.5840/raft	12.848s
+ 
+Running the 380 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25046    0
+Test (2A): multiple elections ...
+  ... Passed --   6.5  7  780  138346    0
+PASS
+ok  	6.5840/raft	14.040s
+ 
+Running the 381 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25682    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  786  150640    0
+PASS
+ok  	6.5840/raft	13.116s
+ 
+Running the 382 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25504    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  600  105186    0
+PASS
+ok  	6.5840/raft	13.057s
+ 
+Running the 383 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14778    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25640    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  118868    0
+PASS
+ok  	6.5840/raft	13.189s
+ 
+Running the 384 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25430    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  690  133312    0
+PASS
+ok  	6.5840/raft	13.139s
+ 
+Running the 385 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25594    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  720  142286    0
+PASS
+ok  	6.5840/raft	13.112s
+ 
+Running the 386 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  134   26198    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  576  110876    0
+PASS
+ok  	6.5840/raft	12.738s
+ 
+Running the 387 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   26072    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  648  122146    0
+PASS
+ok  	6.5840/raft	12.993s
+ 
+Running the 388 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24836    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  594  110182    0
+PASS
+ok  	6.5840/raft	13.034s
+ 
+Running the 389 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25598    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  744  144086    0
+PASS
+ok  	6.5840/raft	13.167s
+ 
+Running the 390 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24250    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  624  113968    0
+PASS
+ok  	6.5840/raft	12.920s
+ 
+Running the 391 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24698    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  588  111228    0
+PASS
+ok  	6.5840/raft	13.203s
+ 
+Running the 392 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25274    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  576  105990    0
+PASS
+ok  	6.5840/raft	13.059s
+ 
+Running the 393 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   24996    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  708  130106    0
+PASS
+ok  	6.5840/raft	13.590s
+ 
+Running the 394 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  144   27188    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  762  148102    0
+PASS
+ok  	6.5840/raft	13.554s
+ 
+Running the 395 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25838    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  606  113146    0
+PASS
+ok  	6.5840/raft	13.049s
+ 
+Running the 396 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24158    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  600  117868    0
+PASS
+ok  	6.5840/raft	13.016s
+ 
+Running the 397 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  142   26732    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  636  121730    0
+PASS
+ok  	6.5840/raft	13.391s
+ 
+Running the 398 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24754    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  582  108172    0
+PASS
+ok  	6.5840/raft	13.037s
+ 
+Running the 399 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25566    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  624  120686    0
+PASS
+ok  	6.5840/raft	13.162s
+ 
+Running the 400 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  582  106012    0
+PASS
+ok  	6.5840/raft	12.869s
+ 
+Running the 401 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24172    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  125482    0
+PASS
+ok  	6.5840/raft	13.100s
+ 
+Running the 402 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   24984    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  600  111392    0
+PASS
+ok  	6.5840/raft	13.194s
+ 
+Running the 403 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25722    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  726  143398    0
+PASS
+ok  	6.5840/raft	13.156s
+ 
+Running the 404 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15302    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25056    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  774  152990    0
+PASS
+ok  	6.5840/raft	13.112s
+ 
+Running the 405 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24842    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  624  120416    0
+PASS
+ok  	6.5840/raft	12.934s
+ 
+Running the 406 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  708  138684    0
+PASS
+ok  	6.5840/raft	13.126s
+ 
+Running the 407 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25740    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  684  126908    0
+PASS
+ok  	6.5840/raft	13.301s
+ 
+Running the 408 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25114    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  122910    0
+PASS
+ok  	6.5840/raft	13.208s
+ 
+Running the 409 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  702  133218    0
+PASS
+ok  	6.5840/raft	13.059s
+ 
+Running the 410 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24656    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  660  122868    0
+PASS
+ok  	6.5840/raft	13.110s
+ 
+Running the 411 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25634    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  552  102334    0
+PASS
+ok  	6.5840/raft	13.147s
+ 
+Running the 412 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24722    0
+Test (2A): multiple elections ...
+  ... Passed --   5.7  7  660  125632    0
+PASS
+ok  	6.5840/raft	13.210s
+ 
+Running the 413 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26096    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  552  102328    0
+PASS
+ok  	6.5840/raft	13.082s
+ 
+Running the 414 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24646    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  732  143656    0
+PASS
+ok  	6.5840/raft	13.036s
+ 
+Running the 415 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25202    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  810  154642    0
+PASS
+ok  	6.5840/raft	13.148s
+ 
+Running the 416 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25994    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  119416    0
+PASS
+ok  	6.5840/raft	13.054s
+ 
+Running the 417 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25594    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  588  111800    0
+PASS
+ok  	6.5840/raft	13.072s
+ 
+Running the 418 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  576  106536    0
+PASS
+ok  	6.5840/raft	13.175s
+ 
+Running the 419 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  131124    0
+PASS
+ok  	6.5840/raft	13.045s
+ 
+Running the 420 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24908    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  708  137930    0
+PASS
+ok  	6.5840/raft	12.932s
+ 
+Running the 421 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  136   26424    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  648  123902    0
+PASS
+ok  	6.5840/raft	13.330s
+ 
+Running the 422 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24416    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  582  108842    0
+PASS
+ok  	6.5840/raft	12.962s
+ 
+Running the 423 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14670    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25340    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  642  118372    0
+PASS
+ok  	6.5840/raft	12.921s
+ 
+Running the 424 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25620    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  678  131310    0
+PASS
+ok  	6.5840/raft	12.953s
+ 
+Running the 425 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25384    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  576  113326    0
+PASS
+ok  	6.5840/raft	13.068s
+ 
+Running the 426 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  126   24600    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  720  135662    0
+PASS
+ok  	6.5840/raft	13.151s
+ 
+Running the 427 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24712    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  624  117236    0
+PASS
+ok  	6.5840/raft	13.143s
+ 
+Running the 428 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25078    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  642  122236    0
+PASS
+ok  	6.5840/raft	13.103s
+ 
+Running the 429 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   62   15830    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  148   28458    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  540  105524    0
+PASS
+ok  	6.5840/raft	13.438s
+ 
+Running the 430 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25114    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  672  126500    0
+PASS
+ok  	6.5840/raft	12.946s
+ 
+Running the 431 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24602    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  118614    0
+PASS
+ok  	6.5840/raft	13.250s
+ 
+Running the 432 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  148   28684    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  618  119416    0
+PASS
+ok  	6.5840/raft	13.669s
+ 
+Running the 433 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25780    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  678  128894    0
+PASS
+ok  	6.5840/raft	12.954s
+ 
+Running the 434 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14670    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25624    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  522   95212    0
+PASS
+ok  	6.5840/raft	13.053s
+ 
+Running the 435 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25250    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  119934    0
+PASS
+ok  	6.5840/raft	13.099s
+ 
+Running the 436 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25576    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  618  116226    0
+PASS
+ok  	6.5840/raft	13.039s
+ 
+Running the 437 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25038    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  702  131948    0
+PASS
+ok  	6.5840/raft	12.930s
+ 
+Running the 438 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  130   25654    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  666  126672    0
+PASS
+ok  	6.5840/raft	13.075s
+ 
+Running the 439 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   62   15710    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25562    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  714  135786    0
+PASS
+ok  	6.5840/raft	12.986s
+ 
+Running the 440 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25926    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  558  103278    0
+PASS
+ok  	6.5840/raft	13.190s
+ 
+Running the 441 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24660    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  708  139030    0
+PASS
+ok  	6.5840/raft	13.050s
+ 
+Running the 442 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   5.1  3  150   28886    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  606  112536    0
+PASS
+ok  	6.5840/raft	13.488s
+ 
+Running the 443 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24762    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  570  106726    0
+PASS
+ok  	6.5840/raft	13.041s
+ 
+Running the 444 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   62   15710    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   25898    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  606  111766    0
+PASS
+ok  	6.5840/raft	12.980s
+ 
+Running the 445 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24656    0
+Test (2A): multiple elections ...
+  ... Passed --   5.9  7  756  150168    0
+PASS
+ok  	6.5840/raft	13.406s
+ 
+Running the 446 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   5.0  3  150   28804    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  606  112798    0
+PASS
+ok  	6.5840/raft	13.565s
+ 
+Running the 447 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   26048    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  600  114358    0
+PASS
+ok  	6.5840/raft	13.402s
+ 
+Running the 448 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   25360    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  696  130016    0
+PASS
+ok  	6.5840/raft	13.140s
+ 
+Running the 449 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25180    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  636  120476    0
+PASS
+ok  	6.5840/raft	13.042s
+ 
+Running the 450 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24122    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  648  120910    0
+PASS
+ok  	6.5840/raft	13.015s
+ 
+Running the 451 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24984    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  630  122500    0
+PASS
+ok  	6.5840/raft	13.166s
+ 
+Running the 452 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.6  3   70   17508    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  132   25376    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  564  105254    0
+PASS
+ok  	6.5840/raft	13.523s
+ 
+Running the 453 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24580    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  588  109646    0
+PASS
+ok  	6.5840/raft	13.179s
+ 
+Running the 454 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25042    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  684  130782    0
+PASS
+ok  	6.5840/raft	13.050s
+ 
+Running the 455 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   60   15190    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24896    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  690  131884    0
+PASS
+ok  	6.5840/raft	13.039s
+ 
+Running the 456 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25228    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  696  135476    0
+PASS
+ok  	6.5840/raft	13.133s
+ 
+Running the 457 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24650    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  570  107292    0
+PASS
+ok  	6.5840/raft	13.165s
+ 
+Running the 458 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25676    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  702  134964    0
+PASS
+ok  	6.5840/raft	13.089s
+ 
+Running the 459 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25176    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  690  132604    0
+PASS
+ok  	6.5840/raft	12.914s
+ 
+Running the 460 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25802    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  588  108098    0
+PASS
+ok  	6.5840/raft	13.092s
+ 
+Running the 461 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24602    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  618  115032    0
+PASS
+ok  	6.5840/raft	13.033s
+ 
+Running the 462 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25614    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  600  110208    0
+PASS
+ok  	6.5840/raft	13.192s
+ 
+Running the 463 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24696    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  798  152496    0
+PASS
+ok  	6.5840/raft	13.028s
+ 
+Running the 464 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25736    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  558  103906    0
+PASS
+ok  	6.5840/raft	13.023s
+ 
+Running the 465 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   24902    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  564  104460    0
+PASS
+ok  	6.5840/raft	13.186s
+ 
+Running the 466 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  134   26198    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  654  125138    0
+PASS
+ok  	6.5840/raft	13.246s
+ 
+Running the 467 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  132   25690    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  678  135254    0
+PASS
+ok  	6.5840/raft	13.418s
+ 
+Running the 468 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   26090    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  624  115154    0
+PASS
+ok  	6.5840/raft	13.010s
+ 
+Running the 469 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24962    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  582  112844    0
+PASS
+ok  	6.5840/raft	13.176s
+ 
+Running the 470 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25634    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  113840    0
+PASS
+ok  	6.5840/raft	12.960s
+ 
+Running the 471 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14468    0
+Test (2A): election after network failure ...
+  ... Passed --   4.7  3  134   25962    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  660  129146    0
+PASS
+ok  	6.5840/raft	13.071s
+ 
+Running the 472 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   24896    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  654  122770    0
+PASS
+ok  	6.5840/raft	13.063s
+ 
+Running the 473 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  132   25674    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  636  120008    0
+PASS
+ok  	6.5840/raft	12.983s
+ 
+Running the 474 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  128   24656    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  582  103372    0
+PASS
+ok  	6.5840/raft	13.106s
+ 
+Running the 475 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25680    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  774  137468    0
+PASS
+ok  	6.5840/raft	13.609s
+ 
+Running the 476 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25202    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  702  131966    0
+PASS
+ok  	6.5840/raft	13.080s
+ 
+Running the 477 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25572    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  672  130086    0
+PASS
+ok  	6.5840/raft	13.093s
+ 
+Running the 478 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24642    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  594  113994    0
+PASS
+ok  	6.5840/raft	13.045s
+ 
+Running the 479 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24348    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  678  129390    0
+PASS
+ok  	6.5840/raft	12.952s
+ 
+Running the 480 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  128   24784    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  546  101410    0
+PASS
+ok  	6.5840/raft	13.132s
+ 
+Running the 481 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25624    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  612  118820    0
+PASS
+ok  	6.5840/raft	13.146s
+ 
+Running the 482 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  136   26544    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  654  119140    0
+PASS
+ok  	6.5840/raft	13.181s
+ 
+Running the 483 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  134   25940    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  768  156142    0
+PASS
+ok  	6.5840/raft	13.119s
+ 
+Running the 484 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25690    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  702  135038    0
+PASS
+ok  	6.5840/raft	13.334s
+ 
+Running the 485 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   25310    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  612  114024    0
+PASS
+ok  	6.5840/raft	13.065s
+ 
+Running the 486 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.3  3  124   23794    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  588  110106    0
+PASS
+ok  	6.5840/raft	12.984s
+ 
+Running the 487 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15396    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25118    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  666  129836    0
+PASS
+ok  	6.5840/raft	13.102s
+ 
+Running the 488 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   24692    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  564  104978    0
+PASS
+ok  	6.5840/raft	12.979s
+ 
+Running the 489 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   56   14356    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  130   25046    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  576  106104    0
+PASS
+ok  	6.5840/raft	12.868s
+ 
+Running the 490 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   60   15516    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25504    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  642  119178    0
+PASS
+ok  	6.5840/raft	13.305s
+ 
+Running the 491 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  124   23736    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  690  134756    0
+PASS
+ok  	6.5840/raft	13.082s
+ 
+Running the 492 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  128   25316    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  660  120224    0
+PASS
+ok  	6.5840/raft	13.516s
+ 
+Running the 493 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24762    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  660  126586    0
+PASS
+ok  	6.5840/raft	13.164s
+ 
+Running the 494 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24708    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  660  120668    0
+PASS
+ok  	6.5840/raft	13.191s
+ 
+Running the 495 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.9  3  148   28662    0
+Test (2A): multiple elections ...
+  ... Passed --   5.4  7  672  127150    0
+PASS
+ok  	6.5840/raft	13.294s
+ 
+Running the 496 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.1  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  128   24754    0
+Test (2A): multiple elections ...
+  ... Passed --   5.5  7  666  128316    0
+PASS
+ok  	6.5840/raft	13.059s
+ 
+Running the 497 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.6  3  136   26726    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  636  119814    0
+PASS
+ok  	6.5840/raft	13.219s
+ 
+Running the 498 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14876    0
+Test (2A): election after network failure ...
+  ... Passed --   4.4  3  126   24198    0
+Test (2A): multiple elections ...
+  ... Passed --   6.0  7  888  174238    0
+PASS
+ok  	6.5840/raft	13.477s
+ 
+Running the 499 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  130   25362    0
+Test (2A): multiple elections ...
+  ... Passed --   5.3  7  624  117808    0
+PASS
+ok  	6.5840/raft	12.882s
+ 
+Running the 500 tests iteration
+Test (2A): initial election ...
+  ... Passed --   3.0  3   58   14992    0
+Test (2A): election after network failure ...
+  ... Passed --   4.5  3  132   25616    0
+Test (2A): multiple elections ...
+  ... Passed --   5.6  7  678  128582    0
+PASS
+ok  	6.5840/raft	13.173s
+ 

@@ -34,7 +34,7 @@ import (
 )
 
 // 是否打印日志
-const LogOption = true
+const LogOption = false
 
 var loger *log.Logger
 
@@ -233,9 +233,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		// rf.mu.Unlock()
 		// 直接设置任期以及投票可以 go rf.becomeFollower(args.Term)，下面的回复也可以正常运行
 		// 若顺序执行的话，重置都在函数内部，但需要先解锁, becomeFollower, 再加锁,容易出错
-		rf.currentTerm = args.Term
-		rf.voteFor = -1
-		go rf.becomeFollower(args.Term)
+		// rf.currentTerm = args.Term
+		// rf.voteFor = -1
+		rf.becomeFollower(args.Term)
 		// rf.mu.Lock()
 	}
 
@@ -312,9 +312,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.Term > rf.currentTerm {
 		rf.rflog("term is out of data in AppendEntries")
 		// rf.mu.Unlock()
-		rf.currentTerm = args.Term
-		rf.state = Follower
-		go rf.becomeFollower(args.Term)
+		// rf.currentTerm = args.Term
+		// rf.state = Follower
+		rf.becomeFollower(args.Term)
 		// rf.mu.Lock()
 	}
 
@@ -323,7 +323,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		if rf.state != Follower {
 			// rf.mu.Unlock()
 			rf.state = Follower
-			go rf.becomeFollower(args.Term)
+			// rf.becomeFollower(args.Term)
 			// rf.mu.Lock()
 		}
 		rf.electionStartTime = time.Now()
@@ -386,13 +386,13 @@ func (rf *Raft) killed() bool {
 	return z == 1
 }
 
-func (rf *Raft) ticker() {
+func (rf *Raft) ticker(state RuleState) {
 	if !rf.killed() {
 		// Your code here (2A)
 		// Check if a leader election should be started.
-		rf.mu.Lock()
-		state := rf.state
-		rf.mu.Unlock()
+		// rf.mu.Lock()
+		// state := rf.state
+		// rf.mu.Unlock()
 		switch state {
 		case Follower:
 			rf.runElectionTimer()
@@ -465,6 +465,7 @@ func (rf *Raft) startElection() {
 	rf.voteFor = rf.me
 	rf.electionStartTime = time.Now()
 	currentTerm := rf.currentTerm
+	candidateId := rf.me
 	rf.mu.Unlock()
 	rf.rflog("becomes Candidate, start election! now term is %d", currentTerm)
 	receivedVotes := 1
@@ -476,7 +477,7 @@ func (rf *Raft) startElection() {
 		go func(peerId int) {
 			args := RequestVoteArgs{
 				Term:        currentTerm,
-				CandidateId: rf.me,
+				CandidateId: candidateId,
 			}
 			var reply RequestVoteReply
 			if succ := rf.sendRequestVote(peerId, &args, &reply); succ {
@@ -491,16 +492,16 @@ func (rf *Raft) startElection() {
 				} else if reply.Term > currentTerm {
 					rf.rflog(" receive bigger term in reply, transforms to follower")
 					// rf.mu.Unlock()
-					rf.state = Follower
-					go rf.becomeFollower(reply.Term)
+					// rf.state = Follower
+					rf.becomeFollower(reply.Term)
 					return
 				} else if reply.Term == currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
 					receivedVotes += 1
 					if receivedVotes*2 >= len(rf.peers)+1 {
 						rf.rflog("wins the selection, becomes leader!")
 						// rf.mu.Unlock()
-						rf.state = Leader
-						go rf.becomeLeader()
+						// rf.state = Leader
+						rf.becomeLeader()
 						// return
 					}
 					// rf.mu.Unlock()
@@ -509,44 +510,47 @@ func (rf *Raft) startElection() {
 			}
 		}(peerId)
 	}
-	go rf.ticker()
+	go rf.ticker(Follower)
 }
 
 // 修改状态，任期，更新选举开始时间，清除投票结果，运行新的选举定时器
 func (rf *Raft) becomeFollower(term int) {
-	rf.mu.Lock()
+	// rf.mu.Lock()
 	rf.state = Follower
 	rf.currentTerm = term
 	rf.electionStartTime = time.Now()
 	rf.voteFor = -1
-	rf.mu.Unlock()
+	// rf.mu.Unlock()
 	rf.rflog("becomes follower at term [%d]", term)
-	go rf.ticker()
+	go rf.ticker(Follower)
 }
 
 // 修改状态，启动 ticker()，原来的 ticker() 会因为自身状态的改变而主动退出
 func (rf *Raft) becomeLeader() {
-	rf.mu.Lock()
-	defer rf.mu.Unlock()
+	// rf.mu.Lock()
+	// defer rf.mu.Unlock()
 	rf.state = Leader
 	// rf.mu.Unlock()
 	rf.rflog("becomes leader, term = [%d]", rf.currentTerm)
-	go rf.ticker()
+	go rf.ticker(Leader)
 }
 
 // 心跳定时器，100ms
 // 当当前节点的状态发生改变，不再是 leader 后结束
-func (rf *Raft) heartBeatsTimer() bool {
+func (rf *Raft) heartBeatsTimer() {
+	rf.mu.Lock()
+	nowTerm := rf.currentTerm
+	rf.mu.Unlock()
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
-	for {
+	for !rf.killed() {
 		rf.runHeartBeats()
 		<-ticker.C
 		rf.mu.Lock()
 		rf.rflog("in heartBeatsTimer, ticker!, time is [%v]", time.Since(rf.electionStartTime))
-		if rf.state != Leader {
+		if rf.state != Leader || rf.currentTerm != nowTerm {
 			rf.mu.Unlock()
-			return false
+			return
 		}
 		rf.mu.Unlock()
 	}
@@ -563,6 +567,7 @@ func (rf *Raft) runHeartBeats() {
 		rf.mu.Unlock()
 		return
 	}
+	leaderid := rf.me
 	currentTerm := rf.currentTerm
 	rf.mu.Unlock()
 
@@ -573,14 +578,14 @@ func (rf *Raft) runHeartBeats() {
 		go func(peerId int) {
 			args := AppendEntriesArgs{
 				Term:     currentTerm,
-				LeaderId: rf.me,
+				LeaderId: leaderid,
 			}
 			var reply AppendEntriesReply
 			rf.rflog("sending AppendEntries to [%v], args = [%+v]", peerId, args)
 			if succ := rf.sendHeartBeats(peerId, &args, &reply); succ {
 				rf.rflog("receive AppendEntries reply [%+v]", reply)
-				// rf.mu.Lock()
-				// defer rf.mu.Unlock()
+				rf.mu.Lock()
+				defer rf.mu.Unlock()
 				if reply.Term > currentTerm {
 					rf.rflog(" receive bigger term in reply, transforms to follower")
 					// rf.mu.Unlock()
@@ -610,6 +615,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.me = me
 
 	// Your initialization code here (2A, 2B, 2C).
+	rf.dead = 0
 	rf.currentTerm = 0
 	rf.voteFor = -1
 	rf.state = Follower
@@ -619,7 +625,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.readPersist(persister.ReadRaftState())
 
 	// start ticker goroutine to start elections
-	go rf.ticker()
+	go rf.ticker(Follower)
 
 	return rf
 }
