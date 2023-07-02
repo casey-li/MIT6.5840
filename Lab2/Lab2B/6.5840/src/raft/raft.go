@@ -18,9 +18,7 @@ package raft
 import (
 	//	"bytes"
 
-	"log"
 	"math/rand"
-	"os"
 
 	// "rand"
 	"sync"
@@ -36,28 +34,33 @@ import (
 // 是否打印日志
 const LogOption = false
 
-var loger *log.Logger
+// var loger *log.Logger
 
-func init() {
-	_, err := os.Stat("./log")
-	if os.IsNotExist(err) {
-		if err = os.Mkdir("./log", 0775); err != nil {
-			log.Fatalf("create directory failed!")
-		}
-	}
-	file := "./log/" + time.Now().Format("0102_1504") + ".txt"
-	f, err := os.OpenFile(file, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
-	if err != nil {
-		log.Fatalf("create log file failed!")
-	}
-	loger = log.New(f, "[Lab 2B]", log.LstdFlags)
-	// fmt.Println("init over!", file)
-}
+// func init() {
+// 	if !LogOption {
+// 		return
+// 	}
+// 	_, err := os.Stat("./log")
+// 	if os.IsNotExist(err) {
+// 		if err = os.Mkdir("./log", 0775); err != nil {
+// 			log.Fatalf("create directory failed!")
+// 		}
+// 	}
+// 	file := "./log/" + time.Now().Format("0102_1504") + ".txt"
+// 	f, err := os.OpenFile(file, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+// 	if err != nil {
+// 		log.Fatalf("create log file failed!")
+// 	}
+// 	loger = log.New(f, "[Lab 2B]", log.LstdFlags)
+// 	// fmt.Println("init over!", file)
+// }
 
 func (rf *Raft) rflog(format string, args ...interface{}) {
 	if LogOption {
 		format = fmt.Sprintf("[%d] ", rf.me) + format
-		loger.Printf(format, args...)
+		fmt.Printf(format, args...)
+		fmt.Println("")
+		// loger.Printf(format, args...)
 	}
 }
 
@@ -225,8 +228,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	if rf.state == Dead {
 		return
 	}
-	// rf.rflog("is requested vote, args [%+v], currentTerm : %d, voteFor: %d",
-	// 	args, rf.currentTerm, rf.voteFor)
+	rf.rflog("is requested vote, args [%+v]; currentTerm : %d, voteFor: %d, log: [%v]",
+		args, rf.currentTerm, rf.voteFor, rf.log)
 	lastLogIndex := len(rf.log) - 1
 	lastLogTerm := rf.log[lastLogIndex].Term
 	if args.Term > rf.currentTerm {
@@ -234,12 +237,16 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		// rf.mu.Unlock()
 		// 直接设置任期以及投票可以 go rf.becomeFollower(args.Term)，下面的回复也可以正常运行
 		// 若顺序执行的话，重置都在函数内部，但需要先解锁, becomeFollower, 再加锁,容易出错
-		rf.currentTerm = args.Term
-		rf.voteFor = -1
-		rf.state = Follower
-		go rf.becomeFollower(args.Term)
+		// rf.currentTerm = args.Term
+		// rf.voteFor = -1
+		// rf.state = Follower
+		// rf.electionStartTime = time.Now()
+		// go rf.ticker()
+		rf.becomeFollower(args.Term)
+		// 若用 go 的话当前已经投过票了，函数结束后又会变为未投票的状态
+		// go rf.becomeFollower(args.Term)
 	}
-	rf.rflog("log is [%v]", rf.log)
+	// rf.rflog("in RequestVote, now log is [%v]", rf.log)
 	reply.VoteGranted = false
 	if rf.currentTerm == args.Term &&
 		(rf.voteFor == -1 || rf.voteFor == args.CandidateId) &&
@@ -249,7 +256,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		rf.electionStartTime = time.Now()
 	}
 	reply.Term = rf.currentTerm
-	rf.rflog("reply in RequestVote [%+v]", reply)
+	rf.rflog("reply in RequestVote [%+v] to [%d]", reply, args.CandidateId)
 }
 
 // example code to send a RequestVote RPC to a server.
@@ -312,21 +319,23 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if rf.state == Dead {
 		return
 	}
-	// rf.rflog("AppendEntries [%+v]", args)
+	rf.rflog("receives AppendEntries [%+v]", args)
 
 	if args.Term > rf.currentTerm {
 		rf.rflog("term is out of data in AppendEntries")
-		rf.currentTerm = args.Term
+		// rf.currentTerm = args.Term
 		// rf.electionStartTime = time.Now()
-		rf.state = Follower
-		go rf.becomeFollower(args.Term)
+		// rf.state = Follower
+		rf.becomeFollower(args.Term)
 	}
 
 	reply.Success = false
 	if args.Term == rf.currentTerm {
 		if rf.state != Follower {
 			rf.state = Follower
-			go rf.becomeFollower(args.Term)
+			// rf.rflog("transform from %s to Follower", rf.state)
+			// 同一个任期内若投过票的话这样会变为-1
+			// go rf.becomeFollower(args.Term)
 		}
 		rf.electionStartTime = time.Now()
 		// rf.rflog("election timer reset to %v!", time.Since(rf.electionStartTime))
@@ -356,7 +365,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		}
 	}
 	reply.Term = rf.currentTerm
-	rf.rflog("reply AppendEntries [%+v]", reply)
+	rf.rflog("reply AppendEntries [%+v] to %d", reply, args.LeaderId)
 }
 
 func (rf *Raft) sendHeartBeats(server int, args *AppendEntriesArgs, reply *AppendEntriesReply) bool {
@@ -384,15 +393,14 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	if rf.state != Leader {
-		return -1, -1, false
+		return -1, rf.currentTerm, false
 	}
 	rf.rflog("receives commond %v", command)
 	rf.log = append(rf.log, LogEntry{
 		Term:    rf.currentTerm,
 		Command: command,
 	})
-	// rf.rflog("%v", rf.log)
-	rf.rflog("return result: [%v, %v]", len(rf.log)-1, rf.currentTerm)
+	// rf.rflog("return result: [%v, %v]", len(rf.log)-1, rf.currentTerm)
 	return len(rf.log) - 1, rf.currentTerm, true
 }
 
@@ -411,22 +419,23 @@ func (rf *Raft) Kill() {
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	rf.state = Dead
-	rf.dead = 1
 	rf.rflog("becomes dead")
 }
 
 func (rf *Raft) killed() bool {
+	// rf.mu.Lock()
+	// defer rf.mu.Unlock()
 	z := atomic.LoadInt32(&rf.dead)
 	return z == 1
 }
 
-func (rf *Raft) ticker() {
+func (rf *Raft) ticker(state RuleState) {
 	if !rf.killed() {
 		// Your code here (2A)
 		// Check if a leader election should be started.
-		rf.mu.Lock()
-		state := rf.state
-		rf.mu.Unlock()
+		// rf.mu.Lock()
+		// state := rf.state
+		// rf.mu.Unlock()
 		switch state {
 		case Follower:
 			rf.runElectionTimer()
@@ -455,27 +464,27 @@ func (rf *Raft) runElectionTimer() {
 
 	ticker := time.NewTicker(10 * time.Millisecond)
 	defer ticker.Stop()
-	for {
+	for !rf.killed() {
 		<-ticker.C
 		rf.mu.Lock()
 		// rf.rflog("after %v, timeout is %v, currentTerm [%d], realTerm [%d], state [%s]",
 		// 	time.Since(rf.electionStartTime), timeout, nowTerm, rf.currentTerm, rf.state.String())
 		if rf.state != Candidate && rf.state != Follower {
-			// rf.rflog("in runElectionTimer, state change to %s, currentTerm [%d], realTerm [%d]",
-			// 	rf.state.String(), nowTerm, rf.currentTerm)
+			rf.rflog("in runElectionTimer, state change to %s, currentTerm [%d], realTerm [%d]",
+				rf.state.String(), nowTerm, rf.currentTerm)
 			rf.mu.Unlock()
 			return
 		}
 		if nowTerm != rf.currentTerm {
-			// rf.rflog("in runElectionTimer, term change from %d to %d, currentTerm [%d], realTerm [%d]",
-			// 	nowTerm, rf.currentTerm, nowTerm, rf.currentTerm)
+			rf.rflog("in runElectionTimer, term change from %d to %d, currentTerm [%d], realTerm [%d]",
+				nowTerm, rf.currentTerm, nowTerm, rf.currentTerm)
 			rf.mu.Unlock()
 			return
 		}
 		// 若超时了则开始选举
 		if duration := time.Since(rf.electionStartTime); duration >= timeout {
-			// rf.rflog("timeed out !! timer after %v, currentTerm [%d], realTerm [%d]",
-			// 	time.Since(rf.electionStartTime), nowTerm, rf.currentTerm)
+			rf.rflog("timeed out !! timer after %v, currentTerm [%d], realTerm [%d]",
+				time.Since(rf.electionStartTime), nowTerm, rf.currentTerm)
 			rf.mu.Unlock()
 			rf.startElection()
 			continue
@@ -501,6 +510,9 @@ func (rf *Raft) startElection() {
 	rf.voteFor = rf.me
 	rf.electionStartTime = time.Now()
 	currentTerm := rf.currentTerm
+	lastLogIndex := len(rf.log) - 1
+	lastLogTerm := rf.log[lastLogIndex].Term
+	candidateId := rf.me
 	rf.mu.Unlock()
 	rf.rflog("becomes Candidate, start election! now term is %d", currentTerm)
 	receivedVotes := 1
@@ -510,13 +522,10 @@ func (rf *Raft) startElection() {
 			continue
 		}
 		go func(peerId int) {
-			rf.mu.Lock()
-			lastLogIndex := len(rf.log) - 1
-			lastLogTerm := rf.log[lastLogIndex].Term
-			rf.mu.Unlock()
+
 			args := RequestVoteArgs{
 				Term:         currentTerm,
-				CandidateId:  rf.me,
+				CandidateId:  candidateId,
 				LastLogIndex: lastLogIndex,
 				LastLogTerm:  lastLogTerm,
 			}
@@ -531,56 +540,65 @@ func (rf *Raft) startElection() {
 					return
 				} else if reply.Term > currentTerm {
 					rf.rflog(" receive bigger term in reply, transforms to follower")
-					rf.state = Follower
-					go rf.becomeFollower(reply.Term)
+					// rf.state = Follower
+					rf.becomeFollower(reply.Term)
 					return
 				} else if reply.Term == currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
 					receivedVotes += 1
 					if receivedVotes*2 >= len(rf.peers)+1 {
 						rf.rflog("wins the selection, becomes leader!")
-						rf.state = Leader
-						go rf.becomeLeader()
+						// rf.state = Leader
+						rf.becomeLeader()
 					}
 					return
 				}
 			}
 		}(peerId)
 	}
-	go rf.ticker()
+	// 有一个问题在于上面和 ticker() 都上锁了，上面选举成功后，状态变为了 leader 并启动了 heartBeatTimer,
+	// 然后这个 ticker() 获得锁的时候状态已经是 leader 了，导致同时有两个 heartBeatTimer，之后每个数据都会发送两次
+	go rf.ticker(Follower)
 }
 
 // 修改状态，任期，更新选举开始时间，清除投票结果，运行新的选举定时器
 func (rf *Raft) becomeFollower(term int) {
-	rf.mu.Lock()
+	// rf.mu.Lock()
 	rf.state = Follower
 	rf.currentTerm = term
-	rf.electionStartTime = time.Now()
+	// rf.electionStartTime = time.Now()
 	rf.voteFor = -1
-	rf.mu.Unlock()
+	// rf.mu.Unlock()
 	rf.rflog("becomes follower at term [%d]", term)
-	go rf.ticker()
+	go rf.ticker(Follower)
 }
 
 // 修改状态，启动 ticker()，原来的 ticker() 会因为自身状态的改变而主动退出
 func (rf *Raft) becomeLeader() {
-	rf.mu.Lock()
-	defer rf.mu.Unlock()
+	// rf.mu.Lock()
+	// defer rf.mu.Unlock()
 	rf.state = Leader
 	rf.rflog("becomes leader, term = [%d]", rf.currentTerm)
-	go rf.ticker()
+	for i := range rf.peers {
+		rf.nextIndex[i] = len(rf.log)
+		rf.matchIndex[i] = 0
+	}
+	go rf.ticker(Leader)
 }
 
 // 心跳定时器，100ms
 // 当当前节点的状态发生改变，不再是 leader 后结束
 func (rf *Raft) heartBeatsTimer() {
+	rf.mu.Lock()
+	nowTerm := rf.currentTerm
+	rf.mu.Unlock()
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
-	for {
+	for !rf.killed() {
 		rf.runHeartBeats()
 		<-ticker.C
 		rf.mu.Lock()
 		// rf.rflog("in heartBeatsTimer, ticker!, time is [%v]", time.Since(rf.electionStartTime))
-		if rf.state != Leader {
+		if rf.state != Leader || rf.currentTerm != nowTerm {
 			rf.mu.Unlock()
 			return
 		}
@@ -596,80 +614,96 @@ func (rf *Raft) heartBeatsTimer() {
 // 收到请求后, 应该统计结果来决定是否增加 commitIndex
 func (rf *Raft) runHeartBeats() {
 	rf.mu.Lock()
-	// rf.rflog("run runHeartBeats()")
 	if rf.state != Leader {
 		rf.rflog("is not a leader any more!")
 		rf.mu.Unlock()
 		return
 	}
+	id := rf.me
 	currentTerm := rf.currentTerm
 	rf.mu.Unlock()
 
+	rf.rflog("ticker!!!--------run runHeartBeats()")
 	for peerId := range rf.peers {
-		if peerId == rf.me {
+		if peerId == id {
 			continue
 		}
 		go func(peerId int) {
-			rf.mu.Lock()
-			// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
-			// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
-			prevLogIndex, nowLogIndex := min(rf.nextIndex[peerId]-1, len(rf.log)-1), min(rf.nextIndex[peerId], len(rf.log))
-			// if len(rf.log) > 1 {
-			// }
-			args := AppendEntriesArgs{
-				Term:         currentTerm,
-				LeaderId:     rf.me,
-				PrevLogIndex: prevLogIndex,
-				PrevLogTerm:  rf.log[prevLogIndex].Term,
-				Entries:      rf.log[nowLogIndex:],
-				LeaderCommit: rf.commitIndex,
-			}
-			rf.mu.Unlock()
-			var reply AppendEntriesReply
-			rf.rflog("sending AppendEntries to [%v], args = [%+v]", peerId, args)
-			if succ := rf.sendHeartBeats(peerId, &args, &reply); succ {
-				rf.rflog("receive AppendEntries reply [%+v]", reply)
-				if reply.Term > currentTerm {
-					rf.rflog(" receive bigger term in reply, transforms to follower")
-					go rf.becomeFollower(reply.Term)
+			for !rf.killed() {
+				rf.mu.Lock()
+				// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
+				// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
+				prevLogIndex, nowLogIndex := min(rf.nextIndex[peerId]-1, len(rf.log)-1), min(rf.nextIndex[peerId], len(rf.log))
+				// if len(rf.log) > 1 {
+				// }
+				if rf.state != Leader {
+					rf.mu.Unlock()
 					return
 				}
-				rf.mu.Lock()
-				defer rf.mu.Unlock()
-				// 收到理想的回复, 统计投票结果
-				if rf.state == Leader && currentTerm == reply.Term {
-					if reply.Success {
-						rf.nextIndex[peerId] += len(args.Entries)
-						rf.matchIndex[peerId] = rf.nextIndex[peerId] - 1
-						rf.rflog("receives reply from [%v], nextIndex := [%v], matchIndex := [%v]",
-							peerId, rf.nextIndex[peerId], rf.matchIndex[peerId])
-						// 统计投票结果, 更新 commitIndex
-						savedCommitIndex := rf.commitIndex
-						for i := rf.commitIndex + 1; i < len(rf.log); i++ {
-							if rf.log[i].Term == rf.currentTerm {
-								count := 1
-								for j := range rf.peers {
-									if rf.matchIndex[j] >= i {
-										count++
+				entries := make([]LogEntry, len(rf.log[nowLogIndex:]))
+				copy(entries, rf.log[nowLogIndex:])
+				args := AppendEntriesArgs{
+					Term:         currentTerm,
+					LeaderId:     rf.me,
+					PrevLogIndex: prevLogIndex,
+					PrevLogTerm:  rf.log[prevLogIndex].Term,
+					Entries:      entries,
+					LeaderCommit: rf.commitIndex,
+				}
+				rf.mu.Unlock()
+				var reply AppendEntriesReply
+				rf.rflog("sending AppendEntries to [%v], args = [%+v]", peerId, args)
+				if succ := rf.sendHeartBeats(peerId, &args, &reply); succ {
+					rf.rflog("receive AppendEntries reply [%+v]", reply)
+					rf.mu.Lock()
+					if reply.Term > currentTerm {
+						rf.rflog("receive bigger term in reply, transforms to follower")
+						rf.becomeFollower(reply.Term)
+						rf.electionStartTime = time.Now()
+						rf.mu.Unlock()
+						return
+					}
+					// defer rf.mu.Unlock()
+					// 收到理想的回复, 统计投票结果
+					if rf.state == Leader && currentTerm == reply.Term && !rf.killed() {
+						if reply.Success {
+							rf.matchIndex[peerId] = prevLogIndex + len(args.Entries)
+							rf.nextIndex[peerId] = rf.matchIndex[peerId] + 1
+							rf.rflog("receives reply from [%v], nextIndex := [%v], matchIndex := [%v]",
+								peerId, rf.nextIndex[peerId], rf.matchIndex[peerId])
+							// 统计投票结果, 更新 commitIndex
+							savedCommitIndex := rf.commitIndex
+							for i := rf.commitIndex + 1; i < len(rf.log); i++ {
+								if rf.log[i].Term == rf.currentTerm {
+									count := 1
+									for j := range rf.peers {
+										if j != rf.me && rf.matchIndex[j] >= i {
+											count++
+										}
+									}
+									if count*2 >= len(rf.peers)+1 {
+										rf.commitIndex = i
+									} else {
+										break
 									}
 								}
-								if count*2 >= len(rf.peers)+1 {
-									rf.commitIndex = i
-								} else {
-									break
-								}
 							}
+							// rf.rflog("savedCommitIndex is [%d], commitIndex change to [%d]", savedCommitIndex, rf.commitIndex)
+							if rf.commitIndex != savedCommitIndex {
+								rf.rflog("updates commitIndex from %v to %v", savedCommitIndex, rf.commitIndex)
+								rf.notifyNewCommitChan <- struct{}{}
+								// rf.rflog("updates over!")
+							}
+						} else if rf.nextIndex[peerId] > 1 {
+							rf.nextIndex[peerId] -= 1
+							rf.rflog("receives reply from [%v] failed", peerId)
+							rf.mu.Unlock()
+							continue
 						}
-						if rf.commitIndex != savedCommitIndex {
-							rf.rflog("updates commitIndex from %v to %v", savedCommitIndex, rf.commitIndex)
-							rf.notifyNewCommitChan <- struct{}{}
-							// rf.rflog("updates over!")
-						}
-					} else {
-						rf.nextIndex[peerId] -= 1
-						rf.rflog("receives reply from [%v] failed", peerId)
 					}
+					rf.mu.Unlock()
 				}
+				return
 			}
 		}(peerId)
 	}
@@ -677,26 +711,56 @@ func (rf *Raft) runHeartBeats() {
 
 // 监听 notifyNewCommitChan, 当有东西发到通道后, 向 rf.applyChan 提交命令
 func (rf *Raft) commitCommand() {
-	for range rf.notifyNewCommitChan {
-		rf.rflog("receive info")
-		rf.mu.Lock()
-		savedLastApplied := rf.lastApplied
-		var logEntries []LogEntry
-		if rf.commitIndex > rf.lastApplied {
-			logEntries = rf.log[rf.lastApplied+1 : rf.commitIndex+1]
-			rf.lastApplied = rf.commitIndex
-		}
-		rf.rflog("commits log [%v] from %d to %d", logEntries, savedLastApplied, rf.lastApplied)
-		rf.mu.Unlock()
-		for i, entry := range logEntries {
-			rf.applyChan <- ApplyMsg{
-				CommandValid: true,
-				Command:      entry.Command,
-				CommandIndex: savedLastApplied + i + 1,
+	ticker := time.NewTicker(10 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-rf.notifyNewCommitChan:
+			ticker.Reset(10 * time.Millisecond)
+			// rf.rflog("receive info")
+			rf.mu.Lock()
+			savedLastApplied := rf.lastApplied
+			var logEntries []LogEntry
+			if rf.commitIndex > rf.lastApplied {
+				logEntries = rf.log[rf.lastApplied+1 : rf.commitIndex+1]
+				rf.lastApplied = rf.commitIndex
+			}
+			rf.rflog("commits log from %d to %d", savedLastApplied, rf.lastApplied)
+			rf.mu.Unlock()
+			for i, entry := range logEntries {
+				rf.applyChan <- ApplyMsg{
+					CommandValid: true,
+					Command:      entry.Command,
+					CommandIndex: savedLastApplied + i + 1,
+				}
+			}
+			ticker.Reset(10 * time.Millisecond)
+		case <-ticker.C:
+			if rf.killed() {
+				return
 			}
 		}
-		// rf.rflog("commits over!")
 	}
+	// for range rf.notifyNewCommitChan {
+	// 	rf.rflog("receive info")
+	// 	rf.mu.Lock()
+	// 	savedLastApplied := rf.lastApplied
+	// 	var logEntries []LogEntry
+	// 	if rf.commitIndex > rf.lastApplied {
+	// 		logEntries = rf.log[rf.lastApplied+1 : rf.commitIndex+1]
+	// 		rf.lastApplied = rf.commitIndex
+	// 	}
+	// 	rf.rflog("commits log [%v] from %d to %d", logEntries, savedLastApplied, rf.lastApplied)
+	// 	rf.mu.Unlock()
+	// 	for i, entry := range logEntries {
+	// 		rf.applyChan <- ApplyMsg{
+	// 			CommandValid: true,
+	// 			Command:      entry.Command,
+	// 			CommandIndex: savedLastApplied + i + 1,
+	// 		}
+	// 	}
+	// 	// rf.rflog("commits over!")
+	// }
 }
 
 // the service or tester wants to create a Raft server. the ports
@@ -719,7 +783,9 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.currentTerm = 0
 	rf.voteFor = -1
 	rf.state = Follower
+	rf.dead = 0
 	rf.electionStartTime = time.Now()
+	rf.log = []LogEntry{}
 	rf.log = append(rf.log, LogEntry{
 		Term:    0,
 		Command: "MIT6.5840 !",
@@ -739,7 +805,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.readPersist(persister.ReadRaftState())
 
 	// start ticker goroutine to start elections
-	go rf.ticker()
+	go rf.ticker(Follower)
 
 	// 开启协程检查是否需要提交命令
 	go rf.commitCommand()

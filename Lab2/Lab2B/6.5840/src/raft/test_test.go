@@ -510,9 +510,14 @@ func TestBackup2B(t *testing.T) {
 	cfg.disconnect((leader1 + 3) % servers)
 	cfg.disconnect((leader1 + 4) % servers)
 
+	// fmt.Println("\n\n\n-------disconnect-------", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
+	// fmt.Println("-------submit lots of commands(1-50) that won't commit-------")
+
 	// submit lots of commands that won't commit
 	for i := 0; i < 50; i++ {
 		cfg.rafts[leader1].Start(rand.Int())
+
+		// cfg.rafts[leader1].Start(i + 1)
 	}
 
 	time.Sleep(RaftElectionTimeout / 2)
@@ -520,15 +525,24 @@ func TestBackup2B(t *testing.T) {
 	cfg.disconnect((leader1 + 0) % servers)
 	cfg.disconnect((leader1 + 1) % servers)
 
+	// fmt.Println("\n\n\n-------disconnect-------", (leader1+0)%servers, (leader1+1)%servers)
+
 	// allow other partition to recover
 	cfg.connect((leader1 + 2) % servers)
 	cfg.connect((leader1 + 3) % servers)
 	cfg.connect((leader1 + 4) % servers)
 
+	// fmt.Println("\n\n\n-------connect-------", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
+	// fmt.Println("-------lots of successful commands(51-100) to new group-------")
+
 	// lots of successful commands to new group.
 	for i := 0; i < 50; i++ {
 		cfg.one(rand.Int(), 3, true)
 	}
+
+	// for i := 50; i < 100; i++ {
+	// 	cfg.one(i+1, 3, true)
+	// }
 
 	// now another partitioned leader and one follower
 	leader2 := cfg.checkOneLeader()
@@ -538,10 +552,18 @@ func TestBackup2B(t *testing.T) {
 	}
 	cfg.disconnect(other)
 
+	// fmt.Println("\n\n\n-------disconnect-------", other)
+	// fmt.Println("-------lots more commands(101-150) that won't commit-------")
+
 	// lots more commands that won't commit
+
 	for i := 0; i < 50; i++ {
 		cfg.rafts[leader2].Start(rand.Int())
 	}
+
+	// for i := 100; i < 150; i++ {
+	// 	cfg.rafts[leader2].Start(i + 1)
+	// }
 
 	time.Sleep(RaftElectionTimeout / 2)
 
@@ -553,15 +575,26 @@ func TestBackup2B(t *testing.T) {
 	cfg.connect((leader1 + 1) % servers)
 	cfg.connect(other)
 
+	// fmt.Println("\n\n\n-------bring original leader back to life-------")
+	// fmt.Println("disconnect all and then connect", (leader1+0)%servers, (leader1+1)%servers, other)
+	// fmt.Println("-------lots of successful commands(151-200) to new group.-------")
+
 	// lots of successful commands to new group.
 	for i := 0; i < 50; i++ {
 		cfg.one(rand.Int(), 3, true)
 	}
 
+	// for i := 150; i < 200; i++ {
+	// 	cfg.one(i+1, 3, true)
+	// }
+
 	// now everyone
 	for i := 0; i < servers; i++ {
 		cfg.connect(i)
 	}
+
+	// fmt.Println("\n\n\n-------connect all-------")
+
 	cfg.one(rand.Int(), servers, true)
 
 	cfg.end()
@@ -899,20 +932,32 @@ func TestFigure8Unreliable2C(t *testing.T) {
 
 	cfg.begin("Test (2C): Figure 8 (unreliable)")
 
-	cfg.one(rand.Int()%10000, 1, true)
+	// cfg.one(rand.Int()%10000, 1, true)
+
+	command_id := 1
+	cfg.one(command_id, 1, true)
+	command_id++
 
 	nup := servers
 	for iters := 0; iters < 1000; iters++ {
 		if iters == 200 {
 			cfg.setlongreordering(true)
+
+			fmt.Println("-------------setlongreordering----------")
 		}
 		leader := -1
 		for i := 0; i < servers; i++ {
-			_, _, ok := cfg.rafts[i].Start(rand.Int() % 10000)
+			// _, _, ok := cfg.rafts[i].Start(rand.Int() % 10000)
+
+			_, _, ok := cfg.rafts[i].Start(command_id)
+			command_id++
+
 			if ok && cfg.connected[i] {
 				leader = i
 			}
 		}
+
+		fmt.Println("------------------Sleep()--------------", leader)
 
 		if (rand.Int() % 1000) < 100 {
 			ms := rand.Int63() % (int64(RaftElectionTimeout/time.Millisecond) / 2)
@@ -922,9 +967,13 @@ func TestFigure8Unreliable2C(t *testing.T) {
 			time.Sleep(time.Duration(ms) * time.Millisecond)
 		}
 
+		fmt.Println("--------------Sleep over!-----------", leader)
+
 		if leader != -1 && (rand.Int()%1000) < int(RaftElectionTimeout/time.Millisecond)/2 {
 			cfg.disconnect(leader)
 			nup -= 1
+
+			fmt.Println("--------------disconnect-----------", leader, nup)
 		}
 
 		if nup < 3 {
@@ -932,9 +981,14 @@ func TestFigure8Unreliable2C(t *testing.T) {
 			if cfg.connected[s] == false {
 				cfg.connect(s)
 				nup += 1
+
+				fmt.Println("--------------connect-----------", s, nup)
+
 			}
 		}
 	}
+
+	fmt.Println("--------------last, connect all servers------------")
 
 	for i := 0; i < servers; i++ {
 		if cfg.connected[i] == false {
@@ -942,7 +996,9 @@ func TestFigure8Unreliable2C(t *testing.T) {
 		}
 	}
 
-	cfg.one(rand.Int()%10000, servers, true)
+	// cfg.one(rand.Int()%10000, servers, true)
+
+	cfg.one(command_id, servers, true)
 
 	cfg.end()
 }
