@@ -31,7 +31,7 @@ Lab2 系列为 Raft 分布式一致性协议算法的实现，Raft 将分布式�
 
 #### :heavy_exclamation_mark: :heavy_exclamation_mark: :heavy_exclamation_mark: Fig.2, 最重要的一张图
 
-![Fig 2](https://github.com/SwordHarry/MIT6.824_2021_note/raw/main/lab/img/008i3skNgy1gvajftq7jmj60u00xyk1402.png)
+![Fig 2](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2A/pic/Raft_Fig2.png?raw=true)
 
 
 ### :lollipop: 各个角色的职责
@@ -260,6 +260,8 @@ func (rf *Raft) sendHeartBeats(server int, args *AppendEntriesArgs, reply *Appen
 - :four: 代码中若存在不断循环检查某些状态的情况, 不要让它们不断执行, 因为会减慢实现速度, 导致测试失败. 可以使用条件变量或者插入一个时间让其休眠一段时间
 - :five: 若测试失败, 请查看 config 中的代码了解该测试在做什么, 这有助于定位 bug
 
+![2B](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2B/pic/Raft2B.png?raw=true)
+
 ### :pizza: 数据结构
 
 同Lab2A, 即 Fig.2 中给出的所有字段, 只不过 Lab2B 将使用所有字段
@@ -328,7 +330,10 @@ type AppendEntriesReply struct {
 - Raft 中的 `nextIndex[]` 为 leader 保存的对应 follower 的下一个需要传输的日志条目
 - Raft 中的 `matchIndex[]` 为 leader 保存的对应 follower 跟自己一致的最大日志条目下标。 在 leader 收到有效的 `AppendEntries` RPC 回复时, 同时更新 `nextIndex[peerID]` 和 `matchIndex[peerID]` `(nextIndex[peerID] += len(args.Entries), matchIndex[peerID] = nextIndex[peerID] - 1)`
 
+当一个节点变成 leader 后, 重新初始化 `nextIndex[]` 为它的日志长度, 即之后发送 `AppendEntries` RPC 的话从最后一个日志条目开始检查
+
 `commitIndex, lastApplied, nextIndex[], matchIndex[]` 共同组成了 leader 的提交规则. leader 总是最先提交的, 可以认为 leader 为这个集群的代表, leader 提交后, follower 才会提交
+
 
 > :lollipop: 提交新命令需要多少次 RPC 往返？
 
@@ -361,6 +366,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 
 // 开始选举, 发送 RequestVote RPC 请求投票
 // Lab2B 仅在发送 RequestVoteArgs 时增加了 LastLogIndex 和 LastLogTerm
+// Lab2B 注意选举成功运行 rf.becomeLeader() 时更新 rf.nextIndex[]
 func (rf *Raft) startElection() {
 }
 
@@ -373,20 +379,24 @@ func (rf *Raft) runHeartBeats() {
 	// Lab2B 中需要发送 PrevLogIndex, PrevLogTerm, Entries, LeaderCommit
 	for peerId := range rf.peers {
 		go func(peerId int) {
-			
-			// 2.1 等待 AppendEntriesReply, 若调用失败直接退出
+			for !rf.killed() {
 
-			// 2.2 检查 reply.Term, 若比自己的 term 更大, 调用 becomeFollower(reply.Term) 并退出
-
-			if rf.state == Leader && currentTerm == reply.Term {
-				if reply.Success {
-					// Lab2B 2.3.1 更新 rf.nextIndex[peerId], rf.matchIndex[peerId]
-
-					// Lab2B 2.3.2 保存当前的 commitIndex (savedCommitIndex), 若有半数的节点的 matchIndex[j] 大于 commitIndex, 更新 commitIndex
-
-					// Lab2B 2.3.3 若 commitIndex > savedCommitIndex, 给 notifyNewCommitChan 发送通知，提交新的日志条目
-				} else {
-					// Lab2B 2.3.4 nextIndex[peerId] -= 1
+				// 2.1 等待 AppendEntriesReply, 若调用失败直接退出
+	
+				// 2.2 检查 reply.Term, 若比自己的 term 更大, 调用 becomeFollower(reply.Term) 并退出
+	
+				if rf.state == Leader && currentTerm == reply.Term {
+					if reply.Success {
+						// Lab2B 2.3.1 更新 rf.nextIndex[peerId], rf.matchIndex[peerId]
+	
+						// Lab2B 2.3.2 保存当前的 commitIndex (savedCommitIndex), 若有半数的节点的 matchIndex[j] 大于 commitIndex, 更新 commitIndex
+	
+						// Lab2B 2.3.3 若 commitIndex > savedCommitIndex, 给 notifyNewCommitChan 发送通知，提交新的日志条目
+					} else {
+						// Lab2B 2.3.4 nextIndex[peerId] -= 1
+						// Lab2B 2.3.5 重发AppendEntries RPC
+						continue;
+					}
 				}
 			}
 		}(peerId)
@@ -442,6 +452,214 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		}
 	}
 }
+```
+
+## :wink: Lab 2C - persistence
+
+### :cherry_blossom: 目标
+实现 Raft 的持久化, 让即使基于 Raft 的服务器重启了也能在它发生中断的地方恢复服务。因此每当 Raft 的状态被更改时, 需要将其持久化写入磁盘, 并在重新启动时从磁盘读取状态
+
+### :mag: 提示
+- :one: 实现不需要真正写入磁盘, 只需利用 `persister.go` 中提供的 `Persister` 对象进行保存和恢复即可
+- :two: 完成 `raft.go` 中的 `persist()` 和 `readPersist()` 函数, 有例子 (仿着写即可), 目前只需将 `nil` 传给 `persister.Save()` 的第二个参数
+- :three: 在更改持久化状态的地方加入对 `persist()` 的调用
+- :four: Lab 2C 从测试比 Lab 2A、2B 都要高, 出现问题很可能是由 Lab 2A 或 2B 中的 bug 引起的
+
+### :beers: 实现
+
+**图2中指出来了持久化参数为 `Term, VoteFor, Log`**
+
+相比于 2A, 2B 很简单的一节
+
+直接仿照着 `persist()` 和 `readPersist()` 中给的例子对持久化参数进行持久化以及读取即可, 并在它们发生改变的时候调用 `persist()` 即可
+
+#### :sob: bugs
+跑 Lab 2C 的测试案例很艰难, 卡了很久。对着日志找到了不少 Lab 2A 和 Lab 2B 引入的 bug (当时只跑了几次, 以为过了就结束了, 实际上应该多测几次, 否则很难发现存在的 bugs)
+
+##### 1. Lab 2C 中的 `TestFigure8Unreliable2C`
+
+**:lollipop: `Test (2C): Figure 8 (unreliable)`**
+
+这个测试案例会不断的提交命令, 休眠一段时间后根据概率断开 leader 的连接, 并在连接的节点数少于一半时根据概率重连一个服务器。最后连接所有服务器, 提交命令, 检查是否能达成共识
+
+跑该测试案例的时候, 会出现最后不能达成共识的情况。检查日志发现问题在于最后选出的 leader 跟其他节点的日志差异过大, leader 每次发送心跳时接收到的回复都是 false, 然后 leader 不断减小发送的 `AppendEntriesArgs` 中的 `rf.nextIndex[peerId]`, 但是仍无法在有限的时间内确定跟其他服务器发生冲突的下标位置 (下标大概只能从600减小到400, 然后 fail)
+
+**:thought_balloon: 解决方案**
+
+优化回复的 `AppendEntriesReply` 结构体
+
+```go
+type AppendEntriesReply struct {
+	Term    int
+	Success bool
+	// Lab2C 新增的，避免 leader 每次只往前移动一位；若日志很长的话在一段时间内无法达到冲突位置
+	ConflictIndex int
+	ConflictTerm  int
+}
+```
+此时在 `AppendEntries` 函数中, 若 `reply.Success == false`, 补充这两个字段。leader 收到回复后根据它快速修改 `PrevLogIndex`
+
+```go
+func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply) {
+	// 1 若状态为 Dead, 直接返回
+
+	// 2 若 args.Term 更大, 调用 becomeFollower(args.Term) 更新任期等信息
+
+	// 3 若任期仍不等 (当前任期更大) 回复 false 和当前任期, leader 收到后会变为 follower
+	if args.Term == rf.currentTerm {
+		if rf.state != Follower {
+			// 4 任期相等但是当前不是 follower 的话,调用 becomeFollower(args.Term) 变成 follower
+		}
+		// 5 更新选举定时器的开始时间
+		// [Lab2B] 6.1 检查参数中的上一个日志下标是否小于自己的日志长度并且任期相同, 不满足直接返回 false, 否则之后返回 true
+		if args.PrevLogIndex < len(rf.log) && args.PrevLogTerm == rf.log[args.PrevLogIndex].Term {
+			// [Lab2B] 6.1.1 从 args.PrevLogIndex + 1 开始找日志不同之处 (不断比较直到下标越界或者日志任期不等)
+
+			// [Lab2B] 6.1.2 若 argsLogIndex < len(args.Entries) 则将参数中的后序日志拼接到 log[:insertIndex] 后面
+
+			// [Lab2B] 6.1.3 若 args.LeaderCommit > rf.commitIndex, 更新 rf.commitIndex 并给 notifyNewCommitChan 发通知
+		} else {
+			// [Lab2C] 6.2 replay false, 此时填写 ConflictIndex 和 ConflictTerm
+			if args.PrevLogIndex >= len(rf.log) {
+				reply.ConflictIndex = len(rf.log)
+				reply.ConflictTerm = -1
+			} else {
+				reply.ConflictTerm = rf.log[args.PrevLogIndex].Term
+
+				var ind int
+				for ind = args.PrevLogIndex - 1; ind >= 0; ind-- {
+					if rf.log[ind].Term != reply.ConflictTerm {
+						break
+					}
+				}
+				reply.ConflictIndex = ind + 1
+			}
+		}
+	}
+	// [Lab2C] 7 若持久化状态发生了改变, 调用 rf.persist()
+}
+
+func (rf *Raft) runHeartBeats() {
+	// 1 检查状态, 若不是 leader 的话直接退出 (可能是旧 leader 调用的), 记录当前任期 nowTerm
+
+	// 2 开启多个协程发送 AppendEntries RPC
+	// Lab2B 中需要发送 PrevLogIndex, PrevLogTerm, Entries, LeaderCommit
+	for peerId := range rf.peers {
+		go func(peerId int) {
+			for !rf.killed() {
+				// 2.1 等待 AppendEntriesReply, 若调用失败直接退出
+				
+				// [Lab 2C] 若当前非 leader, 退出
+
+				// 2.2 检查 reply.Term, 若比自己的 term 更大, 调用 becomeFollower(reply.Term) 并退出
+	
+				if rf.state == Leader && currentTerm == reply.Term && !rf.killed() {
+					if reply.Success {
+						// Lab2B 2.3.1 更新 rf.nextIndex[peerId], rf.matchIndex[peerId]
+	
+						// Lab2B 2.3.2 保存当前的 commitIndex (savedCommitIndex), 若有半数的节点的 matchIndex[j] 大于 commitIndex, 更新 commitIndex
+	
+						// Lab2B 2.3.3 若 commitIndex > savedCommitIndex, 给 notifyNewCommitChan 发送通知，提交新的日志条目
+					} else {
+						// Lab2C 2.4.1 若收到的回复为 false, 更新 rf.nextIndex[peerId], 重发心跳
+						if reply.ConflictTerm >= 0 {
+							lastIndex := -1
+							for i := len(rf.log) - 1; i >= 0; i-- {
+								if rf.log[i].Term == reply.ConflictTerm {
+									lastIndex = i
+									break
+								}
+							}
+							if lastIndex >= 0 {
+								rf.nextIndex[peerId] = lastIndex + 1
+							} else {
+								rf.nextIndex[peerId] = reply.ConflictIndex
+							}
+						} else {
+							rf.nextIndex[peerId] = reply.ConflictIndex
+						}
+						rf.mu.Unlock()
+						continue
+					}
+				}
+			}
+		}(peerId)
+	}
+}
+
+```
+
+##### 2. Lab 2C 中的 `internalChurn`
+
+**:lollipop: `Test (2C): unreliable churn`**
+
+跑该测试案例的时候偶尔会出现死锁的情况, 研究日志后发现死锁出在 `runHeartBeats()` 和 `commitCommand()` 函数上。原先的实现中, 一旦其他服务器回复心跳为 true 是会加锁, 然后处理后序操作(更新 nextIndex, 当大于半数服务器都收到了日志后还会提交新的日志), 最后解锁。但是因为多个协程之间会抢释放掉的锁, 可能存在下面情况
+
+leader 给所有服务器发心跳, leader 收到了 1 的正确回复时加锁并发现可以提交新日志了, 给管道发送信号, 自己阻塞等待管道取数据。管道取出数据后的一瞬间 (锁释放了并且 `commitCommand()` 函数中的下一步就是加锁, 但是锁被 leader 中的另一个协程拿到了), leader 又收到了 2 的正确回复, 加锁并发现可以提交更多的新数据, 给管道发送数据, 自己阻塞了 (但是因为负责取数据的协程已经进入提交新数据的逻辑中了并且在等待其他协程释放锁, 所以不能取新发来的提交数据的信号)。此时产生死锁！！
+
+```go
+func A () {
+	for i := range peers {
+		go func(i int) {
+			// ...
+			if succ := rf.sendHeartBeats(peerId, &args, &reply); succ {
+				mu.Lock()
+				// ...
+				if satisfy requirements {
+					ch <- struct {}{}
+				}
+			}
+			mu.UnLock()
+		}(i)
+	}
+}
+
+func B() {
+	for {
+		case <- ch:
+		mu.Lock()
+		// ...
+		mu.UnLock()
+	}
+}
+
+```
+
+**:thought_balloon: 解决方案**
+
+- :one: 给管道容量, 比如服务器的数目 (最多也只会同时有 `len(peers) - 1` 个协程发送心跳), 让发送可提交新日志的协程不阻塞, 继续执行就会直接释放锁。不会出现提交新日志的协程和发送有新数据可提交的协程抢占锁的情况
+- :two: 因为本函数中发送有新数据到来的信号给通道后, 无后序需要加锁的操作, 因此可以直接先释放锁, 再发送信号。此时阻塞等待 `commitCommand()` 函数取数据不会死锁
+
+自己采用的方案2
+
+```go
+func A () {
+	for i := range peers {
+		go func(i int) {
+			// ...
+			if succ := rf.sendHeartBeats(peerId, &args, &reply); succ {
+				mu.Lock()
+				// ...
+				if satisfy requirements {
+					mu.UnLock()
+					ch <- struct {}{}
+					return
+				}
+			}
+			mu.UnLock()
+		}(i)
+	}
+}
+
+func B() {
+	for {
+		case <- ch:
+		mu.Lock()
+		// ...
+		mu.UnLock()
+	}
+}
+
 ```
 
 
