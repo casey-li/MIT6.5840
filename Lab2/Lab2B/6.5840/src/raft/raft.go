@@ -106,8 +106,7 @@ type Raft struct {
 	nextIndex   []int
 	matchIndex  []int
 
-	electionStartTime time.Time
-	// leaderId           int
+	electionStartTime   time.Time
 	applyChan           chan ApplyMsg
 	notifyNewCommitChan chan struct{}
 }
@@ -234,19 +233,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	lastLogTerm := rf.log[lastLogIndex].Term
 	if args.Term > rf.currentTerm {
 		rf.rflog("term is out of data in RequestVote")
-		// rf.mu.Unlock()
-		// 直接设置任期以及投票可以 go rf.becomeFollower(args.Term)，下面的回复也可以正常运行
-		// 若顺序执行的话，重置都在函数内部，但需要先解锁, becomeFollower, 再加锁,容易出错
-		// rf.currentTerm = args.Term
-		// rf.voteFor = -1
-		// rf.state = Follower
-		// rf.electionStartTime = time.Now()
-		// go rf.ticker()
 		rf.becomeFollower(args.Term)
-		// 若用 go 的话当前已经投过票了，函数结束后又会变为未投票的状态
-		// go rf.becomeFollower(args.Term)
 	}
-	// rf.rflog("in RequestVote, now log is [%v]", rf.log)
 	reply.VoteGranted = false
 	if rf.currentTerm == args.Term &&
 		(rf.voteFor == -1 || rf.voteFor == args.CandidateId) &&
@@ -323,9 +311,6 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 
 	if args.Term > rf.currentTerm {
 		rf.rflog("term is out of data in AppendEntries")
-		// rf.currentTerm = args.Term
-		// rf.electionStartTime = time.Now()
-		// rf.state = Follower
 		rf.becomeFollower(args.Term)
 	}
 
@@ -333,12 +318,8 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.Term == rf.currentTerm {
 		if rf.state != Follower {
 			rf.state = Follower
-			// rf.rflog("transform from %s to Follower", rf.state)
-			// 同一个任期内若投过票的话这样会变为-1
-			// go rf.becomeFollower(args.Term)
 		}
 		rf.electionStartTime = time.Now()
-		// rf.rflog("election timer reset to %v!", time.Since(rf.electionStartTime))
 		if args.PrevLogIndex < len(rf.log) && args.PrevLogTerm == rf.log[args.PrevLogIndex].Term {
 			reply.Success = true
 			insertIndex := args.PrevLogIndex + 1
@@ -400,7 +381,6 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		Term:    rf.currentTerm,
 		Command: command,
 	})
-	// rf.rflog("return result: [%v, %v]", len(rf.log)-1, rf.currentTerm)
 	return len(rf.log) - 1, rf.currentTerm, true
 }
 
@@ -423,8 +403,6 @@ func (rf *Raft) Kill() {
 }
 
 func (rf *Raft) killed() bool {
-	// rf.mu.Lock()
-	// defer rf.mu.Unlock()
 	z := atomic.LoadInt32(&rf.dead)
 	return z == 1
 }
@@ -433,9 +411,6 @@ func (rf *Raft) ticker(state RuleState) {
 	if !rf.killed() {
 		// Your code here (2A)
 		// Check if a leader election should be started.
-		// rf.mu.Lock()
-		// state := rf.state
-		// rf.mu.Unlock()
 		switch state {
 		case Follower:
 			rf.runElectionTimer()
@@ -467,8 +442,6 @@ func (rf *Raft) runElectionTimer() {
 	for !rf.killed() {
 		<-ticker.C
 		rf.mu.Lock()
-		// rf.rflog("after %v, timeout is %v, currentTerm [%d], realTerm [%d], state [%s]",
-		// 	time.Since(rf.electionStartTime), timeout, nowTerm, rf.currentTerm, rf.state.String())
 		if rf.state != Candidate && rf.state != Follower {
 			rf.rflog("in runElectionTimer, state change to %s, currentTerm [%d], realTerm [%d]",
 				rf.state.String(), nowTerm, rf.currentTerm)
@@ -540,14 +513,14 @@ func (rf *Raft) startElection() {
 					return
 				} else if reply.Term > currentTerm {
 					rf.rflog(" receive bigger term in reply, transforms to follower")
-					// rf.state = Follower
-					rf.becomeFollower(reply.Term)
+					if reply.Term > rf.currentTerm {
+						rf.becomeFollower(reply.Term)
+					}
 					return
-				} else if reply.Term == currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
+				} else if reply.Term == currentTerm && currentTerm == rf.currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
 					receivedVotes += 1
 					if receivedVotes*2 >= len(rf.peers)+1 {
 						rf.rflog("wins the selection, becomes leader!")
-						// rf.state = Leader
 						rf.becomeLeader()
 					}
 					return
@@ -597,7 +570,6 @@ func (rf *Raft) heartBeatsTimer() {
 		rf.runHeartBeats()
 		<-ticker.C
 		rf.mu.Lock()
-		// rf.rflog("in heartBeatsTimer, ticker!, time is [%v]", time.Since(rf.electionStartTime))
 		if rf.state != Leader || rf.currentTerm != nowTerm {
 			rf.mu.Unlock()
 			return
@@ -631,11 +603,7 @@ func (rf *Raft) runHeartBeats() {
 		go func(peerId int) {
 			for !rf.killed() {
 				rf.mu.Lock()
-				// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
-				// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
 				prevLogIndex, nowLogIndex := min(rf.nextIndex[peerId]-1, len(rf.log)-1), min(rf.nextIndex[peerId], len(rf.log))
-				// if len(rf.log) > 1 {
-				// }
 				if rf.state != Leader {
 					rf.mu.Unlock()
 					return
@@ -656,16 +624,21 @@ func (rf *Raft) runHeartBeats() {
 				if succ := rf.sendHeartBeats(peerId, &args, &reply); succ {
 					rf.rflog("receive AppendEntries reply [%+v]", reply)
 					rf.mu.Lock()
-					if reply.Term > currentTerm {
-						rf.rflog("receive bigger term in reply, transforms to follower")
-						rf.becomeFollower(reply.Term)
-						rf.electionStartTime = time.Now()
+					if rf.state != Leader {
 						rf.mu.Unlock()
 						return
 					}
-					// defer rf.mu.Unlock()
+					if reply.Term > currentTerm {
+						rf.rflog("receive bigger term in reply, transforms to follower")
+						if reply.Term > rf.currentTerm {
+							rf.becomeFollower(reply.Term)
+							rf.electionStartTime = time.Now()
+						}
+						rf.mu.Unlock()
+						return
+					}
 					// 收到理想的回复, 统计投票结果
-					if rf.state == Leader && currentTerm == reply.Term && !rf.killed() {
+					if rf.state == Leader && currentTerm == reply.Term && currentTerm == rf.currentTerm && !rf.killed() {
 						if reply.Success {
 							rf.matchIndex[peerId] = prevLogIndex + len(args.Entries)
 							rf.nextIndex[peerId] = rf.matchIndex[peerId] + 1
@@ -688,11 +661,11 @@ func (rf *Raft) runHeartBeats() {
 									}
 								}
 							}
-							// rf.rflog("savedCommitIndex is [%d], commitIndex change to [%d]", savedCommitIndex, rf.commitIndex)
 							if rf.commitIndex != savedCommitIndex {
 								rf.rflog("updates commitIndex from %v to %v", savedCommitIndex, rf.commitIndex)
+								rf.mu.Unlock()
 								rf.notifyNewCommitChan <- struct{}{}
-								// rf.rflog("updates over!")
+								return
 							}
 						} else if rf.nextIndex[peerId] > 1 {
 							rf.nextIndex[peerId] -= 1
@@ -717,7 +690,6 @@ func (rf *Raft) commitCommand() {
 		select {
 		case <-rf.notifyNewCommitChan:
 			ticker.Reset(10 * time.Millisecond)
-			// rf.rflog("receive info")
 			rf.mu.Lock()
 			savedLastApplied := rf.lastApplied
 			var logEntries []LogEntry
@@ -741,26 +713,6 @@ func (rf *Raft) commitCommand() {
 			}
 		}
 	}
-	// for range rf.notifyNewCommitChan {
-	// 	rf.rflog("receive info")
-	// 	rf.mu.Lock()
-	// 	savedLastApplied := rf.lastApplied
-	// 	var logEntries []LogEntry
-	// 	if rf.commitIndex > rf.lastApplied {
-	// 		logEntries = rf.log[rf.lastApplied+1 : rf.commitIndex+1]
-	// 		rf.lastApplied = rf.commitIndex
-	// 	}
-	// 	rf.rflog("commits log [%v] from %d to %d", logEntries, savedLastApplied, rf.lastApplied)
-	// 	rf.mu.Unlock()
-	// 	for i, entry := range logEntries {
-	// 		rf.applyChan <- ApplyMsg{
-	// 			CommandValid: true,
-	// 			Command:      entry.Command,
-	// 			CommandIndex: savedLastApplied + i + 1,
-	// 		}
-	// 	}
-	// 	// rf.rflog("commits over!")
-	// }
 }
 
 // the service or tester wants to create a Raft server. the ports
