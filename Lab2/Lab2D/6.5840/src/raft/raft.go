@@ -107,9 +107,12 @@ type Raft struct {
 	nextIndex   []int
 	matchIndex  []int
 
-	electionStartTime   time.Time
-	applyChan           chan ApplyMsg
-	notifyNewCommitChan chan struct{}
+	electionStartTime time.Time
+	applyChan         chan ApplyMsg
+	// notifyNewCommitChan chan struct{}
+
+	isSnapshot uint32 //是否正在保存快照到 applyCh
+	commitCond *sync.Cond
 }
 
 type RuleState int
@@ -121,9 +124,42 @@ const (
 	Dead
 )
 
+// Lab2D 新增 Index 记录日志的索引，因为涉及到了快照，所以真实下标和在日志中的下标不同
+// 并且日志的第一项充当记录, 保存 LastIncludedIndex 和 LastIncludedTerm 的信息
 type LogEntry struct {
 	Command interface{}
 	Term    int
+	Index   int
+}
+
+// 返回第一个日志的下标, 即 lastIncludedIndex
+func (rf *Raft) getFirstIndex() int {
+	return rf.log[0].Index
+}
+
+// 返回第一个日志的任期, 即 lastIncludedTerm
+func (rf *Raft) getFirstTerm() int {
+	return rf.log[0].Term
+}
+
+// 返回最后一个日志的下标
+func (rf *Raft) getLastIndex() int {
+	return rf.log[len(rf.log)-1].Index
+}
+
+// 返回最后一个日志的任期
+func (rf *Raft) getLastTerm() int {
+	return rf.log[len(rf.log)-1].Term
+}
+
+// 返回最后一个日志的下一个下标
+func (rf *Raft) getNextIndex() int {
+	return rf.getLastIndex() + 1
+}
+
+// 返回下标为 index 处的日志的任期 (原始下标)
+func (rf *Raft) getTerm(index int) int {
+	return rf.log[index-rf.getFirstIndex()].Term
 }
 
 func (s RuleState) String() string {
@@ -161,13 +197,25 @@ func (rf *Raft) GetState() (int, bool) {
 func (rf *Raft) persist() {
 	// Your code here (2C).
 	// Example:
+	// w := new(bytes.Buffer)
+	// e := labgob.NewEncoder(w)
+	// e.Encode(rf.currentTerm)
+	// e.Encode(rf.voteFor)
+	// e.Encode(*rf.log)
+	// raftstate := w.Bytes()
+	// rf.persister.Save(raftstate, nil)
+	rf.persister.Save(rf.encodeState(), rf.persister.ReadSnapshot())
+}
+
+// 原先的 persist() 构造 raftstate 部分; 因为 Snapshot() 也需要
+func (rf *Raft) encodeState() []byte {
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
 	e.Encode(rf.currentTerm)
 	e.Encode(rf.voteFor)
 	e.Encode(rf.log)
 	raftstate := w.Bytes()
-	rf.persister.Save(raftstate, nil)
+	return raftstate
 }
 
 // restore previously persisted state.
@@ -198,12 +246,132 @@ func (rf *Raft) readPersist(data []byte) {
 // that index. Raft should now trim its log as much as possible.
 func (rf *Raft) Snapshot(index int, snapshot []byte) {
 	// Your code here (2D).
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	rf.rflog("snapshot index %d", index)
+	lastIndex := rf.getFirstIndex()
+	if lastIndex >= index {
+		// 已经做过快照了
+		return
+	}
+	// 第 0 个日志存快照信息, lastIncludedIndex 和 lastIncludeTerm 就是下标为 index 的日志的信息, 因此裁剪时保留它充当快照信息
+	var tmp []LogEntry
+	rf.log = append(tmp, rf.log[index-lastIndex:]...)
+	rf.log[0].Command = nil
+	rf.persister.Save(rf.encodeState(), snapshot)
+}
 
+type InstallSnapshotArgs struct {
+	Term              int
+	LeaderId          int
+	LastIncludedIndex int    // 快照中最后一个条目包含的索引
+	LastIncludedTerm  int    // 快照中最后一个条目包含的任期
+	Snapshot          []byte //快照
+}
+
+type InstallSnapshotReply struct {
+	Term int
+}
+
+func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
+	rf.mu.Lock()
+	if rf.state == Dead {
+		rf.mu.Unlock()
+		return
+	}
+	rf.rflog("receives InstallSnapshot [%v]", args)
+	if args.Term > rf.currentTerm {
+		rf.rflog("term is out of data in InstallSnapshot")
+		if rf.state != Follower {
+			rf.electionStartTime = time.Now()
+		}
+		rf.becomeFollower(args.Term)
+	}
+	reply.Term = rf.currentTerm
+	if args.Term == rf.currentTerm {
+		if rf.state != Follower {
+			rf.state = Follower
+		}
+		rf.electionStartTime = time.Now()
+		// 是因为延迟得到的过期的快照
+		if rf.commitIndex >= args.LastIncludedIndex {
+			rf.rflog("receive out of data snapshot, commitIndex: [%d], args.LsdtIncludedIndex: [%d]", rf.commitIndex, args.LastIncludedIndex)
+			rf.mu.Unlock()
+			return
+		}
+
+		// // 若当前有快照正在保存，直接返回，避免因为锁的抢占问题导致日志回退
+		// if atomic.LoadUint32(&rf.isSnapshot) == 1 {
+		// 	reply.Term = -1
+		// 	rf.mu.Unlock()
+		// 	return
+		// }
+
+		// 裁剪日志
+		if rf.getLastIndex() <= args.LastIncludedIndex {
+			rf.log = make([]LogEntry, 1)
+		} else {
+			var tmp []LogEntry
+			rf.log = append(tmp, rf.log[args.LastIncludedIndex-rf.getFirstIndex():]...)
+		}
+		rf.log[0].Term = args.LastIncludedTerm
+		rf.log[0].Index = args.LastIncludedIndex
+		rf.log[0].Command = nil
+		rf.persister.Save(rf.encodeState(), args.Snapshot)
+
+		rf.rflog("persist on InstallSnapshot over!, term is %d, log is %d", rf.currentTerm, rf.log)
+		rf.lastApplied, rf.commitIndex = args.LastIncludedIndex, args.LastIncludedIndex
+		rf.mu.Unlock()
+
+		// atomic.StoreUint32(&rf.isSnapshot, 1)
+
+		rf.applyChan <- ApplyMsg{
+			SnapshotValid: true,
+			Snapshot:      args.Snapshot,
+			SnapshotTerm:  args.LastIncludedTerm,
+			SnapshotIndex: args.LastIncludedIndex,
+		}
+
+		// atomic.StoreUint32(&rf.isSnapshot, 0)
+
+		rf.rflog("InstallSnapshot over!")
+		return
+	}
+	rf.mu.Unlock()
+}
+
+// // CondInstallSnapshot 为了保证原子性
+// func (rf *Raft) CondInstallSnapshot(LastIncludedIndex int, LastIncludedTerm int, Snapshot []byte) bool {
+// 	rf.mu.Lock()
+// 	defer rf.mu.Unlock()
+// 	// 因为 RPC 延迟的过期快照
+// 	if rf.commitIndex >= LastIncludedIndex {
+// 		return false
+// 	}
+// 	firstIndex := rf.getFirstIndex()
+// 	// 裁剪日志
+// 	if rf.getLastIndex() <= LastIncludedIndex {
+// 		rf.log = make([]LogEntry, 1)
+// 	} else {
+// 		var tmp []LogEntry
+// 		rf.log = append(tmp, rf.log[LastIncludedIndex-firstIndex:]...)
+// 	}
+// 	rf.log[0].Term = LastIncludedTerm
+// 	rf.log[0].Index = LastIncludedIndex
+// 	rf.log[0].Command = nil
+// 	rf.persister.Save(rf.encodeState(), Snapshot)
+// 	rf.rflog("persist on CondInstallSnapshot over!")
+// 	rf.lastApplied, rf.commitIndex = LastIncludedIndex, LastIncludedIndex
+// 	return true
+// }
+
+func (rf *Raft) sendInstallSnapshot(server int, args *InstallSnapshotArgs, reply *InstallSnapshotReply) bool {
+	ok := rf.peers[server].Call("Raft.InstallSnapshot", args, reply)
+	return ok
 }
 
 // example RequestVote RPC arguments structure.
 // field names must start with capital letters!
-// 看 Fig.2
 type RequestVoteArgs struct {
 	// Your data here (2A, 2B).
 	Term         int
@@ -233,8 +401,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 	rf.rflog("is requested vote, args [%+v]; currentTerm : %d, voteFor: %d, log: [%v]",
 		args, rf.currentTerm, rf.voteFor, rf.log)
-	lastLogIndex := len(rf.log) - 1
-	lastLogTerm := rf.log[lastLogIndex].Term
+
+	// lastLogIndex := len(rf.log) - 1
+	// lastLogTerm := rf.log[lastLogIndex].Term
 
 	need_persist := false
 
@@ -248,6 +417,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		// rf.state = Follower
 		// rf.electionStartTime = time.Now()
 		// go rf.ticker()
+		if rf.state != Follower {
+			rf.electionStartTime = time.Now()
+		}
 		rf.becomeFollower(args.Term)
 		// need_persist = true
 		// 若用 go 的话当前已经投过票了，函数结束后又会变为未投票的状态
@@ -255,6 +427,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 	// rf.rflog("in RequestVote, now log is [%v]", rf.log)
 	reply.VoteGranted = false
+	lastLogIndex := rf.getLastIndex()
+	lastLogTerm := rf.getLastTerm()
+
 	if rf.currentTerm == args.Term &&
 		(rf.voteFor == -1 || rf.voteFor == args.CandidateId) &&
 		(args.LastLogTerm > lastLogTerm || (args.LastLogTerm == lastLogTerm && args.LastLogIndex >= lastLogIndex)) {
@@ -338,7 +513,6 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if rf.state == Dead {
 		return
 	}
-	// rf.rflog("receives AppendEntries [%+v]", args)
 	rf.rflog("receives AppendEntries [Term:%d LeaderId:%d PrevLogIndex:%d PrevLogTerm:%d Entries:%d LeaderCommit:%d]",
 		args.Term, args.LeaderId, args.PrevLogIndex, args.PrevLogTerm, len(args.Entries), args.LeaderCommit)
 
@@ -349,6 +523,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		// rf.currentTerm = args.Term
 		// rf.electionStartTime = time.Now()
 		// rf.state = Follower
+		if rf.state != Follower {
+			rf.electionStartTime = time.Now()
+		}
 		rf.becomeFollower(args.Term)
 		// need_persist = true
 	}
@@ -363,14 +540,27 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 			// go rf.becomeFollower(args.Term)
 		}
 		rf.electionStartTime = time.Now()
-		// rf.rflog("election timer reset to %v!", time.Since(rf.electionStartTime))
-		if args.PrevLogIndex < len(rf.log) && args.PrevLogTerm == rf.log[args.PrevLogIndex].Term {
+
+		if args.PrevLogIndex < rf.getFirstIndex() {
+			rf.rflog("receives out of data AppendEntries RPC, args.PrevLogIndex [%d], LastIncludedIndex [%d]", args.PrevLogIndex, rf.getFirstIndex())
+			reply.Success, reply.Term = false, 0
+			return
+		}
+
+		// if args.PrevLogIndex < len(rf.log) && args.PrevLogTerm == rf.log[args.PrevLogIndex].Term {
+		if args.PrevLogIndex < rf.getNextIndex() && args.PrevLogTerm == rf.getTerm(args.PrevLogIndex) {
 			reply.Success = true
 			insertIndex := args.PrevLogIndex + 1
 			argsLogIndex := 0
 			for {
-				if insertIndex >= len(rf.log) || argsLogIndex >= len(args.Entries) ||
-					rf.log[insertIndex].Term != args.Entries[argsLogIndex].Term {
+
+				// if insertIndex >= len(rf.log) || argsLogIndex >= len(args.Entries) ||
+				// 	rf.log[insertIndex].Term != args.Entries[argsLogIndex].Term {
+				// 	break
+				// }
+
+				if insertIndex >= rf.getNextIndex() || argsLogIndex >= len(args.Entries) ||
+					rf.getTerm(insertIndex) != args.Entries[argsLogIndex].Term {
 					break
 				}
 				insertIndex++
@@ -378,7 +568,11 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 			}
 			// 并未遍历到参数日志的最后, 将后面的内容拼接上来
 			if argsLogIndex < len(args.Entries) {
-				rf.log = append(rf.log[:insertIndex], args.Entries[argsLogIndex:]...)
+				// rf.log = append(rf.log[:insertIndex], args.Entries[argsLogIndex:]...)
+
+				// 这个下标 ???
+				rf.log = append(rf.log[:insertIndex-rf.getFirstIndex()], args.Entries[argsLogIndex:]...)
+
 				// rf.persist()
 				need_persist = true
 				rf.rflog("append logs [%v] in AppendEntries", args.Entries[argsLogIndex:])
@@ -386,21 +580,28 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 			// 检查是否需要提交命令
 			if args.LeaderCommit > rf.commitIndex {
 				// rf.rflog("log: [%v]", rf.log)
-				rf.commitIndex = min(len(rf.log)-1, args.LeaderCommit)
+				// rf.commitIndex = min(len(rf.log)-1, args.LeaderCommit)
+
+				rf.commitIndex = min(rf.getNextIndex()-1, args.LeaderCommit)
 				rf.rflog("updates commitIndex into %v", rf.commitIndex)
-				rf.notifyNewCommitChan <- struct{}{}
+				rf.commitCond.Signal()
+				// rf.notifyNewCommitChan <- struct{}{}
 			}
 		} else {
 			// replay false, 此时填写 ConflictIndex 和 ConflictTerm
-			if args.PrevLogIndex >= len(rf.log) {
-				reply.ConflictIndex = len(rf.log)
+			// if args.PrevLogIndex >= len(rf.log) {
+			// 	reply.ConflictIndex = len(rf.log)
+			if args.PrevLogIndex >= rf.getNextIndex() {
+				reply.ConflictIndex = rf.getNextIndex()
 				reply.ConflictTerm = -1
 			} else {
-				reply.ConflictTerm = rf.log[args.PrevLogIndex].Term
+				// reply.ConflictTerm = rf.log[args.PrevLogIndex].Term
+				reply.ConflictTerm = rf.getTerm(args.PrevLogIndex)
 
 				var ind int
-				for ind = args.PrevLogIndex - 1; ind >= 0; ind-- {
-					if rf.log[ind].Term != reply.ConflictTerm {
+				for ind = args.PrevLogIndex - 1; ind >= rf.getFirstIndex(); ind-- {
+					// if rf.log[ind].Term != reply.ConflictTerm {
+					if rf.getTerm(ind) != reply.ConflictTerm {
 						break
 					}
 				}
@@ -445,13 +646,19 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		return -1, rf.currentTerm, false
 	}
 	rf.rflog("receives commond %v", command)
+	// rf.log = append(rf.log, LogEntry{
+	// 	Term:    rf.currentTerm,
+	// 	Command: command,
+	// })
 	rf.log = append(rf.log, LogEntry{
-		Term:    rf.currentTerm,
 		Command: command,
+		Term:    rf.currentTerm,
+		Index:   rf.getNextIndex(),
 	})
 	rf.persist()
 	// rf.rflog("return result: [%v, %v]", len(rf.log)-1, rf.currentTerm)
-	return len(rf.log) - 1, rf.currentTerm, true
+	// return len(rf.log) - 1, rf.currentTerm, true
+	return rf.getLastIndex(), rf.currentTerm, true
 }
 
 // the tester doesn't halt goroutines created by Raft after each test,
@@ -483,9 +690,6 @@ func (rf *Raft) ticker(state RuleState) {
 	if !rf.killed() {
 		// Your code here (2A)
 		// Check if a leader election should be started.
-		// rf.mu.Lock()
-		// state := rf.state
-		// rf.mu.Unlock()
 		switch state {
 		case Follower:
 			rf.runElectionTimer()
@@ -517,8 +721,8 @@ func (rf *Raft) runElectionTimer() {
 	for !rf.killed() {
 		<-ticker.C
 		rf.mu.Lock()
-		// rf.rflog("after %v, timeout is %v, currentTerm [%d], realTerm [%d], state [%s]",
-		// 	time.Since(rf.electionStartTime), timeout, nowTerm, rf.currentTerm, rf.state.String())
+		rf.rflog("after %v, timeout is %v, currentTerm [%d], realTerm [%d], state [%s]",
+			time.Since(rf.electionStartTime), timeout, nowTerm, rf.currentTerm, rf.state.String())
 		if rf.state != Candidate && rf.state != Follower {
 			rf.rflog("in runElectionTimer, state change to %s, currentTerm [%d], realTerm [%d]",
 				rf.state.String(), nowTerm, rf.currentTerm)
@@ -535,8 +739,8 @@ func (rf *Raft) runElectionTimer() {
 		if duration := time.Since(rf.electionStartTime); duration >= timeout {
 			rf.rflog("timeed out !! timer after %v, currentTerm [%d], realTerm [%d]",
 				time.Since(rf.electionStartTime), nowTerm, rf.currentTerm)
-			rf.mu.Unlock()
 			rf.startElection()
+			rf.mu.Unlock()
 			continue
 		}
 		rf.mu.Unlock()
@@ -554,59 +758,81 @@ func (rf *Raft) runElectionTimer() {
 
 // Lab2B 新增日志, 发送完整 RequestVoteArgs
 func (rf *Raft) startElection() {
-	rf.mu.Lock()
+	// // 固定住状态, 避免收到回复后状态改变然后发送了错误的 RequestVote RPC
+	// rf.mu.Lock()
 	rf.state = Candidate
 	rf.currentTerm += 1
 	rf.voteFor = rf.me
 	rf.electionStartTime = time.Now()
-	currentTerm := rf.currentTerm
-	lastLogIndex := len(rf.log) - 1
-	lastLogTerm := rf.log[lastLogIndex].Term
-	candidateId := rf.me
 	rf.persist()
-	rf.mu.Unlock()
-	rf.rflog("becomes Candidate, start election! now term is %d", currentTerm)
+	// rf.mu.Unlock()
+	rf.rflog("becomes Candidate, start election! now term is %d", rf.currentTerm)
 	receivedVotes := 1
 
+	args := RequestVoteArgs{
+		Term:         rf.currentTerm,
+		CandidateId:  rf.me,
+		LastLogIndex: rf.getLastIndex(),
+		LastLogTerm:  rf.getLastTerm(),
+	}
+
 	for peerId := range rf.peers {
-		if peerId == rf.me {
+		if peerId == args.CandidateId {
 			continue
 		}
 		go func(peerId int) {
-
-			args := RequestVoteArgs{
-				Term:         currentTerm,
-				CandidateId:  candidateId,
-				LastLogIndex: lastLogIndex,
-				LastLogTerm:  lastLogTerm,
-			}
 			var reply RequestVoteReply
 			if succ := rf.sendRequestVote(peerId, &args, &reply); succ {
 				rf.rflog("receive requestVote reply [%+v]", reply)
-
 				rf.mu.Lock()
 				defer rf.mu.Unlock()
-				if rf.state != Candidate {
-					rf.rflog("transforms to state [%s] when waiting for reply", rf.state)
-					return
-					// } else if reply.Term > currentTerm {
-				} else if reply.Term > currentTerm {
-					rf.rflog(" receive bigger term in reply, transforms to follower")
-					// rf.state = Follower
-					if reply.Term > rf.currentTerm {
+
+				// 应该先判断回复是否合法，必须满足 1. 当前节点仍是 Candidate 2. 发送时的任期跟当前任期相等
+				if rf.state == Candidate && rf.currentTerm == args.Term {
+					if reply.VoteGranted {
+						receivedVotes += 1
+						if receivedVotes*2 >= len(rf.peers)+1 {
+							rf.rflog("wins the selection, becomes leader!")
+							rf.becomeLeader()
+							rf.runHeartBeats()
+						}
+					} else if reply.Term > rf.currentTerm {
+						rf.rflog("receive bigger term in reply, maybe out of data")
 						rf.becomeFollower(reply.Term)
+						rf.electionStartTime = time.Now()
 					}
-					return
-					// } else if reply.Term == currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
-				} else if reply.Term == currentTerm && reply.Term == rf.currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
-					receivedVotes += 1
-					if receivedVotes*2 >= len(rf.peers)+1 {
-						rf.rflog("wins the selection, becomes leader!")
-						// rf.state = Leader
-						rf.becomeLeader()
-					}
-					return
 				}
+
+				// if rf.state != Candidate {
+				// 	rf.rflog("transforms to state [%s] when waiting for reply", rf.state)
+				// 	// if reply.Term > rf.currentTerm {
+				// 	// 	rf.rflog("transforms to follower")
+				// 	// 	rf.becomeFollower(reply.Term)
+				// 	// 	// 新加的 ??
+				// 	// 	rf.electionStartTime = time.Now()
+				// 	// }
+				// 	return
+				// 	// } else if reply.Term > currentTerm {
+				// } else if reply.Term > args.Term {
+				// 	rf.rflog("receive bigger term in reply, maybe out of data")
+				// 	// rf.state = Follower
+				// 	if reply.Term > rf.currentTerm {
+				// 		rf.rflog("transforms to follower")
+				// 		rf.becomeFollower(reply.Term)
+				// 		// 新加的 ??
+				// 		rf.electionStartTime = time.Now()
+				// 	}
+				// 	return
+				// 	// } else if reply.Term == currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
+				// } else if reply.Term == args.Term && reply.Term == rf.currentTerm && reply.VoteGranted { // 正确的响应，查看是否同意
+				// 	receivedVotes += 1
+				// 	if receivedVotes*2 >= len(rf.peers)+1 {
+				// 		rf.rflog("wins the selection, becomes leader!")
+				// 		// rf.state = Leader
+				// 		rf.becomeLeader()
+				// 	}
+				// 	return
+				// }
 			}
 		}(peerId)
 	}
@@ -617,12 +843,10 @@ func (rf *Raft) startElection() {
 
 // 修改状态，任期，更新选举开始时间，清除投票结果，运行新的选举定时器
 func (rf *Raft) becomeFollower(term int) {
-	// rf.mu.Lock()
 	rf.state = Follower
 	rf.currentTerm = term
 	// rf.electionStartTime = time.Now()
 	rf.voteFor = -1
-	// rf.mu.Unlock()
 	rf.rflog("becomes follower at term [%d]", term)
 	rf.persist()
 	go rf.ticker(Follower)
@@ -630,12 +854,12 @@ func (rf *Raft) becomeFollower(term int) {
 
 // 修改状态，启动 ticker()，原来的 ticker() 会因为自身状态的改变而主动退出
 func (rf *Raft) becomeLeader() {
-	// rf.mu.Lock()
-	// defer rf.mu.Unlock()
 	rf.state = Leader
 	rf.rflog("becomes leader, term = [%d]", rf.currentTerm)
+	nextIndex := rf.getNextIndex()
 	for i := range rf.peers {
-		rf.nextIndex[i] = len(rf.log)
+		// rf.nextIndex[i] = len(rf.log)
+		rf.nextIndex[i] = nextIndex
 		rf.matchIndex[i] = 0
 	}
 	go rf.ticker(Leader)
@@ -650,14 +874,13 @@ func (rf *Raft) heartBeatsTimer() {
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 	for !rf.killed() {
-		rf.runHeartBeats()
 		<-ticker.C
 		rf.mu.Lock()
-		// rf.rflog("in heartBeatsTimer, ticker!, time is [%v]", time.Since(rf.electionStartTime))
 		if rf.state != Leader || rf.currentTerm != nowTerm {
 			rf.mu.Unlock()
 			return
 		}
+		rf.runHeartBeats()
 		rf.mu.Unlock()
 	}
 }
@@ -669,194 +892,251 @@ func (rf *Raft) heartBeatsTimer() {
 // Lab2B 中需要完善发送的 AppendEntriesArgs, 发送完整信息
 // 收到请求后, 应该统计结果来决定是否增加 commitIndex
 func (rf *Raft) runHeartBeats() {
-	rf.mu.Lock()
+	// rf.mu.Lock()
+	// id := rf.me
 	if rf.state != Leader {
 		rf.rflog("is not a leader any more!")
-		rf.mu.Unlock()
+		// rf.mu.Unlock()
 		return
 	}
-	id := rf.me
 	currentTerm := rf.currentTerm
-	rf.mu.Unlock()
+	// rf.mu.Unlock()
 
 	rf.rflog("ticker!!!--------run runHeartBeats()")
 	for peerId := range rf.peers {
-		if peerId == id {
+		if peerId == rf.me {
 			continue
 		}
 		go func(peerId int) {
 			for !rf.killed() {
 				rf.mu.Lock()
-				// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
-				// prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
-				prevLogIndex, nowLogIndex := min(rf.nextIndex[peerId]-1, len(rf.log)-1), min(rf.nextIndex[peerId], len(rf.log))
-				// if len(rf.log) > 1 {
-				// }
 				if rf.state != Leader {
 					rf.mu.Unlock()
 					return
 				}
-				entries := make([]LogEntry, len(rf.log[nowLogIndex:]))
-				copy(entries, rf.log[nowLogIndex:])
-				args := AppendEntriesArgs{
-					Term:         currentTerm,
-					LeaderId:     rf.me,
-					PrevLogIndex: prevLogIndex,
-					PrevLogTerm:  rf.log[prevLogIndex].Term,
-					Entries:      entries,
-					LeaderCommit: rf.commitIndex,
-				}
-				rf.mu.Unlock()
-				var reply AppendEntriesReply
-				rf.rflog("sending AppendEntries to [%v], args = [%+v]", peerId, args)
-				if succ := rf.sendHeartBeats(peerId, &args, &reply); succ {
-					rf.rflog("receive AppendEntries reply [%+v]", reply)
-					rf.mu.Lock()
-					if rf.state != Leader {
-						rf.mu.Unlock()
-						return
+
+				// Lab2D, 有快照要求, 所以可能要发送的日志已经被删除了 (发送快照), 否则仍按 Lab2B 的流程走就行
+				firstIndex := rf.getFirstIndex()
+				if rf.nextIndex[peerId] <= firstIndex {
+					rf.rflog("send snapshot to %d, nextIndex is [%d] but lastIncludedIndex is [%d]", peerId, rf.nextIndex[peerId], firstIndex)
+					args := InstallSnapshotArgs{
+						Term:              currentTerm,
+						LeaderId:          rf.me,
+						LastIncludedIndex: firstIndex,
+						LastIncludedTerm:  rf.getFirstTerm(),
+						Snapshot:          rf.persister.ReadSnapshot(),
 					}
-					// if reply.Term > currentTerm {
-					if reply.Term > currentTerm {
-						rf.rflog("receive bigger term in reply, transforms to follower")
-						if reply.Term > rf.currentTerm {
-							rf.becomeFollower(reply.Term)
-							rf.electionStartTime = time.Now()
-						}
+					rf.mu.Unlock()
+					var reply InstallSnapshotReply
+					rf.rflog("sending InstallSnapshotArgs to [%v], args = [%+v]", peerId, args)
+					if rf.sendInstallSnapshot(peerId, &args, &reply) {
+						rf.rflog("receive InstallSnapshot reply [%+v]", reply)
+						rf.mu.Lock()
+						rf.handleInstallSnapshotRPCResponse(peerId, &args, &reply)
 						rf.mu.Unlock()
-						return
 					}
-					// defer rf.mu.Unlock()
-					// 收到理想的回复, 统计投票结果
-					// if rf.state == Leader && currentTerm == reply.Term && !rf.killed() {
-					if rf.state == Leader && currentTerm == reply.Term && currentTerm == rf.currentTerm && !rf.killed() {
-						if reply.Success {
-							rf.matchIndex[peerId] = prevLogIndex + len(args.Entries)
-							rf.nextIndex[peerId] = rf.matchIndex[peerId] + 1
-							rf.rflog("receives reply from [%v], nextIndex := [%v], matchIndex := [%v]",
-								peerId, rf.nextIndex[peerId], rf.matchIndex[peerId])
-							// 统计投票结果, 更新 commitIndex
-							savedCommitIndex := rf.commitIndex
-							for i := rf.commitIndex + 1; i < len(rf.log); i++ {
-								if rf.log[i].Term == rf.currentTerm {
-									count := 1
-									for j := range rf.peers {
-										if j != rf.me && rf.matchIndex[j] >= i {
-											count++
-										}
-									}
-									if count*2 >= len(rf.peers)+1 {
-										rf.commitIndex = i
-									} else {
-										break
-									}
-								}
-							}
-							// rf.rflog("savedCommitIndex is [%d], commitIndex change to [%d]", savedCommitIndex, rf.commitIndex)
-							if rf.commitIndex != savedCommitIndex {
-								rf.rflog("updates commitIndex from %v to %v", savedCommitIndex, rf.commitIndex)
-								rf.mu.Unlock()
-								rf.notifyNewCommitChan <- struct{}{}
-								// rf.rflog("updates over!")
-								return
-							}
-						} else {
-							if reply.ConflictTerm > 0 {
-								lastIndex := -1
-								// for i := len(rf.log) - 1; i >= 0; i-- {
-								for i := args.PrevLogIndex - 1; i >= 0; i-- {
-									if rf.log[i].Term == reply.ConflictTerm {
-										lastIndex = i
-										break
-									} else if rf.log[i].Term < reply.ConflictTerm {
-										break
-									}
-								}
-								if lastIndex > 0 {
-									rf.nextIndex[peerId] = lastIndex + 1
-								} else {
-									rf.nextIndex[peerId] = reply.ConflictIndex
-								}
-							} else {
-								rf.nextIndex[peerId] = reply.ConflictIndex
-							}
-							rf.rflog("receives reply from [%v] failed, nextIndex changes to [%d]", peerId, rf.nextIndex[peerId])
+					return
+				} else {
+					// 原先的 Lab2B 的流程
+					prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
+					entries := make([]LogEntry, rf.getNextIndex()-nowLogIndex)
+					copy(entries, rf.log[nowLogIndex-rf.getFirstIndex():])
+					args := AppendEntriesArgs{
+						Term:         currentTerm,
+						LeaderId:     rf.me,
+						PrevLogIndex: prevLogIndex,
+						PrevLogTerm:  rf.getTerm(prevLogIndex),
+						Entries:      entries,
+						LeaderCommit: rf.commitIndex,
+					}
+					rf.mu.Unlock()
+					var reply AppendEntriesReply
+					rf.rflog("sending AppendEntries to [%v], args = [%+v]", peerId, args)
+					if rf.sendHeartBeats(peerId, &args, &reply) {
+						rf.rflog("receive AppendEntries reply [%+v]", reply)
+						rf.mu.Lock()
+						// 可能需要重发
+						if rf.handleAppendEntriesRPCResponse(peerId, &args, &reply) {
 							rf.mu.Unlock()
 							continue
 						}
-						// else if rf.nextIndex[peerId] > 1 {
-						// 	rf.nextIndex[peerId] -= 1
-						// 	rf.rflog("receives reply from [%v] failed", peerId)
-						// 	rf.mu.Unlock()
-						// 	continue
-						// }
+						rf.mu.Unlock()
 					}
-					rf.mu.Unlock()
+					return
 				}
-				return
 			}
 		}(peerId)
 	}
 }
 
-// 监听 notifyNewCommitChan, 当有东西发到通道后, 向 rf.applyChan 提交命令
-func (rf *Raft) commitCommand() {
-	ticker := time.NewTicker(20 * time.Millisecond)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-rf.notifyNewCommitChan:
-			ticker.Reset(20 * time.Millisecond)
-			// rf.rflog("receive info")
-			rf.mu.Lock()
-			if rf.lastApplied == rf.commitIndex {
-				rf.mu.Unlock()
-				break
-			}
-			savedLastApplied := rf.lastApplied
-			logEntries := make([]LogEntry, rf.commitIndex-rf.lastApplied)
-			if rf.commitIndex > rf.lastApplied {
-				copy(logEntries, rf.log[rf.lastApplied+1:rf.commitIndex+1])
-				rf.lastApplied = rf.commitIndex
-			}
-			rf.rflog("commits log from %d to %d", savedLastApplied, rf.lastApplied)
-			rf.rflog("log: [%v]", rf.log[:rf.lastApplied+1])
-			rf.mu.Unlock()
-			for i, entry := range logEntries {
-				rf.applyChan <- ApplyMsg{
-					CommandValid: true,
-					Command:      entry.Command,
-					CommandIndex: savedLastApplied + i + 1,
-				}
-			}
-			rf.rflog("commits log from %d to %d over!!", savedLastApplied, rf.lastApplied)
-			ticker.Reset(20 * time.Millisecond)
-		case <-ticker.C:
-			if rf.killed() {
-				return
-			}
+func (rf *Raft) handleInstallSnapshotRPCResponse(peerId int, args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
+	// 判断回复的合法性，必须满足 1. 当前节点仍是 Leader 2. 当前任期仍等于发送 RPC 时的任期
+	if rf.state == Leader && rf.currentTerm == args.Term {
+		if reply.Term == rf.currentTerm {
+			rf.rflog("receives reply from [%v], nextIndex changes from [%v] to [%v]",
+				peerId, rf.nextIndex[peerId], args.LastIncludedIndex+1)
+			rf.matchIndex[peerId] = max(rf.matchIndex[peerId], args.LastIncludedIndex)
+			rf.nextIndex[peerId] = rf.matchIndex[peerId] + 1
+		} else if reply.Term > rf.currentTerm {
+			rf.rflog("receive bigger term in reply, transforms to follower")
+			rf.becomeFollower(reply.Term)
+			rf.electionStartTime = time.Now()
 		}
 	}
-	// for range rf.notifyNewCommitChan {
-	// 	rf.rflog("receive info")
-	// 	rf.mu.Lock()
-	// 	savedLastApplied := rf.lastApplied
-	// 	var logEntries []LogEntry
-	// 	if rf.commitIndex > rf.lastApplied {
-	// 		logEntries = rf.log[rf.lastApplied+1 : rf.commitIndex+1]
-	// 		rf.lastApplied = rf.commitIndex
-	// 	}
-	// 	rf.rflog("commits log [%v] from %d to %d", logEntries, savedLastApplied, rf.lastApplied)
-	// 	rf.mu.Unlock()
-	// 	for i, entry := range logEntries {
-	// 		rf.applyChan <- ApplyMsg{
-	// 			CommandValid: true,
-	// 			Command:      entry.Command,
-	// 			CommandIndex: savedLastApplied + i + 1,
-	// 		}
-	// 	}
-	// 	// rf.rflog("commits over!")
-	// }
+}
+
+// 处理 AppendEntriesReply, 并决定是否需要继续发送 (当且仅当收到的reply.Success == false)
+func (rf *Raft) handleAppendEntriesRPCResponse(peerId int, args *AppendEntriesArgs, reply *AppendEntriesReply) bool {
+	// 判断回复的合法性，必须满足 1. 当前节点仍是 Leader 2. 当前任期仍等于发送 RPC 时的任期
+	if rf.state == Leader && rf.currentTerm == args.Term {
+		if reply.Term == rf.currentTerm {
+			if reply.Success {
+				rf.matchIndex[peerId] = max(rf.matchIndex[peerId], args.PrevLogIndex+len(args.Entries))
+				rf.nextIndex[peerId] = rf.matchIndex[peerId] + 1
+				rf.rflog("receives reply from [%v], nextIndex := [%v], matchIndex := [%v]",
+					peerId, rf.nextIndex[peerId], rf.matchIndex[peerId])
+				// 统计投票结果, 更新 commitIndex
+				savedCommitIndex := rf.commitIndex
+				for i := rf.commitIndex + 1; i < rf.getNextIndex(); i++ {
+					if rf.getTerm(i) == rf.currentTerm {
+						count := 1
+						for j := range rf.peers {
+							if j != rf.me && rf.matchIndex[j] >= i {
+								count++
+							}
+						}
+						if count*2 >= len(rf.peers)+1 {
+							rf.commitIndex = i
+						} else {
+							break
+						}
+					}
+				}
+				// rf.rflog("savedCommitIndex is [%d], commitIndex change to [%d]", savedCommitIndex, rf.commitIndex)
+				if rf.commitIndex != savedCommitIndex {
+					rf.rflog("updates commitIndex from %v to %v", savedCommitIndex, rf.commitIndex)
+					rf.commitCond.Signal()
+				}
+			} else {
+				// 根据返回的 ConflictTerm 以及 ConflictIndex 快速修正 rf.nextIndex[peerId]
+				if reply.ConflictTerm > 0 {
+					lastIndex := -1
+					firstIndex := rf.getFirstIndex()
+					for i := args.PrevLogIndex - 1; i >= firstIndex; i-- {
+						if rf.getTerm(i) == reply.ConflictTerm {
+							lastIndex = i
+							break
+						} else if rf.getTerm(i) < reply.ConflictTerm {
+							break
+						}
+					}
+					if lastIndex > 0 {
+						rf.nextIndex[peerId] = lastIndex + 1
+					} else {
+						rf.nextIndex[peerId] = max(reply.ConflictIndex, rf.matchIndex[peerId]+1)
+					}
+				} else {
+					rf.nextIndex[peerId] = max(reply.ConflictIndex, rf.matchIndex[peerId]+1)
+				}
+				rf.rflog("receives reply from [%v] failed, nextIndex changes to [%d]", peerId, rf.nextIndex[peerId])
+				return true
+			}
+		} else if reply.Term > rf.currentTerm {
+			rf.rflog("receive bigger term in reply, transforms to follower")
+			rf.becomeFollower(reply.Term)
+			rf.electionStartTime = time.Now()
+		}
+	}
+	return false
+}
+
+// // 监听 notifyNewCommitChan, 当有东西发到通道后, 向 rf.applyChan 提交命令
+// func (rf *Raft) commitCommand() {
+// 	ticker := time.NewTicker(20 * time.Millisecond)
+// 	defer ticker.Stop()
+// 	for {
+// 		select {
+// 		case <-rf.notifyNewCommitChan:
+// 			ticker.Reset(20 * time.Millisecond)
+// 			// rf.rflog("receive info")
+// 			rf.mu.Lock()
+// 			if rf.lastApplied == rf.commitIndex {
+// 				rf.mu.Unlock()
+// 				break
+// 			}
+// 			savedLastApplied := rf.lastApplied
+
+// 			firstIndex := rf.getFirstIndex()
+// 			var logEntries []LogEntry
+// 			if rf.commitIndex > rf.lastApplied {
+// 				logEntries = make([]LogEntry, rf.commitIndex-rf.lastApplied)
+// 				copy(logEntries, rf.log[rf.lastApplied+1-firstIndex:rf.commitIndex+1-firstIndex])
+// 				rf.lastApplied = rf.commitIndex
+// 			}
+// 			rf.rflog("commits log from %d (%d) to %d (%d)", savedLastApplied-firstIndex, savedLastApplied, rf.lastApplied-firstIndex, rf.lastApplied)
+// 			rf.rflog("log: [%v]", rf.log[:rf.lastApplied+1-firstIndex])
+
+// 			// logEntries := []LogEntry{}
+// 			// if rf.commitIndex > rf.lastApplied {
+// 			// 	logEntries = rf.log.getLogEnteries(rf.lastApplied+1, rf.commitIndex+1)
+// 			// 	rf.lastApplied = rf.commitIndex
+// 			// }
+// 			// rf.rflog("commits log from %d to %d", savedLastApplied, rf.lastApplied)
+// 			// rf.rflog("log: [%v]", rf.log)
+
+// 			rf.mu.Unlock()
+// 			for i, entry := range logEntries {
+// 				rf.applyChan <- ApplyMsg{
+// 					CommandValid: true,
+// 					Command:      entry.Command,
+// 					CommandIndex: savedLastApplied + i + 1,
+// 				}
+// 			}
+// 			rf.rflog("commits log from %d (%d) to %d (%d) over!!", savedLastApplied-firstIndex, savedLastApplied, rf.lastApplied-firstIndex, rf.lastApplied)
+// 			ticker.Reset(20 * time.Millisecond)
+// 		case <-ticker.C:
+// 			if rf.killed() {
+// 				return
+// 			}
+// 		}
+// 	}
+// }
+
+// 监听 notifyNewCommitChan, 当有东西发到通道后, 向 rf.applyChan 提交命令
+func (rf *Raft) commitCommand() {
+	for !rf.killed() {
+		rf.mu.Lock()
+		for rf.lastApplied >= rf.commitIndex {
+			rf.commitCond.Wait()
+		}
+
+		logEntries := make([]LogEntry, rf.commitIndex-rf.lastApplied)
+		firstIndex := rf.getFirstIndex()
+		commitindex := rf.commitIndex
+		// rf.rflog("copy log from %d (%d) to %d (%d), now lastApplied is %d, commitIndex is %d", rf.lastApplied+1-firstIndex,
+		// 	rf.lastApplied+1, rf.commitIndex-firstIndex, rf.commitIndex, rf.lastApplied, rf.commitIndex)
+		copy(logEntries, rf.log[rf.lastApplied+1-firstIndex:rf.commitIndex+1-firstIndex])
+		rf.rflog("commits log from %d (%d) to %d (%d)", rf.lastApplied-firstIndex, rf.lastApplied, rf.commitIndex-firstIndex, rf.commitIndex)
+
+		// if rf.isSnapshot == 1 {
+		// 	continue
+		// }
+
+		rf.mu.Unlock()
+		rf.rflog("commit log: [%v]", logEntries)
+		for _, entry := range logEntries {
+			rf.applyChan <- ApplyMsg{
+				CommandValid: true,
+				Command:      entry.Command,
+				CommandIndex: entry.Index,
+			}
+		}
+
+		rf.mu.Lock()
+		rf.rflog("commits log from %d (%d) to %d (%d) over !!", rf.lastApplied-firstIndex, rf.lastApplied, rf.commitIndex-firstIndex, rf.commitIndex)
+		rf.lastApplied = max(rf.lastApplied, commitindex)
+		rf.mu.Unlock()
+	}
 }
 
 // the service or tester wants to create a Raft server. the ports
@@ -881,24 +1161,30 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.state = Follower
 	rf.dead = 0
 	rf.electionStartTime = time.Now()
-	rf.log = []LogEntry{}
-	rf.log = append(rf.log, LogEntry{
-		Term:    0,
-		Command: "MIT6.5840 !",
-	})
-	rf.commitIndex = 0
-	rf.lastApplied = 0
-	rf.nextIndex = make([]int, len(peers))
-	rf.matchIndex = make([]int, len(peers))
-	for i := range rf.nextIndex {
-		rf.nextIndex[i] = 1
-		rf.matchIndex[i] = 0
-	}
-	rf.applyChan = applyCh
-	rf.notifyNewCommitChan = make(chan struct{})
+
+	// 设置第一个为空条目, 表示 lastIncludedIndex 和 lastIncludedTerm, 初始化都为 0
+	rf.log = make([]LogEntry, 1)
+	// rf.log = append(rf.log, LogEntry{
+	// 	Term:    0,
+	// 	Command: "MIT6.5840 !",
+	// })
 
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
+
+	// 读取的第一个日志记录了之前的 lastIncludedIndex 信息, 若节点崩溃应将 commitIndex 和 lastApplied 设为它
+	// 同理 rf.nextIndex[] 和 rf.matchIndex[] 也应做相应的修改
+	rf.commitIndex = rf.getFirstIndex()
+	rf.lastApplied = rf.getFirstIndex()
+	rf.nextIndex = make([]int, len(peers))
+	rf.matchIndex = make([]int, len(peers))
+	for i := range rf.nextIndex {
+		rf.nextIndex[i] = rf.getNextIndex()
+		rf.matchIndex[i] = 0
+	}
+	rf.applyChan = applyCh
+	// rf.notifyNewCommitChan = make(chan struct{})
+	rf.commitCond = sync.NewCond(&rf.mu)
 
 	// start ticker goroutine to start elections
 	go rf.ticker(Follower)
@@ -911,6 +1197,13 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 func min(a, b int) int {
 	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int) int {
+	if a > b {
 		return a
 	}
 	return b

@@ -510,8 +510,8 @@ func TestBackup2B(t *testing.T) {
 	cfg.disconnect((leader1 + 3) % servers)
 	cfg.disconnect((leader1 + 4) % servers)
 
-	fmt.Println("\n\n\n-------disconnect-------", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
-	fmt.Println("-------submit lots of commands(1-50) that won't commit-------")
+	// fmt.Println("\n\n\n-------disconnect-------", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
+	// fmt.Println("-------submit lots of commands(1-50) that won't commit-------")
 
 	// submit lots of commands that won't commit
 	for i := 0; i < 50; i++ {
@@ -524,15 +524,15 @@ func TestBackup2B(t *testing.T) {
 	cfg.disconnect((leader1 + 0) % servers)
 	cfg.disconnect((leader1 + 1) % servers)
 
-	fmt.Println("\n\n\n-------disconnect-------", (leader1+0)%servers, (leader1+1)%servers)
+	// fmt.Println("\n\n\n-------disconnect-------", (leader1+0)%servers, (leader1+1)%servers)
 
 	// allow other partition to recover
 	cfg.connect((leader1 + 2) % servers)
 	cfg.connect((leader1 + 3) % servers)
 	cfg.connect((leader1 + 4) % servers)
 
-	fmt.Println("\n\n\n-------connect-------", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
-	fmt.Println("-------lots of successful commands(51-100) to new group-------")
+	// fmt.Println("\n\n\n-------connect-------", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
+	// fmt.Println("-------lots of successful commands(51-100) to new group-------")
 
 	// lots of successful commands to new group.
 	// for i := 0; i < 50; i++ {
@@ -551,8 +551,8 @@ func TestBackup2B(t *testing.T) {
 	}
 	cfg.disconnect(other)
 
-	fmt.Println("\n\n\n-------disconnect-------", other)
-	fmt.Println("-------lots more commands(101-150) that won't commit-------")
+	// fmt.Println("\n\n\n-------disconnect-------", other)
+	// fmt.Println("-------lots more commands(101-150) that won't commit-------")
 
 	// lots more commands that won't commit
 
@@ -574,9 +574,9 @@ func TestBackup2B(t *testing.T) {
 	cfg.connect((leader1 + 1) % servers)
 	cfg.connect(other)
 
-	fmt.Println("\n\n\n-------bring original leader back to life-------")
-	fmt.Println("disconnect all and then connect", (leader1+0)%servers, (leader1+1)%servers, other)
-	fmt.Println("-------lots of successful commands(151-200) to new group.-------")
+	// fmt.Println("\n\n\n-------bring original leader back to life-------")
+	// fmt.Println("disconnect all and then connect", (leader1+0)%servers, (leader1+1)%servers, other)
+	// fmt.Println("-------lots of successful commands(151-200) to new group.-------")
 
 	// lots of successful commands to new group.
 	// for i := 0; i < 50; i++ {
@@ -592,7 +592,7 @@ func TestBackup2B(t *testing.T) {
 		cfg.connect(i)
 	}
 
-	fmt.Println("\n\n\n-------connect all-------")
+	// fmt.Println("\n\n\n-------connect all-------")
 
 	cfg.one(rand.Int(), servers, true)
 
@@ -1175,8 +1175,17 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 
 	cfg.begin(name)
 
-	cfg.one(rand.Int(), servers, true)
+	// cfg.one(rand.Int(), servers, true)
+
+	command_id := 1
+	// fmt.Printf("\n 1181: start check reach agreement\n")
+	cfg.one(command_id, servers, true)
+	command_id++
+	// fmt.Printf("\n check reach agreement over!\n")
+
 	leader1 := cfg.checkOneLeader()
+
+	// fmt.Printf("\n leader is %d\n", leader1)
 
 	for i := 0; i < iters; i++ {
 		victim := (leader1 + 1) % servers
@@ -1192,13 +1201,25 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 		}
 		if crash {
 			cfg.crash1(victim)
-			cfg.one(rand.Int(), servers-1, true)
+
+			// fmt.Printf("\n crash1 %d\n", victim)
+
+			// cfg.one(rand.Int(), servers-1, true)
+
+			// fmt.Printf("\n 1209: start check reach agreement\n")
+			cfg.one(command_id, servers-1, true)
+			command_id++
+			// fmt.Printf("\n check reach agreement over!\n")
+
 		}
 
 		// perhaps send enough to get a snapshot
 		nn := (SnapShotInterval / 2) + (rand.Int() % SnapShotInterval)
 		for i := 0; i < nn; i++ {
-			cfg.rafts[sender].Start(rand.Int())
+			// cfg.rafts[sender].Start(rand.Int())
+
+			cfg.rafts[sender].Start(command_id)
+			command_id++
 		}
 
 		// let applier threads catch up with the Start()'s
@@ -1208,7 +1229,12 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 			// TestSnapshotBasic2D().
 			cfg.one(rand.Int(), servers, true)
 		} else {
-			cfg.one(rand.Int(), servers-1, true)
+			// cfg.one(rand.Int(), servers-1, true)
+
+			// fmt.Printf("\n 1234: start check reach agreement\n")
+			cfg.one(command_id, servers-1, true)
+			command_id++
+			// fmt.Printf("\n check reach agreement over!\n")
 		}
 
 		if cfg.LogSize() >= MAXLOGSIZE {
@@ -1224,8 +1250,14 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 		if crash {
 			cfg.start1(victim, cfg.applierSnap)
 			cfg.connect(victim)
-			cfg.one(rand.Int(), servers, true)
+			// fmt.Printf("\n 1252: start check reach agreement\n")
+			// cfg.one(rand.Int(), servers, true)
+
+			cfg.one(command_id, servers, true)
+			command_id++
+
 			leader1 = cfg.checkOneLeader()
+			// fmt.Printf("\n check reach agreement over!\n")
 		}
 	}
 	cfg.end()

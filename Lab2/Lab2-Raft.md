@@ -252,6 +252,12 @@ func (rf *Raft) sendHeartBeats(server int, args *AppendEntriesArgs, reply *Appen
 	return ok
 }
 ```
+### :rainbow: 结果
+
+![实验结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2A/result/pic/Lab2A%E7%BB%93%E6%9E%9C.png?raw=true)
+
+通过了 1000 次的连续测试 (`Lab2A/result/test_2A_500times.txt` 和 `Lab2A/result/test_2A_500times_2.txt`)
+
 ---
 
 ## :wink: Lab 2B - Log
@@ -460,6 +466,14 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 }
 ```
 
+### :rainbow: 结果
+
+![实验结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2B/result/pic/Lab2B%E7%BB%93%E6%9E%9C.png?raw=true)
+
+通过了 1000 次的连续测试 ( 500 次带日志, 500 次无日志, 无日志的结果在 `Lab2B/result/test_2B_500times.txt`)
+
+---
+
 ## :wink: Lab 2C - persistence
 
 ### :cherry_blossom: 目标
@@ -486,10 +500,10 @@ bug 几乎都是 Lab2A 和 Lab2B 引入的, 一旦测试案例上强度了 (网�
 发现这些问题后自己又重新回去写了 Lab2A Lab2B, 每个都测了 1000 次, 没问题后继续做的 Lab2C (500 次带日志的用于找 bug, 500 次不带日志的最终结果以及典型的出错日志都上传到 raft/test_result 文件里了)
 
 
-#### :sob: bugs
+### :sob: bugs
 跑 Lab 2C 的测试案例很艰难, 卡了很久。对着日志找到了不少 Lab 2A 和 Lab 2B 引入的 bug, 这里记录一下
 
-##### 1. Lab 2C 中的 `TestFigure8Unreliable2C`
+#### 1. Lab 2C 中的 `TestFigure8Unreliable2C`
 
 **`Test (2C): Figure 8 (unreliable)`**
 
@@ -602,7 +616,7 @@ func (rf *Raft) runHeartBeats() {
 
 ```
 
-##### 2. Lab 2C 中的 `internalChurn`
+#### 2. Lab 2C 中的 `internalChurn`
 
 **`Test (2C): unreliable churn`**
 
@@ -675,7 +689,7 @@ func B() {
 
 ```
 
-##### 3. data race
+#### 3. data race
 
 **:lollipop: 跑多次 Lab2C 出现的问题, 并非某个具体测试案例检查出来的 bug, 用 -race 测试时出现了 data race 但是检查代码时找不到问题所在**
 
@@ -683,7 +697,7 @@ func B() {
 
 很大概率是发送心跳时的参数中的 `Entries` 属性, 不要直接 `Entries: rf.log[nowLogIndex:]`, 拷贝一份 `rf.log[nowLogIndex:]` 再发送拷贝的日志就可以解决 data race 的问题
 
-##### 4. Lab 2B 中的 `TestRPCBytes2B`
+#### 4. Lab 2B 中的 `TestRPCBytes2B`
 
 **Test (2B): RPC byte count**
 
@@ -736,7 +750,7 @@ func (rf *Raft) ticker(state RuleState) {
 }
 ```
 
-##### 5. Lab 2B 中的 `TestBackup2B`
+#### 5. Lab 2B 中的 `TestBackup2B`
 
 **Test (2B): leader backs up quickly over incorrect follower logs**
 
@@ -754,7 +768,7 @@ Lab2A 中原先的 `becomeFollower()` 实现为修改任期, 状态, 重置投�
 
 其实问题在于 Lab2A 中 `becomeFollower()` 的实现有问题, 并不是所有情况下变成 Follower 都需要重置选举开始时间的。在 `RequestVote()` 中, 只有投赞成票的时候才需要重置选举开始时间, 而发现接收到的参数中的任期更大只需修改任期, 重置投票结果, 修改状态即可。因此将重置选举开始时间这一步从 `becomeFollower()` 中删除即可, 这样当 1 或 2 发起请求投票时, 3 必定投反对票并且不会重置选举开始时间, 最差情况为 1 或 2 依次开始选举, 然后失败, 随后 3 开始选举并当选 leader
 
-##### 6. `failed to reach agreement`
+#### 6. `failed to reach agreement`
 
 :lollipop: 在多次跑 Lab2B 的过程中可能出现的问题, 不是具体某个测试案例下发现的。
 
@@ -768,7 +782,7 @@ Lab2A 中原先的 `becomeFollower()` 实现为修改任期, 状态, 重置投�
 
 取消了并行执行 `becomeFollower()`, 让其串行执行, 这样只会执行一次 `voteFor = -1`, 但是因为原先 `becomeFollower()` 中上锁了, 所以可以调用前先解锁, 调用 `becomeFollower()` 后再上锁。但是这么改利用小锁可能会出现锁抢占的问题; 为了简化逻辑, 自己直接去掉了 `becomeFollower()` 中的加锁解锁操作, 因为调用 `becomeFollower()` 时本来就处于锁的掌控范围内, 所以并不会出现资源抢占的问题; 同理, 自己也把 `becomeLeader()` 也改了, 也是去掉了锁, 串行修改并用调用该函数内存在的粗粒度锁来避免调用过程中的资源竞争问题
 
-##### 7. Lab 2C 中的 `TestFigure8Unreliable2C`
+#### 7. Lab 2C 中的 `TestFigure8Unreliable2C`
 
 **`Test (2C): Figure 8 (unreliable)`**
 
@@ -854,7 +868,7 @@ func (rf *Raft) startElection() {
 ```
 
 
-##### 8. Lab 2C 中的 `TestFigure8Unreliable2C`
+#### 8. Lab 2C 中的 `TestFigure8Unreliable2C`
 
 **`Test (2C): Figure 8 (unreliable)`**
 
@@ -932,13 +946,412 @@ func (rf *Raft) runHeartBeats() {
 }
 
 ```
+### :rainbow: 结果
+
+![2C结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2C/result/pic/Lab2C%E7%BB%93%E6%9E%9C.png?raw=true)
+通过了 1000 次的连续测试 ( 500 次带日志, 500 次无日志, 无日志的结果在 `Lab2C/result/test_2C_500times.txt`)
+
+---
+
+## :wink: Lab 2D - log compaction
+
+### :cherry_blossom: 目标
+
+实现日志压缩功能, 即 snapshot 快照; 因为若不对日志进行压缩的话, 随着时间推移每台服务器上都会保留特别长的日志, 即占用存储空间又不利于服务器崩溃后的快速恢复
+
+### :mag: 提示
+- :one: 修改代码让其可以仅存储从某个索引 X 开始的日志部分, 最初可以将 X 设为 0 并在 2B, 2C 上进行测试。然后让 `Snapshot(index)` 丢弃 index 之前的日志并让 X = index, 若一切顺利就可以通过第一个测试
+- :two: 修改索引访问逻辑, 因为存在丢弃的日志, 所以此时日志的真正索引已经不等于它在切片中的索引了
+- :three: 若 leader 发送心跳时发现应给当前 follower 发送的起始日志被删除了的话, 发送 `InstallSnapshot RPC`, 让 follower 接受并提交快照
+- :four: 在单个 `InstallSnapshot RPC` 中发送整个快照, 不要实现图 13 的偏移机制来分割快照
+- :five: Raft 必须正确地丢弃旧日志条目 (无引用或指针指向被丢弃的日志条目) 以允许 Go 的垃圾回收机制对内存进行重利用
+- :six: 即使日志被修剪，你的实现仍然需要在调用 `AppendEntries RPC` 时发送正确的参数 (上一个日志的任期和索引), 这可能需要保存最新快照的 `lastIncludedTerm` 和 `lastIncludedIndex`（考虑是否应该对其进行持久化处理）
+
+**图 13**
+
+![](https://github.com/SwordHarry/MIT6.824_2021_note/raw/main/lab/img/008i3skNgy1gvif2aqic1j60ro15e11g02.png)
+
+因为不需要实现偏移机制来分割快照, 所以无需 offset 和 done 这两个属性
+
+### :pizza: 数据结构
+
+新增的数据结构为 `InstallSnapshotArgs` 和 `InstallSnapshotReply`, 用于实现 `InstallSnapshot RPC`, 自己直接将快照命名为了 snapshot, 即图13中的 data
+
+```go
+type InstallSnapshotArgs struct {
+	Term              int
+	LeaderId          int
+	LastIncludedIndex int    // 快照中最后一个条目包含的索引
+	LastIncludedTerm  int    // 快照中最后一个条目包含的任期
+	Snapshot          []byte //快照
+}
+
+type InstallSnapshotReply struct {
+	Term int
+}
+```
+
+此外，为了获取日志的真实下标，在原来的 LogEntry 结构体中新增了 Index 属性。那么一个日志在当前切片中的逻辑位置即为 `index - lastIncludedIndex`。
+
+本来打算将 `lastIncludedIndex` 和 `lastIncludedTerm` 保存到 raft 结构体中的，但是这样操作的话持久化时也需要把它们一并处理
+
+随后在 Raft 初始化过程中突然意识到自己并未利用好第一个日志的信息 (之前的 Lab 2B 要求下标从 1 开始, 所以初始化时加入了一个无意义的日志作为了第一个日志)，第一个日志的 `Term` 和 `Index` 刚好可以用来保存 `lastIncludedIndex` 和 `lastIncludedTerm` ！！此外，持久化就会保存日志，因此它们也会被直接持久化
+
+```go
+type LogEntry struct {
+	Command interface{}
+	Term    int
+	Index   int
+}
+```
+
+### :beers: 实现
+
+#### :cherries:  索引转换
+
+为了让所有代码不受被删除的日志的影响而继续使用原下标进行处理，封装了以下函数
+
+```go
+// 返回第一个日志的下标, 即 lastIncludedIndex
+func (rf *Raft) getFirstIndex() int {
+	return rf.log[0].Index
+}
+
+// 返回第一个日志的任期, 即 lastIncludedTerm
+func (rf *Raft) getFirstTerm() int {
+	return rf.log[0].Term
+}
+
+// 返回最后一个日志的下标
+func (rf *Raft) getLastIndex() int {
+	return rf.log[len(rf.log)-1].Index
+}
+
+// 返回最后一个日志的任期
+func (rf *Raft) getLastTerm() int {
+	return rf.log[len(rf.log)-1].Term
+}
+
+// 返回最后一个日志的下一个下标
+func (rf *Raft) getNextIndex() int {
+	return rf.getLastIndex() + 1
+}
+
+// 返回下标为 index 处的日志的任期 (原始下标)
+func (rf *Raft) getTerm(index int) int {
+	return rf.log[index-rf.getFirstIndex()].Term
+}
+
+// 这样获取真实的第 index 个日志的调用如下, 没有设计 getLog(index int) LogEntry 是不想多次拷贝一个日志
+rf.log[index - rf.getFirstIndex]
+```
+
+#### :cherries:  InstallSnapshot RPC
+
+服务器需要检查是否为过期的快照 (比较自己的 `commitIndex` 和 `args.LastIncludedIndex`); 若为满足要求的快照，对自己的日志进行裁剪 (注意至少要预留一个日志大小的空间来存放快照信息), 随后进行持久化处理, 更新自己的信息并将快照发给 `applyChan`
+
+```go
+func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
+
+	// 1 若状态为 Dead, 直接返回
+
+	// 2 若 args.Term 更大, 调用 becomeFollower(args.Term) 更新任期等信息并重置选举定时器开始时间
+	if args.Term > rf.currentTerm {
+		//...
+	}
+	reply.Term = rf.currentTerm
+
+	// 3 若任期仍不等 (当前任期更大) 回复当前任期, leader 收到后会变为 follower
+
+	if args.Term == rf.currentTerm {
+		if rf.state != Follower {
+			// 若当前不是 follower 的话, 变成 follower
+		}
+		// 4.1 更新选举定时器的开始时间，检查是否为过期的快照
+		if rf.commitIndex >= args.LastIncludedIndex {
+			return
+		}
+
+		// 4.2 裁剪日志，设置 rf.log[0] 的相关信息，即 args.LastIncludedTerm 和 args.LastIncludedIndex
+
+		// 4.3 持久化处理，更新 rf.lastApplied, rf.commitIndex，给 rf.applyChan 发送快照
+	}
+}
+
+func (rf *Raft) sendInstallSnapshot(server int, args *InstallSnapshotArgs, reply *InstallSnapshotReply) bool {
+	ok := rf.peers[server].Call("Raft.InstallSnapshot", args, reply)
+	return ok
+}
+```
+
+#### :cherries: Snapshot()
+
+需要先判断一下是否已经生成过快照了，没有的话就删除日志，调用 `persister.Save()` 进行持久化，因为跟 `persist()` 存在大量重复代码，所以声明了一个新函数 `encodeState()` 生成第一个参数
+
+```go
+func (rf *Raft) encodeState() []byte {
+	w := new(bytes.Buffer)
+	e := labgob.NewEncoder(w)
+	e.Encode(rf.currentTerm)
+	e.Encode(rf.voteFor)
+	e.Encode(rf.log)
+	raftstate := w.Bytes()
+	return raftstate
+}
+
+func (rf *Raft) Snapshot(index int, snapshot []byte) {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	lastIndex := rf.getFirstIndex()
+	if lastIndex >= index {
+		return
+	}
+	// 第 0 个日志存快照信息, lastIncludedIndex 和 lastIncludeTerm 就是下标为 index 的日志的信息, 因此裁剪时保留它充当快照信息
+	var tmp []LogEntry
+	rf.log = append(tmp, rf.log[index-lastIndex:]...)
+	rf.log[0].Command = nil
+	rf.persister.Save(rf.encodeState(), snapshot)
+}
+
+func (rf *Raft) persist() {
+	rf.persister.Save(rf.encodeState(), rf.persister.ReadSnapshot())
+}
+```
+
+#### :cherries: runHeartBeats()
+
+当 leader 发现给当前 follower 发送的第一条需要同步的日志被删除后就会调用 `InstallSnapshot RPC`，否则调用 `AppendEntries RPC`
+
+之前都是发现 bug 了以后在 `runHeartBeats()` 里增加判断逻辑, 这次再新增快照部分后这个函数代码太长了, 在测试 2D 的时候对着日志找 bug 也不方便, 因此进行了重写, 拆分成了多个函数并修改了部分逻辑。现在 `runHeartBeats()` 中仅涉及 RPC 参数的设置以及 RPC 的调用, 收到回复后分别由 `handleInstallSnapshotRPCResponse()` 和 `handleAppendEntriesRPCResponse()` 进行处理
+
+之前处理 RPC 的代码在缝缝补补后又臭又长:sob:，都是先进行了一堆判断，否决掉很多种非法情况后再进行处理，但其实只对合法回复进行处理即可（必须满足1、当前节点仍为leader; 2、当且 leader 的任期等于发送 RPC 时参数种的任期），其它情况统一忽略掉就好了
+
+还有一个注意事项为收到正确的回复后，它虽然什么都正确但是可能是上次发的或者是上上次发送的 RPC，为了避免 matchIndex[] 发生回退，每次更新时应取最大值 (之前未发现这个问题，虽然回退后下一次收到响应又会被改过来但是逻辑上还是存在问题，毕竟不应该允许回退现象的发生)，完整代码如下
+
+```go
+func (rf *Raft) runHeartBeats() {
+	if rf.state != Leader {
+		return
+	}
+	currentTerm := rf.currentTerm
+	for peerId := range rf.peers {
+		if peerId == rf.me {
+			continue
+		}
+		go func(peerId int) {
+			for !rf.killed() {
+				rf.mu.Lock()
+				if rf.state != Leader {
+					rf.mu.Unlock()
+					return
+				}
+				// Lab2D, 有快照要求, 所以可能要发送的日志已经被删除了 (发送快照), 否则仍按 Lab2B 的流程走就行
+				firstIndex := rf.getFirstIndex()
+				if rf.nextIndex[peerId] <= firstIndex {
+					args := InstallSnapshotArgs{
+						Term:              currentTerm,
+						LeaderId:          rf.me,
+						LastIncludedIndex: firstIndex,
+						LastIncludedTerm:  rf.getFirstTerm(),
+						Snapshot:          rf.persister.ReadSnapshot(),
+					}
+					rf.mu.Unlock()
+					var reply InstallSnapshotReply
+					if rf.sendInstallSnapshot(peerId, &args, &reply) {
+						rf.mu.Lock()
+						rf.handleInstallSnapshotRPCResponse(peerId, &args, &reply)
+						rf.mu.Unlock()
+					}
+					return
+				} else {
+					// 原先的 Lab2B 的流程
+					prevLogIndex, nowLogIndex := rf.nextIndex[peerId]-1, rf.nextIndex[peerId]
+					entries := make([]LogEntry, rf.getNextIndex()-nowLogIndex)
+					copy(entries, rf.log[nowLogIndex-rf.getFirstIndex():])
+					args := AppendEntriesArgs{
+						Term:         currentTerm,
+						LeaderId:     rf.me,
+						PrevLogIndex: prevLogIndex,
+						PrevLogTerm:  rf.getTerm(prevLogIndex),
+						Entries:      entries,
+						LeaderCommit: rf.commitIndex,
+					}
+					rf.mu.Unlock()
+					var reply AppendEntriesReply
+					if rf.sendHeartBeats(peerId, &args, &reply) {
+						rf.mu.Lock()
+						// 可能需要重发
+						if rf.handleAppendEntriesRPCResponse(peerId, &args, &reply) {
+							rf.mu.Unlock()
+							continue
+						}
+						rf.mu.Unlock()
+					}
+					return
+				}
+			}
+		}(peerId)
+	}
+}
+
+func (rf *Raft) handleInstallSnapshotRPCResponse(peerId int, args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
+	// 判断回复的合法性，必须满足 1. 当前节点仍是 Leader 2. 当前任期仍等于发送 RPC 时的任期
+	if rf.state == Leader && rf.currentTerm == args.Term {
+		if reply.Term == rf.currentTerm {
+			rf.matchIndex[peerId] = max(rf.matchIndex[peerId], args.LastIncludedIndex)
+			rf.nextIndex[peerId] = rf.matchIndex[peerId] + 1
+		} else if reply.Term > rf.currentTerm {
+			rf.becomeFollower(reply.Term)
+			rf.electionStartTime = time.Now()
+		}
+	}
+}
+
+// 处理 AppendEntriesReply, 并决定是否需要继续发送 (当且仅当收到的reply.Success == false)
+func (rf *Raft) handleAppendEntriesRPCResponse(peerId int, args *AppendEntriesArgs, reply *AppendEntriesReply) bool {
+	// 判断回复的合法性，必须满足 1. 当前节点仍是 Leader 2. 当前任期仍等于发送 RPC 时的任期
+	if rf.state == Leader && rf.currentTerm == args.Term {
+		if reply.Term == rf.currentTerm {
+			if reply.Success {
+				rf.matchIndex[peerId] = max(rf.matchIndex[peerId], args.PrevLogIndex+len(args.Entries))
+				rf.nextIndex[peerId] = rf.matchIndex[peerId] + 1
+				// 统计投票结果, 更新 commitIndex
+				savedCommitIndex := rf.commitIndex
+				for i := rf.commitIndex + 1; i < rf.getNextIndex(); i++ {
+					if rf.getTerm(i) == rf.currentTerm {
+						count := 1
+						for j := range rf.peers {
+							if j != rf.me && rf.matchIndex[j] >= i {
+								count++
+							}
+						}
+						if count*2 >= len(rf.peers)+1 {
+							rf.commitIndex = i
+						} else {
+							break
+						}
+					}
+				}
+				if rf.commitIndex != savedCommitIndex {
+					rf.commitCond.Signal()
+				}
+			} else {
+				// 根据返回的 ConflictTerm 以及 ConflictIndex 快速修正 rf.nextIndex[peerId]
+				if reply.ConflictTerm > 0 {
+					lastIndex := -1
+					firstIndex := rf.getFirstIndex()
+					for i := args.PrevLogIndex - 1; i >= firstIndex; i-- {
+						if rf.getTerm(i) == reply.ConflictTerm {
+							lastIndex = i
+							break
+						} else if rf.getTerm(i) < reply.ConflictTerm {
+							break
+						}
+					}
+					if lastIndex > 0 {
+						rf.nextIndex[peerId] = lastIndex + 1
+					} else {
+						rf.nextIndex[peerId] = max(reply.ConflictIndex, rf.matchIndex[peerId]+1)
+					}
+				} else {
+					rf.nextIndex[peerId] = max(reply.ConflictIndex, rf.matchIndex[peerId]+1)
+				}
+				return true
+			}
+		} else if reply.Term > rf.currentTerm {
+			rf.becomeFollower(reply.Term)
+			rf.electionStartTime = time.Now()
+		}
+	}
+	return false
+}
+```
+
+### :cherries: 容易出错的地方
+
+相比于 Lab2C 的诸多 bug, 2D 出现的问题还好，基本是因为 2D 的下标逻辑改了以后但是忘记修改原来的代码出现的问题
+
+#### 下标越界，负数下标
+
+注意节点初始化以及成为 leader 后需要修改 `nextIndex[i]`。原先是让它等于日志长度，但是因为现在日志有修剪，只要日志长度小于 `lastIncludedIndex`, 就会在 `runHeartBeat()` 拷贝日志时减出负数下标
+
+应该让其等于最后一个日志对应的 index 的下一个。此外，初始化的时候 `commitIndex` 以及 `lastApplied` 也不能再等于 0 了
+
+```go
+func Make(peers []*labrpc.ClientEnd, me int,
+	persister *Persister, applyCh chan ApplyMsg) *Raft {
+	rf := &Raft{}
+	rf.peers, rf.persister, rf.me = peers, persister, me
+	rf.currentTerm, rf.voteFor, rf.state, rf.dead = 0, -1, Follower, 0
+	rf.electionStartTime = time.Now()
+	// 设置第一个为空条目, 表示 lastIncludedIndex 和 lastIncludedTerm, 初始化都为 0
+	rf.log = make([]LogEntry, 1)
+	rf.readPersist(persister.ReadRaftState())
+	// 读取的第一个日志记录了之前的 lastIncludedIndex 信息, 若节点崩溃应将 commitIndex 和 lastApplied 设为它
+	// 同理 rf.nextIndex[] 和 rf.matchIndex[] 也应做相应的修改
+	rf.commitIndex, rf.lastApplied = rf.getFirstIndex(), rf.getFirstIndex()
+	rf.nextIndex, rf.matchIndex = make([]int, len(peers)), make([]int, len(peers))
+	for i := range rf.nextIndex {
+		rf.nextIndex[i], rf.matchIndex[i] = rf.getNextIndex(), 0
+	}
+	rf.applyChan = applyCh
+	rf.commitCond = sync.NewCond(&rf.mu)
+	go rf.ticker(Follower)
+	go rf.commitCommand()
+	return rf
+}
+```
+
+#### 锁抢占的问题
+
+因为自己之前的实现中每个函数内部都是自己控制锁，然后若在函数 A 中调用函数 B 就会先释放锁再调用 B, B 中再加锁, 但是此时锁很可能被其它协程拿走了，然后 B 拿到锁的时候自身状态发生了改变，就容易出现问题
+
+建议只在少量函数中使用锁，比如 A，其它函数如 B 就在 A 持有锁的时候调用就可以了，这样 B 就不用加锁，并且能保证数据的一致性
+
+自己改了 `heartBeatsTimer(), runHeartBeats(), handleInstallSnapshotRPCResponse(), handleAppendEntriesRPCResponse(), commitCommand` 这一套函数的处理逻辑以及 `runElectionTimer(), startElection(), becomeFollower(), becomeLeader()` 这一套处理逻辑，简化了锁的处理逻辑
+
+此外，提交命令部分取消了原先的通过给管道发送信息来提交命令的逻辑，因为这样写必须得先释放锁然后等待提交函数取出管道数据并上锁后才能进行命令的提交，为了简化锁的处理逻辑，换成了条件变量。在需要提交新命令的地方 `Signal()` 唤醒提交函数即可，注意最后的 lastApplied 同样需要取大以避免回退
+
+```go
+func (rf *Raft) commitCommand() {
+	for !rf.killed() {
+		rf.mu.Lock()
+		for rf.lastApplied >= rf.commitIndex {
+			rf.commitCond.Wait()
+		}
+		logEntries := make([]LogEntry, rf.commitIndex-rf.lastApplied)
+		firstIndex, commitindex := rf.getFirstIndex(), rf.commitIndex
+		copy(logEntries, rf.log[rf.lastApplied+1-firstIndex:rf.commitIndex+1-firstIndex])
+		rf.mu.Unlock()
+		for _, entry := range logEntries {
+			rf.applyChan <- ApplyMsg{
+				CommandValid: true,
+				Command:      entry.Command,
+				CommandIndex: entry.Index,
+			}
+		}
+		rf.mu.Lock()
+		rf.lastApplied = max(rf.lastApplied, commitindex)
+		rf.mu.Unlock()
+	}
+}
+```
+
+#### 重置选举定时器开始时间
+
+在所有跟 leader 相关的 RPC 函数中 (`AppendEnteries RPC, InstallSnapshot RPC`)，当当前节点收到的参数或者回复中的任期更大时，当前节点都应该转变为 follower 并且重置选举开始时间；只有在 `RequestVote RPC` 中收到了任期更大的参数时需要检查自身状态，若当前状态本来就是 follower 的话，不更新选举定时器的开始时间，避免一个不能当选 leader 的节点超时后不断更新其它节点的开始时间，然后一直选不出 leader
+
+
+### :rainbow: 结果
+
+2D 可以同时跑多个进行测试，不然太慢了，跑一次几乎 270s 左右
+
 
 
 ---
 # :rose: 参考
 
 :one: [有关 Raft 工作流程的动画网址](http://thesecretlivesofdata.com/raft/#home)，有助于快速理解 Raft
-
 
 :two: 下面的博客分四部分介绍了 Raft 的实现，讲的很好 ！！！
 
@@ -951,3 +1364,6 @@ func (rf *Raft) runHeartBeats() {
 主要讲解当一个客户给 leader 发送命令后，leader 如何处理并通知 follower 复制日志；以及 follow 收到 leader 的 AE 请求后，如何处理
 
 :thought_balloon: [***Part 3 - Persistence and Optimizations***](https://eli.thegreenplace.net/2020/implementing-raft-part-3-persistence-and-optimizations/)
+讲解了如何做持久化处理，处理哪些内容以及应在哪些地方做相应的修改。此外讲解了索引的优化，即在发生冲突后如何快速定位下一次发送的日志
+
+:three: [别人写的所有 Lab 的一个总结](https://github.com/SwordHarry/MIT6.824_2021_note/tree/main), 可以在做实验前看一下相应的实验部分，同样列举了一些常见的错误，有助于少走弯路！！
