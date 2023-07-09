@@ -4,7 +4,7 @@
 
 所有 Lab 都通过了 500 次的连续测试，但是无法保证不存在 bug :joy:，肯定仍存在一些特殊情况自己没有考虑到（比如做 Lab2C 的时候因为网络问题就发现了不少 Lab 2A 和 Lab2B 中的 bug，比如缺乏对于过期 RPC 回复的判断）
 
-## :two_hearts: Lab1 MapReduce
+## :two_hearts: [Lab1 MapReduce](https://github.com/casey-li/MIT6.5840/tree/main/Lab1)
 
 [6.5840 Lab 1: MapReduce](https://pdos.csail.mit.edu/6.824/labs/lab-mr.html)
 
@@ -12,7 +12,7 @@
 
 第一个 lab，难度不是很大，要求实现一个简易版的分布式 mapreduce demo, 只要照着论文中的架构图写就可以了
 
-## :two_hearts: Lab2 Raft
+## :two_hearts: [Lab2 Raft](https://github.com/casey-li/MIT6.5840/tree/main/Lab2)
 
 [6.5840 Lab 2: Raft](https://pdos.csail.mit.edu/6.824/labs/lab-raft.html)
 

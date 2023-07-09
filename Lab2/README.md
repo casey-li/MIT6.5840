@@ -37,7 +37,7 @@ Lab2 系列为 Raft 分布式一致性协议算法的实现，Raft 将分布式�
 
 #### :heavy_exclamation_mark: :heavy_exclamation_mark: :heavy_exclamation_mark: Fig.2, 最重要的一张图
 
-![Fig 2](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2A/pic/Raft_Fig2.png?raw=true)
+![Fig 2](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2A/result/pic/Raft_Fig2.png?raw=true)
 
 
 ### :lollipop: 各个角色的职责
@@ -272,7 +272,7 @@ func (rf *Raft) sendHeartBeats(server int, args *AppendEntriesArgs, reply *Appen
 - :four: 代码中若存在不断循环检查某些状态的情况, 不要让它们不断执行, 因为会减慢实现速度, 导致测试失败. 可以使用条件变量或者插入一个时间让其休眠一段时间
 - :five: 若测试失败, 请查看 config 中的代码了解该测试在做什么, 这有助于定位 bug
 
-![2B](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2B/pic/Raft2B.png?raw=true)
+![2B](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2B/result/pic/Raft2B.png?raw=true)
 
 ### :pizza: 数据结构
 
@@ -949,6 +949,7 @@ func (rf *Raft) runHeartBeats() {
 ### :rainbow: 结果
 
 ![2C结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2C/result/pic/Lab2C%E7%BB%93%E6%9E%9C.png?raw=true)
+
 通过了 1000 次的连续测试 ( 500 次带日志, 500 次无日志, 无日志的结果在 `Lab2C/result/test_2C_500times.txt`)
 
 ---
@@ -969,7 +970,7 @@ func (rf *Raft) runHeartBeats() {
 
 **图 13**
 
-![](https://github.com/SwordHarry/MIT6.824_2021_note/raw/main/lab/img/008i3skNgy1gvif2aqic1j60ro15e11g02.png)
+![](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2D/result/pic/Raft2D-snapshot.png?raw=true)
 
 因为不需要实现偏移机制来分割快照, 所以无需 offset 和 done 这两个属性
 
@@ -1344,9 +1345,16 @@ func (rf *Raft) commitCommand() {
 
 ### :rainbow: 结果
 
+![2D_1](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/Lab2D/result/pic/Lab2D%E7%BB%93%E6%9E%9C.png?raw=true)
+
 2D 可以同时跑多个进行测试，不然太慢了，跑一次几乎 270s 左右
+通过了 500 次的压力测试，实验结果记录在 `Lab2D/result/test_2D_500times.txt`
+
+## Lab2 最终结果
 
 
+
+通过了 500 次的压力测试，实验结果记录在 `Lab2/result/test_2_500times.txt`
 
 ---
 # :rose: 参考
@@ -1357,13 +1365,18 @@ func (rf *Raft) commitCommand() {
 
 :thought_balloon: [***Part 0 - Introduction***](https://eli.thegreenplace.net/2020/implementing-raft-part-0-introduction/)
 
-:thought_balloon: [***Part 1 - Elections***](https://eli.thegreenplace.net/2020/implementing-raft-part-1-elections/) 
+:thought_balloon: [***Part 1 - Elections***](https://eli.thegreenplace.net/2020/implementing-raft-part-1-elections/)
+
 讲解了状态之间的转移（follower、leader 和 candidate），RPC请求（RequestVotes、AppendEntries）和响应, 注意本部分并未涉及日志的相关内容
 
 :thought_balloon: [***Part 2 - Commands and Log Replication***](https://eli.thegreenplace.net/2020/implementing-raft-part-2-commands-and-log-replication/)
+
 主要讲解当一个客户给 leader 发送命令后，leader 如何处理并通知 follower 复制日志；以及 follow 收到 leader 的 AE 请求后，如何处理
 
 :thought_balloon: [***Part 3 - Persistence and Optimizations***](https://eli.thegreenplace.net/2020/implementing-raft-part-3-persistence-and-optimizations/)
+
 讲解了如何做持久化处理，处理哪些内容以及应在哪些地方做相应的修改。此外讲解了索引的优化，即在发生冲突后如何快速定位下一次发送的日志
 
-:three: [别人写的所有 Lab 的一个总结](https://github.com/SwordHarry/MIT6.824_2021_note/tree/main), 可以在做实验前看一下相应的实验部分，同样列举了一些常见的错误，有助于少走弯路！！
+:three: [别人写的所有 Lab 的一个总结](https://github.com/SwordHarry/MIT6.824_2021_note/tree/main)
+
+可以在做实验前看一下相应的实验部分，同样列举了一些常见的错误，有助于少走弯路！！
