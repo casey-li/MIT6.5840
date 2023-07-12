@@ -11,11 +11,13 @@ Lab2 系列为 Raft 分布式一致性协议算法的实现，Raft 将分布式�
 - log compaction，日志压缩-快照(lab2D)
 - Cluster membership changes，集群成员变更
 
-**:mag: 提示** 
+### :mag: 提示
 
-**注意后序实验都是基于前面的实验完成的, 所以一定要确保前面的实验没问题, 跑测试用例的时候多跑几次, 自己是在做 Lab2C 的时候吃了亏, 又重新回来改的 Lab2A 和 Lab2B, 目前每个 Lab 都是跑了 1000 次无错的结果**
+**注意后序实验都是基于前面的实验完成的, 所以一定要确保前面的实验没问题, 跑测试用例的时候多跑几次, 自己是在做 Lab2C 的时候吃了亏, 又重新回来改的 Lab2A 和 Lab2B, 目前每个 Lab 都是跑了 500 次无错的结果**
 
 下面的 Lab2A 和 Lab2B 存在一些小问题 (自己并未修改这部分的描述, 只改了代码。主要是为了回看当时的思路, 方便对比, 知道为什么会有问题)。存在的问题都在 Lab2C 中的 bugs 小节进行了详细描述, 给出了出错原因, 在什么情况下会出错以及解决方案。
+
+---
 
 ## :wink: Lab 2A - leader election
 
@@ -355,6 +357,7 @@ type AppendEntriesReply struct {
 ### :beers: 实现
 
 **:warning: :warning: :warning: 注意通道需要初始化, 否则直接提交数据会阻塞**
+
 **:warning: :warning: :warning: 注意检查传输的日志的范围**
 
 #### :cherries: 主要函数
@@ -503,7 +506,7 @@ bug 几乎都是 Lab2A 和 Lab2B 引入的, 一旦测试案例上强度了 (网�
 ### :sob: bugs
 跑 Lab 2C 的测试案例很艰难, 卡了很久。对着日志找到了不少 Lab 2A 和 Lab 2B 引入的 bug, 这里记录一下
 
-#### 1. Lab 2C 中的 `TestFigure8Unreliable2C`
+#### :one: Lab 2C 中的 `TestFigure8Unreliable2C`
 
 **`Test (2C): Figure 8 (unreliable)`**
 
@@ -616,7 +619,7 @@ func (rf *Raft) runHeartBeats() {
 
 ```
 
-#### 2. Lab 2C 中的 `internalChurn`
+#### :two: Lab 2C 中的 `internalChurn`
 
 **`Test (2C): unreliable churn`**
 
@@ -689,7 +692,7 @@ func B() {
 
 ```
 
-#### 3. data race
+#### :three: data race
 
 **:lollipop: 跑多次 Lab2C 出现的问题, 并非某个具体测试案例检查出来的 bug, 用 -race 测试时出现了 data race 但是检查代码时找不到问题所在**
 
@@ -697,7 +700,7 @@ func B() {
 
 很大概率是发送心跳时的参数中的 `Entries` 属性, 不要直接 `Entries: rf.log[nowLogIndex:]`, 拷贝一份 `rf.log[nowLogIndex:]` 再发送拷贝的日志就可以解决 data race 的问题
 
-#### 4. Lab 2B 中的 `TestRPCBytes2B`
+#### :four: Lab 2B 中的 `TestRPCBytes2B`
 
 **Test (2B): RPC byte count**
 
@@ -750,7 +753,7 @@ func (rf *Raft) ticker(state RuleState) {
 }
 ```
 
-#### 5. Lab 2B 中的 `TestBackup2B`
+#### :five: Lab 2B 中的 `TestBackup2B`
 
 **Test (2B): leader backs up quickly over incorrect follower logs**
 
@@ -768,7 +771,7 @@ Lab2A 中原先的 `becomeFollower()` 实现为修改任期, 状态, 重置投�
 
 其实问题在于 Lab2A 中 `becomeFollower()` 的实现有问题, 并不是所有情况下变成 Follower 都需要重置选举开始时间的。在 `RequestVote()` 中, 只有投赞成票的时候才需要重置选举开始时间, 而发现接收到的参数中的任期更大只需修改任期, 重置投票结果, 修改状态即可。因此将重置选举开始时间这一步从 `becomeFollower()` 中删除即可, 这样当 1 或 2 发起请求投票时, 3 必定投反对票并且不会重置选举开始时间, 最差情况为 1 或 2 依次开始选举, 然后失败, 随后 3 开始选举并当选 leader
 
-#### 6. `failed to reach agreement`
+#### :six: `failed to reach agreement`
 
 :lollipop: 在多次跑 Lab2B 的过程中可能出现的问题, 不是具体某个测试案例下发现的。
 
@@ -782,7 +785,7 @@ Lab2A 中原先的 `becomeFollower()` 实现为修改任期, 状态, 重置投�
 
 取消了并行执行 `becomeFollower()`, 让其串行执行, 这样只会执行一次 `voteFor = -1`, 但是因为原先 `becomeFollower()` 中上锁了, 所以可以调用前先解锁, 调用 `becomeFollower()` 后再上锁。但是这么改利用小锁可能会出现锁抢占的问题; 为了简化逻辑, 自己直接去掉了 `becomeFollower()` 中的加锁解锁操作, 因为调用 `becomeFollower()` 时本来就处于锁的掌控范围内, 所以并不会出现资源抢占的问题; 同理, 自己也把 `becomeLeader()` 也改了, 也是去掉了锁, 串行修改并用调用该函数内存在的粗粒度锁来避免调用过程中的资源竞争问题
 
-#### 7. Lab 2C 中的 `TestFigure8Unreliable2C`
+#### :seven: Lab 2C 中的 `TestFigure8Unreliable2C`
 
 **`Test (2C): Figure 8 (unreliable)`**
 
@@ -868,7 +871,7 @@ func (rf *Raft) startElection() {
 ```
 
 
-#### 8. Lab 2C 中的 `TestFigure8Unreliable2C`
+#### :eight: Lab 2C 中的 `TestFigure8Unreliable2C`
 
 **`Test (2C): Figure 8 (unreliable)`**
 
@@ -1272,7 +1275,7 @@ func (rf *Raft) handleAppendEntriesRPCResponse(peerId int, args *AppendEntriesAr
 
 相比于 Lab2C 的诸多 bug, 2D 出现的问题还好，基本是因为 2D 的下标逻辑改了以后但是忘记修改原来的代码出现的问题
 
-#### 下标越界，负数下标
+#### :one: 下标越界，负数下标
 
 注意节点初始化以及成为 leader 后需要修改 `nextIndex[i]`。原先是让它等于日志长度，但是因为现在日志有修剪，只要日志长度小于 `lastIncludedIndex`, 就会在 `runHeartBeat()` 拷贝日志时减出负数下标
 
@@ -1303,7 +1306,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 }
 ```
 
-#### 锁抢占的问题
+#### :two: 锁抢占的问题
 
 因为自己之前的实现中每个函数内部都是自己控制锁，然后若在函数 A 中调用函数 B 就会先释放锁再调用 B, B 中再加锁, 但是此时锁很可能被其它协程拿走了，然后 B 拿到锁的时候自身状态发生了改变，就容易出现问题
 
@@ -1338,7 +1341,7 @@ func (rf *Raft) commitCommand() {
 }
 ```
 
-#### 重置选举定时器开始时间
+#### :three: 重置选举定时器开始时间
 
 在所有跟 leader 相关的 RPC 函数中 (`AppendEnteries RPC, InstallSnapshot RPC`)，当当前节点收到的参数或者回复中的任期更大时，当前节点都应该转变为 follower 并且重置选举开始时间；只有在 `RequestVote RPC` 中收到了任期更大的参数时需要检查自身状态，若当前状态本来就是 follower 的话，不更新选举定时器的开始时间，避免一个不能当选 leader 的节点超时后不断更新其它节点的开始时间，然后一直选不出 leader
 
@@ -1350,13 +1353,17 @@ func (rf *Raft) commitCommand() {
 2D 可以同时跑多个进行测试，不然太慢了，跑一次几乎 270s 左右
 通过了 500 次的压力测试，实验结果记录在 `Lab2D/result/test_2D_500times.txt`
 
+---
+
 ## Lab2 最终结果
 
-
+![Lab2 最终结果1](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/result/Lab2%E7%BB%93%E6%9E%9C_1.png?raw=true)
+![Lab2 最终结果2](https://github.com/casey-li/MIT6.5840/blob/main/Lab2/result/Lab2%E7%BB%93%E6%9E%9C_2.png?raw=true)
 
 通过了 500 次的压力测试，实验结果记录在 `Lab2/result/test_2_500times.txt`
 
 ---
+
 # :rose: 参考
 
 :one: [有关 Raft 工作流程的动画网址](http://thesecretlivesofdata.com/raft/#home)，有助于快速理解 Raft
