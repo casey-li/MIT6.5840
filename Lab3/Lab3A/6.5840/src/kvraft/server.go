@@ -95,7 +95,7 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	// Your code here.
 	kv.mu.Lock()
 	id := kv.me
-	if kv.isOldRequest(args.ClientId, args.RequestId) {
+	if kv.isInvalidRequest(args.ClientId, args.RequestId) {
 		DPrintf("[%d] receive out of data request", id)
 		reply.Err = OK
 		kv.mu.Unlock()
@@ -128,7 +128,6 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	select {
 	case res := <-waitChan:
 		DPrintf("[%d] receive res from notifyChan [%v]", id, res)
-		// reply.Err = res.Err
 		reply.Err = OK
 		currentTerm, stillLeader := kv.rf.GetState()
 		if !stillLeader || currentTerm != term {
@@ -165,7 +164,8 @@ func (kv *KVServer) killed() bool {
 	return z == 1
 }
 
-// 监听 Raft 提交的命令
+// 监听 Raft 提交的 applyMsg, 根据 applyMsg 的类别执行不同的操作
+// 为命令的话，必执行，执行完后检查是否需要给 waitCh 发通知
 func (kv *KVServer) applier() {
 	for !kv.killed() {
 		applyMsg := <-kv.applyCh
@@ -179,9 +179,9 @@ func (kv *KVServer) applier() {
 			// 若当前服务器已经不再是 leader 或者是发生了分区的旧 leader，不需要通知回复客户端
 			// 指南中提到的情况：Clerk 在一个任期内向 kvserver 领导者发送请求、等待答复超时并在另一个任期内将请求重新发送给新领导者
 			if isLeader && applyMsg.CommandTerm == currentTerm {
-				kv.notify(applyMsg.CommandIndex, &op)
+				kv.notifyWaitCh(applyMsg.CommandIndex, &op)
 			}
-		} else if applyMsg.SnapshotValid { // 是快照
+		} else if applyMsg.SnapshotValid {
 			//
 		}
 		kv.mu.Unlock()
@@ -194,10 +194,9 @@ func (kv *KVServer) execute(op *Op) {
 	DPrintf("[%d] apply command [%v] success", kv.me, op)
 	// 因为是执行完后才会更新，可能会有重复命令在第一次检查时认为不是重复命令，然后被执行了两遍
 	// 所以在真正执行命令前需要再检查一遍，若发现有重复日志并且操作不是 Get 的话直接返回 OK
-	if op.OpType != "Get" && kv.isOldRequest(op.ClientId, op.RequestId) {
+	if op.OpType != "Get" && kv.isInvalidRequest(op.ClientId, op.RequestId) {
 		return
 	} else {
-		// 执行命令，更新最近一次请求的下摆
 		switch op.OpType {
 		case "Get":
 			op.Value = kv.KVDB[op.Key]
@@ -207,21 +206,20 @@ func (kv *KVServer) execute(op *Op) {
 			str := kv.KVDB[op.Key]
 			kv.KVDB[op.Key] = str + op.Value
 		}
-		// reply.Err = OK
-		// if op.OpType != GET {
 		kv.UpdateLastRequest(op)
-		// }
 	}
 }
 
-func (kv *KVServer) notify(index int, op *Op) {
-	DPrintf("[%d] notify [%d]", kv.me, index)
+// 给 waitCh 发送通知，让其生成响应。必须在发送前检查一下 waitCh 是否关闭
+func (kv *KVServer) notifyWaitCh(index int, op *Op) {
+	DPrintf("[%d] notifyWaitCh [%d]", kv.me, index)
 	if waitCh, ok := kv.waitChMap[index]; ok {
 		waitCh <- op
 	}
 }
 
-func (kv *KVServer) isOldRequest(clientId int64, requestId int64) bool {
+// 检查当前命令是否为无效的命令 (非 Get 命令需要检查，可能为过期的 RPC 或已经执行过的命令)
+func (kv *KVServer) isInvalidRequest(clientId int64, requestId int64) bool {
 	if lastRequestId, ok := kv.lastRequestMap[clientId]; ok {
 		if requestId <= lastRequestId {
 			return true
@@ -230,6 +228,7 @@ func (kv *KVServer) isOldRequest(clientId int64, requestId int64) bool {
 	return false
 }
 
+// 更新对应客户端对应的最近一次请求的Id, 这样可以避免今后执行过期的 RPC 或已经执行过的命令
 func (kv *KVServer) UpdateLastRequest(op *Op) {
 	lastRequestId, ok := kv.lastRequestMap[op.ClientId]
 	if (ok && lastRequestId < op.RequestId) || !ok {

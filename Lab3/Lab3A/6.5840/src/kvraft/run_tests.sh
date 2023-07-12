@@ -1,6 +1,6 @@
 # 运行脚本循环跑测试用例
 
-for ((i=154;i<=300;i++))
+for ((i=260;i<=270;i++))
 do 
     result_file="./test_result/result.txt"
     echo -e "Running the $i tests iteration" >> $result_file
