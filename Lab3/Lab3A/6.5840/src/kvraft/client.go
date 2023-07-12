@@ -1,13 +1,19 @@
 package kvraft
 
-import "6.5840/labrpc"
-import "crypto/rand"
-import "math/big"
+import (
+	"crypto/rand"
+	"math/big"
 
+	"6.5840/labrpc"
+)
 
+// 要求保存 leader，不重复处理命令
 type Clerk struct {
 	servers []*labrpc.ClientEnd
 	// You will have to modify this struct.
+	ClientId  int64
+	RequestId int64
+	LeaderId  int
 }
 
 func nrand() int64 {
@@ -21,6 +27,9 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 	ck := new(Clerk)
 	ck.servers = servers
 	// You'll have to add code here.
+	ck.ClientId = nrand()
+	ck.LeaderId = 0
+	ck.RequestId = 0
 	return ck
 }
 
@@ -37,7 +46,29 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 func (ck *Clerk) Get(key string) string {
 
 	// You will have to modify this function.
-	return ""
+	args := GetArgs{
+		Key:       key,
+		RequestId: ck.RequestId,
+		ClientId:  ck.ClientId,
+	}
+	reply := GetReply{}
+	for {
+		DPrintf("[%d] send Get RPC [%v]", ck.ClientId, args)
+		if ck.servers[ck.LeaderId].Call("KVServer.Get", &args, &reply) {
+			DPrintf("[%d] receive Get reply [%v]", ck.ClientId, reply)
+			switch reply.Err {
+			case ErrWrongLeader:
+				ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+			case ErrNoKey, OK:
+				ck.RequestId += 1
+				return reply.Value
+			}
+		} else {
+			DPrintf("[%d] call failed, leader changes from %d to %d", ck.ClientId, ck.LeaderId, (ck.LeaderId+1)%len(ck.servers))
+			ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+		}
+	}
+	// return ""
 }
 
 // shared by Put and Append.
@@ -50,6 +81,30 @@ func (ck *Clerk) Get(key string) string {
 // arguments. and reply must be passed as a pointer.
 func (ck *Clerk) PutAppend(key string, value string, op string) {
 	// You will have to modify this function.
+	args := PutAppendArgs{
+		Key:       key,
+		Value:     value,
+		Op:        op,
+		RequestId: ck.RequestId,
+		ClientId:  ck.ClientId,
+	}
+	reply := PutAppendReply{}
+	for {
+		DPrintf("[%d] send PutAppend RPC [%v]", ck.ClientId, args)
+		if ck.servers[ck.LeaderId].Call("KVServer.PutAppend", &args, &reply) {
+			DPrintf("[%d] receive PutAppend reply [%v]", ck.ClientId, reply)
+			switch reply.Err {
+			case ErrWrongLeader:
+				ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+			case ErrNoKey, OK:
+				ck.RequestId += 1
+				return
+			}
+		} else {
+			DPrintf("[%d] call failed, leader changes from %d to %d", ck.ClientId, ck.LeaderId, (ck.LeaderId+1)%len(ck.servers))
+			ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+		}
+	}
 }
 
 func (ck *Clerk) Put(key string, value string) {

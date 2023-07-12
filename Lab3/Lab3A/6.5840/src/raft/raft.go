@@ -78,6 +78,7 @@ type ApplyMsg struct {
 	CommandValid bool
 	Command      interface{}
 	CommandIndex int
+	CommandTerm  int
 
 	// For 2D:
 	SnapshotValid bool
@@ -542,6 +543,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		Index:   rf.getNextIndex(),
 	})
 	rf.persist()
+	rf.runHeartBeats()
 	return rf.getLastIndex(), rf.currentTerm, true
 }
 
@@ -884,7 +886,7 @@ func (rf *Raft) handleAppendEntriesRPCResponse(peerId int, args *AppendEntriesAr
 }
 
 // 提交命令，当 rf.lastApplied >= rf.commitIndex 时调用 Wait(), 等待其他协程发送 Signal() 信号通知
-func (rf *Raft) commitCommand() {
+func (rf *Raft) apply() {
 	for !rf.killed() {
 		rf.mu.Lock()
 		for rf.lastApplied >= rf.commitIndex {
@@ -905,6 +907,7 @@ func (rf *Raft) commitCommand() {
 				CommandValid: true,
 				Command:      entry.Command,
 				CommandIndex: entry.Index,
+				CommandTerm:  entry.Term,
 			}
 		}
 		rf.rflog("commits log from over !!")
@@ -957,7 +960,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	go rf.ticker(Follower)
 
 	// 开启协程检查是否需要提交命令
-	go rf.commitCommand()
+	go rf.apply()
 
 	return rf
 }
