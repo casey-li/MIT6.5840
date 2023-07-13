@@ -1,6 +1,7 @@
 package kvraft
 
 import (
+	"bytes"
 	"log"
 	"sync"
 	"sync/atomic"
@@ -11,7 +12,7 @@ import (
 	"6.5840/raft"
 )
 
-const Debug = true
+const Debug = false
 
 func DPrintf(format string, a ...interface{}) (n int, err error) {
 	if Debug {
@@ -45,8 +46,11 @@ type KVServer struct {
 	// Your definitions here.
 	KVDB           map[string]string // 状态机，记录KV
 	waitChMap      map[int]chan *Op  // 通知 chan, key 为日志的下标，值为通道
-	lastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的内容（包括请求的Id 和 回复）
+	LastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的内容（包括请求的Id 和 回复）
 
+	// 3B
+	persister         *raft.Persister
+	lastIncludedIndex int
 }
 
 // Get 和 PutAppend 都是先封装 OP，再调用 Raft 的 Start()
@@ -165,8 +169,39 @@ func (kv *KVServer) killed() bool {
 	return z == 1
 }
 
+// 需要持久化的字段为 数据库
+// 为了避免重复执行命令，每个客户端最近一次请求的 Id 也需要持久化处理
+func (kv *KVServer) encodeState() []byte {
+	w := new(bytes.Buffer)
+	e := labgob.NewEncoder(w)
+	e.Encode(kv.KVDB)
+	e.Encode(kv.LastRequestMap)
+	kvstate := w.Bytes()
+	return kvstate
+}
+
+// 读取持久化状态, 仿照 Raft 里面的写就可以了
+func (kv *KVServer) readPersist(data []byte) {
+	if data == nil || len(data) < 1 { // bootstrap without any state?
+		return
+	}
+	r := bytes.NewBuffer(data)
+	d := labgob.NewDecoder(r)
+	kvdb := map[string]string{}
+	lastRequestMap := map[int64]int64{}
+	if d.Decode(&kvdb) != nil || d.Decode(&lastRequestMap) != nil {
+		return
+	} else {
+		// kv.mu.Lock()
+		kv.KVDB = kvdb
+		kv.LastRequestMap = lastRequestMap
+		// kv.mu.Unlock()
+	}
+}
+
 // 监听 Raft 提交的 applyMsg, 根据 applyMsg 的类别执行不同的操作
 // 为命令的话，必执行，执行完后检查是否需要给 waitCh 发通知
+// 为快照的话读快照，更新状态
 func (kv *KVServer) applier() {
 	for !kv.killed() {
 		applyMsg := <-kv.applyCh
@@ -174,16 +209,41 @@ func (kv *KVServer) applier() {
 		DPrintf("[%d] receives applyMsg [%v]", kv.me, applyMsg)
 		// 根据收到的是命令还是快照来决定相应的操作，3A仅需处理命令
 		if applyMsg.CommandValid {
+			// 3B 需要判断日志是否被裁剪了
+			if applyMsg.CommandIndex <= kv.lastIncludedIndex {
+				DPrintf("[%d] has snapshot this command!", kv.me)
+				kv.mu.Unlock()
+				continue
+			}
+
 			op := applyMsg.Command.(Op)
 			kv.execute(&op)
 			currentTerm, isLeader := kv.rf.GetState()
-			// 若当前服务器已经不再是 leader 或者是发生了分区的旧 leader，不需要通知回复客户端
-			// 指南中提到的情况：Clerk 在一个任期内向 kvserver 领导者发送请求、等待答复超时并在另一个任期内将请求重新发送给新领导者
+			// 若当前服务器已经不再是 leader 或者是旧 leader，不需要通知回复客户端
+			// 指南中提到的情况：Clerk 在一个任期内向 kvserver 领导者发送请求, 可能在此期间当前领导者丧失了领导地位但是又重新当选了 Leader
+			// 虽然它还是 Leader, 但是已经不能在进行回复了，需要满足线性一致性 (可能客户端发起 Get 时应该获取的结果是 0, 但是在次期间增加了 1。若现在回复的话会回复 1, 但是根据请求时间来看应该返回 0)
+			// 所以不给客户端响应, 让其超时, 然后重新发送 Get, 此时的 Get 得到的结果就应该是 1 了 (只要任期没变, 都是同一个 Leader 在处理的话, 因为有重复命令的检查, 必定满足线性一致性)
 			if isLeader && applyMsg.CommandTerm == currentTerm {
 				kv.notifyWaitCh(applyMsg.CommandIndex, &op)
 			}
+
+			// 3B 执行完命令后检查状态, 有必要的化执行快照压缩 Raft 的日志
+			if kv.maxraftstate != -1 && kv.persister.RaftStateSize() >= kv.maxraftstate {
+				DPrintf("[%d] has too big RaftStateSize, run Raft.Snapshot()", kv.me)
+				kv.rf.Snapshot(applyMsg.CommandIndex, kv.encodeState())
+			}
+			kv.lastIncludedIndex = applyMsg.CommandIndex
+
 		} else if applyMsg.SnapshotValid {
-			//
+			// 一定是 Follower 收到了快照, 若是最新的快照, 读取快照信息并更新自身状态
+			if applyMsg.SnapshotIndex <= kv.lastIncludedIndex {
+				DPrintf("[%d] receive old snapshot, lastIncludeIndex [%d], applyMsg.SnapshotIndex [%d]",
+					kv.me, kv.lastIncludedIndex, applyMsg.SnapshotIndex)
+				kv.mu.Unlock()
+				continue
+			}
+			kv.readPersist(applyMsg.Snapshot)
+			kv.lastIncludedIndex = applyMsg.SnapshotIndex
 		}
 		kv.mu.Unlock()
 	}
@@ -221,7 +281,7 @@ func (kv *KVServer) notifyWaitCh(index int, op *Op) {
 
 // 检查当前命令是否为无效的命令 (非 Get 命令需要检查，可能为过期的 RPC 或已经执行过的命令)
 func (kv *KVServer) isInvalidRequest(clientId int64, requestId int64) bool {
-	if lastRequestId, ok := kv.lastRequestMap[clientId]; ok {
+	if lastRequestId, ok := kv.LastRequestMap[clientId]; ok {
 		if requestId <= lastRequestId {
 			return true
 		}
@@ -231,9 +291,9 @@ func (kv *KVServer) isInvalidRequest(clientId int64, requestId int64) bool {
 
 // 更新对应客户端对应的最近一次请求的Id, 这样可以避免今后执行过期的 RPC 或已经执行过的命令
 func (kv *KVServer) UpdateLastRequest(op *Op) {
-	lastRequestId, ok := kv.lastRequestMap[op.ClientId]
+	lastRequestId, ok := kv.LastRequestMap[op.ClientId]
 	if (ok && lastRequestId < op.RequestId) || !ok {
-		kv.lastRequestMap[op.ClientId] = op.RequestId
+		kv.LastRequestMap[op.ClientId] = op.RequestId
 	}
 }
 
@@ -266,7 +326,11 @@ func StartKVServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persiste
 	// You may need initialization code here.
 	kv.KVDB = make(map[string]string)
 	kv.waitChMap = make(map[int]chan *Op)
-	kv.lastRequestMap = make(map[int64]int64)
+	kv.LastRequestMap = make(map[int64]int64)
+
+	// 3B
+	kv.persister = persister
+	kv.readPersist(kv.persister.ReadSnapshot())
 
 	go kv.applier()
 	return kv
