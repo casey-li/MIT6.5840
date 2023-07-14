@@ -45,7 +45,7 @@ type KVServer struct {
 	// Your definitions here.
 	KVDB           map[string]string // 状态机，记录KV
 	waitChMap      map[int]chan *Op  // 通知 chan, key 为日志的下标，值为通道
-	lastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的内容（包括请求的Id 和 回复）
+	lastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的Id
 }
 
 // Get 和 PutAppend 都是先封装 OP，再调用 Raft 的 Start()
@@ -127,7 +127,7 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 
 	select {
 	case res := <-waitChan:
-		DPrintf("[%d] receive res from notifyChan [%v]", id, res)
+		DPrintf("[%d] receive res from waitChan [%v]", id, res)
 		reply.Err = OK
 		currentTerm, stillLeader := kv.rf.GetState()
 		if !stillLeader || currentTerm != term {
