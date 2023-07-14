@@ -33,6 +33,80 @@ Lab 3 共有两个实验：
 
 `src/kvraft` 中提供了代码框架和测试案例。仅需要修改 `kvraft/client.go`, `kvraft/server.go` 和 `kvraft/common.go`
 
+**Lab 3A 和 Lab 3B 都通过了 1000 次的压力测试 (500次单独的测试, 500次最终测试)**
+
+### 一致性概念
+
+**CAP原理**: CAP (一致性、可用性、分区容忍性) 其实是一种权衡平衡的思想, 用于指导在系统可用性设计。一致性强调在同一时刻副本一致, 可用性指的是服务在有限的时间内完成处理并响应, 分区容忍性说的是分布式系统本身的特点可以独立运行并提供服务
+
+**分布式数据库必须要有 P (Partition Tolerant 分区容忍性), 所以主要是在 C (Consistent 一致性) 和 A (Available 可用性) 之间做选择**
+
+分布式系统中的一致性按照从强到弱可以分为四种 ([分布式系统一致性 - 总结](https://zhuanlan.zhihu.com/p/57315959))
+
+- :one: 线性一致性 (Linearizability)
+- :two: 顺序一致性 (Sequential consistency)
+- :three: 因果一致性 (Causal consistency)
+- :four: 最终一致性 (Eventually Consistency)
+
+#### 线性一致性
+
+要求系统表现的如同一个单一的副本, 按照实际的时间顺序来串行执行线程的读写操作, 满足
+- :one: 每一个读操作都将返回『最近的写操作』 (基于单一的实际时间) 的值
+- :two: 对任何 client 的表现均一致
+
+**横轴为实际时间**
+
+![线性一致性案例](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/result/%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7%E6%A1%88%E4%BE%8B.png?raw=true)
+
+最开始 P1 执行了写 x 为 3 的操作 (肯定是在 invocation 和 response 之间生效, 但具体生效时间不确定); 从 P2 第一次读操作结果为 0 可知此时并未生效, 从 P3 读操作返回 3 可知在 P2 调用 Inv(R, x) 到 给 P3 生成响应这段时间里 P1 的 Inv(w, x, 3) 生效了。根据线性一致性的要求, 所有在 P2 Res(R, x, 3) 时间点往后读 x 的操作都应该返回 3 !!
+
+因此若 P2 再次调用 Inv(R, x) 得到的 ? 是 0, 就不满足线性一致性 (对外表现的并不像单一的副本, P3 访问的服务器已经同步了 P1 的写操作但 P2 访问的服务器此时没来的及更新结果); 若 ? 是 3 则满足线性一致性
+
+#### 顺序一致性
+
+相比于线性一致性, 顺序一致性放松了一致性的要求, 它并不要求操作的执行顺序严格按照真实的时间序; 满足
+- :one: 从单个线程或者进程的角度上看, 其指令的执行顺序以编程中的顺序为准
+- :two: 从所有线程或者进程的角度上看, 指令的执行保持一个单一的顺序
+
+总之就是要求对于一个进程的所有指令而言, 必须按照规定的顺序执行; 对于所有进程而言, 它们的操作需满足原子性; 可以抽象为有多个进程在访问一个临界资源, 同一时刻仅有一个进程能够对临界资源进行操作 (只能按照程序中规定好的顺序依次对该共享资源进行处理), 执行完一个操作后所有进程再次开始争抢该临界资源的访问权
+
+**横轴表示程序内部的执行顺序**
+
+![顺序一致性案例1](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/result/%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7%E6%A1%88%E4%BE%8B.png?raw=true)
+
+上面的两种执行结果均满足顺序一致性, 只要按照 `P1 x.write(2) -> P1 x.write(3) -> P2 x.write(5) -> P1 x.read(5)` 的先后运行顺序执行即可
+
+![顺序一致性案例2](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/result/%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7%E6%A1%88%E4%BE%8B2.png?raw=true)
+
+这个图就不满足顺序一致性的要求, 因为不管进程之间怎么执行都不可能出现 P3, P4 连续读两次的结果相反的情况
+
+#### 线性一致性和顺序一致性的对比
+
+|线性一致性|顺序一致性|
+| :--: | :--: |
+| 单一进程要按照时间序执行 | 单一进程要按照程序规定的顺序执行 |
+| 不同进程要按照时间序执行 | 不同进程的执行顺序无要求 |
+
+**示意图**
+
+![线性一致性和顺序一致性的对比图](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/result/%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7%E5%92%8C%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7%E5%AF%B9%E6%AF%94.png?raw=true)
+
+#### 因果一致性
+
+因果一致性在一致性的要求上, 又比顺序一致性降低了, 它仅要求有因果关系的操作顺序得到保证, 非因果关系的操作顺序则无所谓
+
+因果一致性往往发生在分区 (也称为分片) 的分布式数据库中, 分区后，每个节点并不包含全部数据, 不同的节点独立运行, 因此不存在全局写入顺序。如果用户A提交一个问题, 用户B提交了回答. 问题写入了节点A, 回答写入了节点B, 因为同步延迟, 发起查询的其它用户可能会先看到回答, 再看到问题。为了防止这种异常，就需要满足因果一致性, 即如果一系列写入按某个逻辑顺序发生, 那么任何人读取这些写入时, 会看见它们以正确的逻辑顺序出现
+
+因果一致性一般应用在跨地域同步数据中心系统中, 例如Facebook, 微信这样的应用程序。全球各地的用户, 往往会访问其距离最近的数据中心, 数据中心之间再进行双向的数据同步
+
+#### 最终一致性
+
+虽然 CAP 理论说明了选择了 A 就不可能得到真正的 C, 但是业务系统在大多情况下对一致性没那么高的要求反而更多强调高可用性, 因此只需追求最终一致性即可
+
+只要求每个系统节点总是可用的, 同时任何的写 (修改数据) 操作都会在后台同步给系统的其他节点 (所有节点最终都能取得已更新的数据, 但不能保证其它节点能立即取得已更新的数据); 这意味着在任意时刻, 整个系统是 Inconsistent(不一致的), 然而从概率上讲, 大多数的请求得到的值是准确的
+
+互联网的 DNS (域名服务) 就是最终一致性的一个非常好的例子。你注册了一个域名, 这个新域名需要几天的时间才能通知给所有的 DNS 服务器, 但是不管什么时候, 你能够连接到的任意 DNS 服务器对你来说都是 'Available' 的
+
 ---
 
 ## :wink: Lab 3A - Key/value service without snapshots
@@ -113,37 +187,37 @@ kvservers 之间不应该直接通信，只能通过 Raft 进行交流！
 
 ```go
 const (
-	OK             = "OK"
-	ErrNoKey       = "ErrNoKey"
-	ErrWrongLeader = "ErrWrongLeader"
+    OK             = "OK"
+    ErrNoKey       = "ErrNoKey"
+    ErrWrongLeader = "ErrWrongLeader"
 )
 
 type Err string
 
 // Put or Append
 type PutAppendArgs struct {
-	Key   string
-	Value string
-	Op    string // "Put" or "Append"
+    Key   string
+    Value string
+    Op    string // "Put" or "Append"
     // You'll have to add definitions here.
-	RequestId int64
-	ClientId  int64
+    RequestId int64
+    ClientId  int64
 }
 
 type PutAppendReply struct {
-	Err Err
+    Err Err
 }
 
 type GetArgs struct {
-	Key string
+    Key string
     // You'll have to add definitions here.
-	RequestId int64
-	ClientId  int64
+    RequestId int64
+    ClientId  int64
 }
 
 type GetReply struct {
-	Err   Err
-	Value string
+    Err   Err
+    Value string
 }
 ```
 
@@ -155,11 +229,11 @@ type GetReply struct {
 
 ```go
 type Clerk struct {
-	servers []*labrpc.ClientEnd
-	// You will have to modify this struct.
-	ClientId  int64
-	LeaderId  int
-	RequestId int64
+    servers []*labrpc.ClientEnd
+    // You will have to modify this struct.
+    ClientId  int64
+    LeaderId  int
+    RequestId int64
 }
 ```
 
@@ -169,18 +243,18 @@ KVServer 为一个键值数据库（键和值都为 string）, 因此首先必�
 
 ```go
 type KVServer struct {
-	mu      sync.Mutex
-	me      int
-	rf      *raft.Raft
-	applyCh chan raft.ApplyMsg
-	dead    int32 // set by Kill()
+    mu      sync.Mutex
+    me      int
+    rf      *raft.Raft
+    applyCh chan raft.ApplyMsg
+    dead    int32 // set by Kill()
 
-	maxraftstate int // snapshot if log grows this big
+    maxraftstate int // snapshot if log grows this big
 
-	// Your definitions here.
-	KVDB           map[string]string // 状态机，记录KV
-	waitChMap      map[int]chan *Op  // 通知 chan, key 为日志的下标，值为通道
-	lastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的内容（包括请求的Id 和 回复）
+    // Your definitions here.
+    KVDB           map[string]string // 状态机，记录KV
+    waitChMap      map[int]chan *Op  // 通知 chan, key 为日志的下标，值为通道
+    lastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的内容（包括请求的Id 和 回复）
 }
 ```
 
@@ -190,11 +264,11 @@ type KVServer struct {
 
 ```go
 type Op struct {
-	ClientId  int64
-	RequestId int64 
-	OpType    string
-	Key       string
-	Value     string
+    ClientId  int64
+    RequestId int64 
+    OpType    string
+    Key       string
+    Value     string
 }
 ```
 
@@ -209,44 +283,44 @@ type Op struct {
 ```go
 func (ck *Clerk) Get(key string) string {
     // 设置 GetArgs, 不断尝试
-	for {
-		if ck.servers[ck.LeaderId].Call("KVServer.Get", &args, &reply) {
-			switch reply.Err {
-			case ErrWrongLeader:
-				ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
-			case ErrNoKey, OK:
-				ck.RequestId += 1
-				return reply.Value
-			}
-		} else {
-			ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
-		}
-	}
+    for {
+        if ck.servers[ck.LeaderId].Call("KVServer.Get", &args, &reply) {
+            switch reply.Err {
+            case ErrWrongLeader:
+                ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+            case ErrNoKey, OK:
+                ck.RequestId += 1
+                return reply.Value
+            }
+        } else {
+            ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+        }
+    }
 }
 
 func (ck *Clerk) PutAppend(key string, value string, op string) {
-	// 设置 PutAppendArgs, 不断尝试
-	for {
-		if ck.servers[ck.LeaderId].Call("KVServer.PutAppend", &args, &reply) {
-			switch reply.Err {
-			case ErrWrongLeader:
-				ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
-			case ErrNoKey, OK:
-				ck.RequestId += 1
-				return
-			}
-		} else {
-			ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
-		}
-	}
+    // 设置 PutAppendArgs, 不断尝试
+    for {
+        if ck.servers[ck.LeaderId].Call("KVServer.PutAppend", &args, &reply) {
+            switch reply.Err {
+            case ErrWrongLeader:
+                ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+            case ErrNoKey, OK:
+                ck.RequestId += 1
+                return
+            }
+        } else {
+            ck.LeaderId = (ck.LeaderId + 1) % len(ck.servers)
+        }
+    }
 }
 
 func (ck *Clerk) Put(key string, value string) {
-	ck.PutAppend(key, value, "Put")
+    ck.PutAppend(key, value, "Put")
 }
 
 func (ck *Clerk) Append(key string, value string) {
-	ck.PutAppend(key, value, "Append")
+    ck.PutAppend(key, value, "Append")
 }
 ```
 
@@ -259,43 +333,43 @@ func (ck *Clerk) Append(key string, value string) {
 ```go
 func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
     // 封装Op
-	index, term, isLeader := kv.rf.Start(op)
+    index, term, isLeader := kv.rf.Start(op)
     // 非 Leader, 设置 reply.Err = ErrWrongLeader 并返回
     // 初始化 waitChan ( kv.waitChMap[index] )
     // 等待直到定时器超时或收到 waitChan 的通知
-	select {
-	case res := <-waitChan:
-		reply.Value, reply.Err = res.Value, OK
+    select {
+    case res := <-waitChan:
+        reply.Value, reply.Err = res.Value, OK
         // 检查是否仍未当时的 Leader, 提示 5 中说明了这种情况
-		currentTerm, stillLeader := kv.rf.GetState()
-		if !stillLeader || currentTerm != term {
-			reply.Err = ErrWrongLeader
-		}
-	case <-time.After(ExecuteTimeout):
-		reply.Err = ErrWrongLeader
-	}
+        currentTerm, stillLeader := kv.rf.GetState()
+        if !stillLeader || currentTerm != term {
+            reply.Err = ErrWrongLeader
+        }
+    case <-time.After(ExecuteTimeout):
+        reply.Err = ErrWrongLeader
+    }
     delete(kv.waitChMap, index)
 }
 
 func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
-	// Put或Append 需要先检查是否为过期的 RPC 或已经执行过的命令，避免重复执行
+    // Put或Append 需要先检查是否为过期的 RPC 或已经执行过的命令，避免重复执行
     // 封装Op
-	index, term, isLeader := kv.rf.Start(op)
+    index, term, isLeader := kv.rf.Start(op)
     // 非 Leader, 设置 reply.Err = ErrWrongLeader 并返回
     // 初始化 waitChan ( kv.waitChMap[index] )
     // 等待直到定时器超时或收到 waitChan 的通知
-	select {
-	case res := <-waitChan:
+    select {
+    case res := <-waitChan:
         reply.Err = OK
         // 检查是否仍未当时的 Leader, 提示 5 中说明了这种情况
-		currentTerm, stillLeader := kv.rf.GetState()
-		if !stillLeader || currentTerm != term {
-			reply.Err = ErrWrongLeader
-		}
-	case <-time.After(ExecuteTimeout):
-		reply.Err = ErrWrongLeader
-	}
-	delete(kv.waitChMap, index)
+        currentTerm, stillLeader := kv.rf.GetState()
+        if !stillLeader || currentTerm != term {
+            reply.Err = ErrWrongLeader
+        }
+    case <-time.After(ExecuteTimeout):
+        reply.Err = ErrWrongLeader
+    }
+    delete(kv.waitChMap, index)
 }
 ```
 
@@ -305,61 +379,63 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 // 监听 Raft 提交的 applyMsg, 根据 applyMsg 的类别执行不同的操作
 // 为命令的话，必执行，执行完后检查是否需要给 waitCh 发通知
 func (kv *KVServer) applier() {
-	for !kv.killed() {
-		applyMsg := <-kv.applyCh
-		kv.mu.Lock()
-		// 根据收到的是命令还是快照来决定相应的操作
-		if applyMsg.CommandValid {
-			op := applyMsg.Command.(Op)
-			kv.execute(&op)
-			currentTerm, isLeader := kv.rf.GetState()
-			// 若当前服务器已经不再是 leader 或者是发生了分区的旧 leader，不需要通知回复客户端
-			// 指南中提到的情况：Clerk 在一个任期内向 kvserver 领导者发送请求、等待答复超时并在另一个任期内将请求重新发送给新领导者
-			if isLeader && applyMsg.CommandTerm == currentTerm {
-				kv.notifyWaitCh(applyMsg.CommandIndex, &op)
-			}
-		} else if applyMsg.SnapshotValid {
-			//
-		}
-		kv.mu.Unlock()
-	}
+    for !kv.killed() {
+        applyMsg := <-kv.applyCh
+        kv.mu.Lock()
+        // 根据收到的是命令还是快照来决定相应的操作
+        if applyMsg.CommandValid {
+            op := applyMsg.Command.(Op)
+            kv.execute(&op)
+            currentTerm, isLeader := kv.rf.GetState()
+            // 若当前服务器已经不再是 leader 或者是旧 leader，不需要通知回复客户端
+            // 指南中提到的情况：Clerk 在一个任期内向 kvserver 领导者发送请求, 可能在此期间当前领导者丧失了领导地位但是又重新当选了 Leader
+            // 虽然它还是 Leader, 但是已经不能在进行回复了，需要满足线性一致性 (可能客户端发起 Get 时应该获取的结果是 0, 但是在次期间增加了 1。若现在回复的话会回复 1, 但是根据请求时间来看应该返回 0)
+            // 所以不给客户端响应, 让其超时, 然后重新发送 Get, 此时的 Get 得到的结果就应该是 1 了 (只要任期没变, 都是同一个 Leader 在处理的话, 因为有重复命令的检查, 必定满足线性一致性)
+            if isLeader && applyMsg.CommandTerm == currentTerm {
+                kv.notifyWaitCh(applyMsg.CommandIndex, &op)
+            }
+        } else if applyMsg.SnapshotValid {
+            //
+        }
+        kv.mu.Unlock()
+    }
 }
 
 // 执行命令，Get 必执行；非 Get 需检查当前命令是否有效，执行后更新该客户端最近一次请求的Id
 func (kv *KVServer) execute(op *Op) {
-	// 因为是执行完后才会更新，可能会有重复命令在第一次检查时认为不是重复命令，然后被执行了两遍
-	// 所以在真正执行命令前需要再检查一遍，若发现有重复日志并且操作不是 Get 的话直接返回 OK
-	if op.OpType != "Get" && kv.isInvalidRequest(op.ClientId, op.RequestId) {
-		return
-	} else {
-		switch op.OpType {
-		case "Get":
-			op.Value = kv.KVDB[op.Key]
-		case "Put":
-			kv.KVDB[op.Key] = op.Value
-		case "Append":
-			str := kv.KVDB[op.Key]
-			kv.KVDB[op.Key] = str + op.Value
-		}
-		kv.UpdateLastRequest(op)
-	}
+    // 因为是执行完后才会更新，可能会有重复命令在第一次检查时认为不是重复命令，然后被执行了两遍
+    // 所以在真正执行命令前需要再检查一遍，若发现有重复日志并且操作不是 Get 的话直接返回 OK
+    if op.OpType != "Get" && kv.isInvalidRequest(op.ClientId, op.RequestId) {
+        return
+    } else {
+        switch op.OpType {
+        case "Get":
+            op.Value = kv.KVDB[op.Key]
+        case "Put":
+            kv.KVDB[op.Key] = op.Value
+        case "Append":
+            str := kv.KVDB[op.Key]
+            kv.KVDB[op.Key] = str + op.Value
+        }
+        kv.UpdateLastRequest(op)
+    }
 }
 
 // 给 waitCh 发送通知，让其生成响应
 func (kv *KVServer) notifyWaitCh(index int, op *Op) {
-	if waitCh, ok := kv.waitChMap[index]; ok {
-		waitCh <- op
-	}
+    if waitCh, ok := kv.waitChMap[index]; ok {
+        waitCh <- op
+    }
 }
 
 // 检查当前命令是否为无效的命令 (非 Get 命令需要检查，可能为过期的 RPC 或已经执行过的命令)
 func (kv *KVServer) isInvalidRequest(clientId int64, requestId int64) bool {
-	if lastRequestId, ok := kv.lastRequestMap[clientId]; ok {
-		if requestId <= lastRequestId {
-			return true
-		}
-	}
-	return false
+    if lastRequestId, ok := kv.lastRequestMap[clientId]; ok {
+        if requestId <= lastRequestId {
+            return true
+        }
+    }
+    return false
 }
 
 // 更新对应客户端对应的最近一次请求的Id, 这样可以避免今后执行过期的 RPC 或已经执行过的命令
@@ -412,29 +488,205 @@ test_test.go:419: Operations completed too slowly 100.00975ms/op > 33.333333ms/o
 
 ### :cherry_blossom: 目标
 
-修改键/值服务器以便它能够检测到持久化 Raft 状态何时变得太大, 然后通过与 Raft 库的 `Snapshot()` 方法合作，实现快照功能，以减少重新启动时间并节省日志空间; 当键/值服务器重新启动时，它应该从 `persister` 读取快照并从快照恢复其状态
+修改键/值服务器以便它能够检测到持久化 Raft 状态何时变得太大, 然后调用 Raft 库的 `Snapshot()` 方法实现快照功能，以减少重新启动时间并节省日志空间; 当键/值服务器重新启动时，它应该从 `persister` 读取快照并从快照恢复其状态
 
 ### :mag: 提示
 
-测试时会给 `StartKVServer()` 传递 `maxraftstate` 参数, 它表明持久化的 Raft 状态的最大以字节数 (包括日志，但不包括快照)。因此若调用 `persister.RaftStateSize()` 后发现当前持久化状态大小接近阈值 `maxraftstate` 的话, 就应该调用 Raft 的 `Snapshot()` 来保存快照; 若 `maxraftstate` 为 -1, 表明不必创建快照
+测试时会给 `StartKVServer()` 传递 `maxraftstate` 参数, 它表明持久化的 Raft 状态 (自己的 Raft 实现中就是 `currentTerm`, `voteFor` 和 `log` 字段) 的最大以字节数 (包括日志，但不包括快照); 因此若调用 `persister.RaftStateSize()` 后发现当前持久化状态大小接近阈值 `maxraftstate` 的话, 就应该调用 Raft 的 `Snapshot()` 方法来保存快照; 若 `maxraftstate` 为 -1, 表明不必创建快照
 
-- :one:
-- :two: 
-- :three: 
-- :four: 
-- :five: 
+- :one: 考虑 KVServer 何时应该调用 `Raft.Snapshot()` 以及快照中应该包含哪些内容; Raft 会调用 `Save()` 将快照和对应的持久化状态存储在持久化对象中; 使用 `ReadSnapshot()` 读取最新存储的快照
+- :two: KVServer 必须能够跨检查点检测日志中的重复操作 (自己理解的检查点是生成快照的点, 即要求重启后能识别出当前命令是否在快照中), 用于检测命令是否重复的状态必须被包含在快照中
+- :three: 快照中存储的所有字段大写
+- :four: Lab 2 的 Raft 库中在本测试案例下可能会暴露出新问题, 若对 Raft 的实现进行了更改, 请确保它能继续通过所有 Lab 2 的测试
+
+### :dart: 思路
+
+相比于 Lab 3A, 增加了快照功能, 但是原先的逻辑都不用更改 (不像 Lab 2D 需要改很多很多东西), 只需要增加部分逻辑即可, 直接调用 `Raft.Snapshot()` 就可以了 (Lab 2D 写好的)。底层 Raft 之间的共识 KVServer 不用管, 所以 Lab 3B 其实并没有新增多少代码
+
+- :one: 考虑 KVServer 何时应该调用 `Raft.Snapshot()`?
+
+实验描述中也说的很清楚了, 当 `persister.RaftStateSize() > maxraftstate` 时就调用 `Raft.Snapshot()`, 而持久化状态的大小跟日志长度相关, 所以应在 KVServer 知道日志长度增加了以后检查条件
+
+KVServer 在两个地方知道底层 Raft 的日志增加了 (调用 `Start()` 和 从 `applyCh` 接收到命令), 但是调用 `Raft.Snapshot()` 必须提供裁剪到哪的下标并且必须确保该下标之前的日志已经被 `apply`, 所以**只能在 KVServer 接收到命令后进行检查并生成快照**
+
+- :two: 应对哪些内容生成快照？
+
+对 Raft 的日志进行裁剪就意味着 KVServer 无法通过读取日志来恢复其数据库内容, 因此 KVServer 必须将**当前键值数据库的内容**生成快照 (`KVDB map[string]string`), 这样即使崩溃了也可以通过读取保存的数据库状态和 Raft 中持久化的日志快速恢复其数据库内容
+
+提示 2 中说了应该在快照中保存用于检测命令是否会被重复执行的信息, 因此还需保存 `LastRequestMap map[int64]int64`
+
+最终效果为 KVServer 通过快照保存自己的数据库信息和所有客户端最近一次的请求信息, 底层 Raft 通过持久化状态保存任期, 投票和日志结果信息
+
+#### 流程图
+
+KVServer 新增快照功能后, 只是多了一个检测是否需要生成快照的逻辑和接收到快照 applyMsg 后如何处理的逻辑, 之前的逻辑基本不变, 一次具体的请求流程如下 ***(新增的逻辑用斜体加粗表示)***
+
+![一次具体的请求流程](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/Lab3B/result/pic/3B%E5%8D%95%E6%AC%A1%E8%AF%B7%E6%B1%82%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
+
+***Leader KVServer***
+
+- :one: Client 给 KVServer 的 Leader 发送 `RPC request`
+- :two: KVServer 封装 Op 并调用 Raft 的 `Start()` 提交日志, 因为需要在规定时间内给 Client 响应, 会同步开启定时器; 若未能在规定时间内在 `waitCh` 上读取到到相应的结果, 直接返回 `Err`
+- :three: 底层 Raft 达成共识 ***(区别是这里 Leader 可能会给 Follower 发送快照以达成共识)***
+- :four: Raft `apply` 该命令, 将其发送到 `applyCh`, 此时 KVServer 监听 `applyCh` 的协程会收到 `applyMsg` 
+- :five: KVServer 根据 `applyMsg` 中的 Op 执行相应的命令, 给 `waitCh` 发送执行结果。这样正在处理 `RPC request` 的协程 (正在监听 `waitCh` 和定时器) 就会收到信息, 当然前提是此时未达到定时时间; ***(随后检查 Raft 持久化状态大小, 若超过了 `maxraftstate`, 调用 `Raft.Snapshot()` 即可)***
+- :six: KVServer 根据 `waitCh` 读取的结果生成 `RPC response`, 响应 Client
+
+还有一个注意点就是初始化的时候记得读取快照 (Snapshot 的编码解码这部分直接参考 Lab 2 写就可以了, 都是模板, 改个需要进行快照的参数就行了)
+
+***Follower KVServer***
+
+- :one: 等待达成共识; 根据 Lab 2 实现的 Raft 可知会慢于 Leader 一拍 (达成共识后, Leader 提交命令, 更新 commitIndex; Follower 会在下一次收到心跳时发现自己的 commitIndex 落后于 Leader 的, 进而提交命令, ***现在也可能在心跳中收到快照进而提交快照***)
+- :two: Raft `apply` 该命令, 将其发送到 `applyCh`, 此时 KVServer 监听 `applyCh` 的协程会收到 `applyMsg` 
+- :three: ***KVServer 判断 applyMsg 的类别***
+    - 若为命令, 根据 `applyMsg` 中的 Op 执行相应的命令, ***(随后检查 Raft 持久化状态大小, 若超过了 `maxraftstate`, 调用 `Raft.Snapshot()` 即可)***
+    - ***若为快照, 解析快照, 更新自身状态 (同命令, 需要判断是旧的快照, 不能回退自身状态)***
+
+***总结***
+
+增加快照后, Leader KVServer 和 Follower KVServer 的流程又新增了不同点
+
+Lab 3A 中的区别在于在执行完 Op 后是否需要给 waitCh 发送执行完毕的通知 (Follower KVServer 没有 waitCh, 因为不需要回复客户端);
+
+Lab 3B 的区别在于快照的生成和解析 (同底层的 Raft 一样)。 Leader KVServer 只负责生成快照, 它永远也不会从 applyCh 中收到快照 applyMsg; Follower KVServer 既会在 Raft 的持久化状态大小过大时生成快照, 也会接收来自 Leader 的快照并根据快照内容更新自身状态
 
 ### :pizza: 数据结构
 
+相比于 Lab 3A, 仅修改了 KVServer 的结构, 新增加了两个字段
+
+```go
+type KVServer struct {
+    mu      sync.Mutex
+    me      int
+    rf      *raft.Raft
+    applyCh chan raft.ApplyMsg
+    dead    int32 // set by Kill()
+
+    maxraftstate int // snapshot if log grows this big
+
+    // Your definitions here.
+    KVDB           map[string]string // 状态机，记录KV
+    waitChMap      map[int]chan *Op  // 通知 chan, key 为日志的下标，值为通道
+    LastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的内容（包括请求的Id 和 回复）
+
+    // 3B 新增字段
+    persister         *raft.Persister
+    lastIncludedIndex int
+}
+```
+
 ### :beers: 实现
+#### :cherries: Snapshot 的编码解码
+
+仿照 Lab 2 写就可以了
+
+```go
+// 需要持久化的字段为 数据库
+// 为了避免重复执行命令，每个客户端最近一次请求的 Id 也需要持久化处理
+func (kv *KVServer) encodeState() []byte {
+    w := new(bytes.Buffer)
+    e := labgob.NewEncoder(w)
+    e.Encode(kv.KVDB)
+    e.Encode(kv.LastRequestMap)
+    kvstate := w.Bytes()
+    return kvstate
+}
+
+// 读取持久化状态
+func (kv *KVServer) readPersist(data []byte) {
+    if data == nil || len(data) < 1 {
+        return
+    }
+    r := bytes.NewBuffer(data)
+    d := labgob.NewDecoder(r)
+    kvdb := map[string]string{}
+    lastRequestMap := map[int64]int64{}
+    if d.Decode(&kvdb) != nil || d.Decode(&lastRequestMap) != nil {
+        return
+    } else {
+        kv.KVDB = kvdb
+        kv.LastRequestMap = lastRequestMap
+    }
+}
+```
+#### :cherries: 主要函数
+
+主要需要修改的就一个 applier() 函数, 新增一个是命令的话检查 Raft 持久化状态大小; 是快照的话读快照, 更新状态
+
+```go
+// 监听 Raft 提交的 applyMsg, 根据 applyMsg 的类别执行不同的操作
+// 为命令的话，必执行，执行完后检查是否需要给 waitCh 发通知
+// 为快照的话读快照，更新状态
+func (kv *KVServer) applier() {
+    for !kv.killed() {
+        applyMsg := <-kv.applyCh
+        kv.mu.Lock()
+        if applyMsg.CommandValid {
+            // 3B 需要判断日志是否被裁剪了
+            if applyMsg.CommandIndex <= kv.lastIncludedIndex {
+                kv.mu.Unlock()
+                continue
+            }
+
+            op := applyMsg.Command.(Op)
+            kv.execute(&op)
+            currentTerm, isLeader := kv.rf.GetState()
+            // 若当前服务器已经不再是 leader 或者是旧 leader，不需要通知回复客户端
+            // 指南中提到的情况：Clerk 在一个任期内向 kvserver 领导者发送请求, 可能在此期间当前领导者丧失了领导地位但是又重新当选了 Leader
+            // 虽然它还是 Leader, 但是已经不能在进行回复了，需要满足线性一致性 (可能客户端发起 Get 时应该获取的结果是 0, 但是在次期间增加了 1。若现在回复的话会回复 1, 但是根据请求时间来看应该返回 0)
+            // 所以不给客户端响应, 让其超时, 然后重新发送 Get, 此时的 Get 得到的结果就应该是 1 了 (只要任期没变, 都是同一个 Leader 在处理的话, 因为有重复命令的检查, 必定满足线性一致性)
+            if isLeader && applyMsg.CommandTerm == currentTerm {
+                kv.notifyWaitCh(applyMsg.CommandIndex, &op)
+            }
+
+            // 3B 执行完命令后检查状态, 有必要的化执行快照压缩 Raft 的日志
+            if kv.maxraftstate != -1 && kv.persister.RaftStateSize() >= kv.maxraftstate {
+                kv.rf.Snapshot(applyMsg.CommandIndex, kv.encodeState())
+            }
+            kv.lastIncludedIndex = applyMsg.CommandIndex
+
+        } else if applyMsg.SnapshotValid {
+            // 一定是 Follower 收到了快照, 若是最新的快照, 读取快照信息并更新自身状态
+            if applyMsg.SnapshotIndex <= kv.lastIncludedIndex {
+                kv.mu.Unlock()
+                continue
+            }
+            kv.readPersist(applyMsg.Snapshot)
+            kv.lastIncludedIndex = applyMsg.SnapshotIndex
+        }
+        kv.mu.Unlock()
+    }
+}
+```
+
+另一个修改的地方是初始化的时候记得读快照
+
+### :sob: 遇到的一些问题
+
+最开始测试的时候就产生死锁了, 检查代码后发现问题在于读快照部分 (因为是原封不动的拿的 Lab 2 中编码解码代码也没多想 :sob:) 
+在 Lab 2 的 Raft 的实现中, 自己想着读取持久化状态会修改共享资源就给加了锁 (这在 Raft 里是没啥问题的, 因为读取持久化状态仅仅发生在 Raft 初始化的时候, 此时不会产生死锁); 但是在 KVServer 的实现流程中, 当从 applyCh 中接收到的 applyMsg 为 Snapshot 时 (此时已经加锁), 就会读取 Snapshot, 在加锁就发生了死锁!!
+
 
 ### :rainbow: 结果
 
+![3B 结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/Lab3B/result/pic/Lab3B%E7%BB%93%E6%9E%9C.png?raw=true)
+
+通过了 500 次的压力测试，结果保存在 `Lab3B/result/test_3B_500times.txt` 中
+
 ---
 
+## 最终结果
+
+![Lab 3 结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/result/Lab3%E7%BB%93%E6%9E%9C.png?raw=true)
+
+通过了 500 次的压力测试，结果保存在 `Lab3/result/test_3_500times.txt` 中
 
 ---
+
 # :rose: 参考
+[分布式系统一致性 - 总结](https://zhuanlan.zhihu.com/p/57315959)
 
-[博客1](https://blog.csdn.net/qq_40443651/article/details/117172246)
-[博客2](https://www.codercto.com/a/84326.html)
+[MIT 6.824 Lab3 2021 AB完成记录](https://blog.csdn.net/qq_40443651/article/details/117172246)
+
+[Lab3A. 基于 Raft 实现容错的 kvDB](https://www.codercto.com/a/84326.html)
+
