@@ -4,7 +4,7 @@
 
 记录自己对于不同 Lab 的理解，思路以及遇到的一些 bug，方便回顾
 
-所有 Lab 都通过了 500 次的连续测试，但是无法保证不存在 bug :joy:，肯定仍存在一些特殊情况自己没有考虑到（比如做 Lab2C 的时候因为网络问题就发现了不少 Lab 2A 和 Lab2B 中的 bug，比如缺乏对于过期 RPC 回复的判断）
+所有 Lab 都通过了 1000 次的连续测试，但是无法保证不存在 bug :joy:，肯定仍存在一些特殊情况自己没有考虑到（比如做 Lab2C 的时候因为网络问题就发现了不少 Lab 2A 和 Lab2B 中的 bug，比如缺乏对于过期 RPC 回复的判断）
 
 ## :two_hearts: [Lab1 MapReduce](https://github.com/casey-li/MIT6.5840/tree/main/Lab1)
 
@@ -29,7 +29,7 @@
 
 因为后序实验都是在前面的实验上进行改进，所以每完成一个实验一定一定要进行压力测试，尽可能的修改掉当前引入的 bug，这样做后面的实验会轻松很多。自己就是最开始没注意这个，跑了几次都过了就继续往后做，到了 Lab2C 以后出现了一堆 bug :sob:，然后又重头回去重写了 Lab2A 和 Lab2B
 
-## :two_hearts: Lab3
+## :two_hearts: [Lab3](https://github.com/casey-li/MIT6.5840/tree/main/Lab3)
 
 [6.5840 Lab 3: Fault-tolerant Key/Value Service](https://pdos.csail.mit.edu/6.824/labs/lab-kvraft.html)
 
@@ -48,7 +48,7 @@
 
 ![](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/Lab3B/result/pic/3B%E5%8D%95%E6%AC%A1%E8%AF%B7%E6%B1%82%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
 
-## :two_hearts: Lab4
+## :two_hearts: [Lab4](https://github.com/casey-li/MIT6.5840/tree/main/Lab4)
 
 [6.5840 Lab 4: Sharded Key/Value Service](https://pdos.csail.mit.edu/6.824/labs/lab-shard.html)
 
