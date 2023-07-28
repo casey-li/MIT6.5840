@@ -1,4 +1,6 @@
-# [MIT6.5840](https://pdos.csail.mit.edu/6.824/index.html)
+# MIT6.5840
+
+[官方课程页面](https://pdos.csail.mit.edu/6.824/index.html)
 
 记录自己对于不同 Lab 的理解，思路以及遇到的一些 bug，方便回顾
 
@@ -31,10 +33,41 @@
 
 [6.5840 Lab 3: Fault-tolerant Key/Value Service](https://pdos.csail.mit.edu/6.824/labs/lab-kvraft.html)
 
-TODO
+将使用实验 2 中的 Raft 库构建容错键/值存储服务，即维护一个简单的键/值对数据库，其中键和值都是字符串。具体来说，该服务是一个复制状态机，由多个使用 Raft 进行复制的键/值服务器组成，只要大多数服务器处于活动状态并且可以通信，该服务就应该继续处理客户端请求
+
+它是 Lab 4 的基础, 只不过在 Lab 3 中维护的是整个完整的剪枝存储服务, 而 Lab 4 中对整键进行了分片处理, 不同的分片交由一个副本组完成 (每个副本组相当于一个 Lab 3 的 KVServer)
+
+- :one: Lab 3A 使用 Raft 实现来实现键/值服务，但不使用快照
+- :two: Lab 3B 将使用 Lab 2D 中的快照，即允许 Raft 丢弃旧的日志条目
+
+总体流程如下
+
+![](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/Lab3A/result/pic/3A%E6%80%BB%E4%BD%93%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
+
+一次具体的请求流程 (包含超时检测) 如下
+
+![](https://github.com/casey-li/MIT6.5840/blob/main/Lab3/Lab3B/result/pic/3B%E5%8D%95%E6%AC%A1%E8%AF%B7%E6%B1%82%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
 
 ## :two_hearts: Lab4
 
 [6.5840 Lab 4: Sharded Key/Value Service](https://pdos.csail.mit.edu/6.824/labs/lab-shard.html)
 
-TODO
+要求构建一个分片键/值存储系统, 包含一组副本组和一个分片控制器
+
+分片存储系统必须能够在多个副本组之间转移分片。原因之一是某些组的负载可能远高于其他组, 需要移动分片以实现负载均衡; 二是某些副本组可能会加入或退出系统 (可能会添加新的副本组以增加容量, 或者现有的副本组可能会脱机以进行修复), 因此必须移动分片以继续满足要求
+
+- :one: Lab 4A 实现分片控制器以管理配置, 每个配置都描述了每个分片由哪个副本组管理以及每个副本组包含哪些服务器的信息; 每当需要更改分片分配信息时, ShardCtrler 都会创建新配置, 当键/值客户端和服务器想要了解当前或过去的配置时，它们会请求 ShardCtrler
+- :two: Lab 4B 实现完整的分片存储系统;  一个副本组由多个 shardkv server 保证容错, 每个副本组相当于仅处理部分 keys 的 Lab 3, 都支持 Get, Put, Append 操作 (仅处理维护自己管理的分片中包含的 keys)。客户端使用 key2shard() 来查找 key 属于哪个分片, 多个副本组协作以为完整的分片集提供服务
+
+Lab 4 的难度是最大的, 自己也是参考了很多人的博客才完成
+
+分片控制器的管理模式如下
+
+![](https://github.com/casey-li/MIT6.5840/raw/main/Lab4/Lab4A/result/pic/4A%E8%AF%B4%E6%98%8E%E5%9B%BE.png?raw=true)
+
+分片控制器的总体流程图如下
+
+![](https://github.com/casey-li/MIT6.5840/raw/main/Lab4/Lab4A/result/pic/4A%E8%AF%B7%E6%B1%82%E6%B5%81%E7%A8%8B.png?raw=true)
+
+在 Lab 4A 以及 Lab 3 的基础上完善分片迁移的功能即可
+
