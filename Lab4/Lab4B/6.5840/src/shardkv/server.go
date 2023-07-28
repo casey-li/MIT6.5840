@@ -24,15 +24,6 @@ func DPrintf(format string, a ...interface{}) (n int, err error) {
 	return
 }
 
-// Test: concurrent configuration change and restart...
-// panic: test timed out after 10m0s
-// running tests:
-//
-//	TestConcurrent3 (9m25s)
-
-// --- FAIL: TestConcurrent3 (169.43s)
-//     config.go:75: test took longer than 120 seconds
-
 const ExecuteTimeout = 500 * time.Millisecond
 
 type Op struct {
@@ -68,37 +59,14 @@ type ShardKV struct {
 	lastIncludedIndex int
 }
 
-// type ShardState int
-
-// const (
-// 	Serving   ShardState = iota // 当前分片正常服务中
-// 	Pulling                     // 当前分片正在从其它复制组中拉取信息
-// 	BePulling                   // 当前分片正在复制给其它复制组
-// 	GCing                       // 当前分片正在等待清楚 （监视器检测到后需要从拥有这个分片的复制组中删除分片）
-// )
-
 type ShardState string
 
 const (
 	Serving   = "Serving"   // 当前分片正常服务中
 	Pulling   = "Pulling"   // 当前分片正在从其它复制组中拉取信息
 	BePulling = "BePulling" // 当前分片正在复制给其它复制组
-	GCing     = "GCing"     // 当前分片正在等待清楚 （监视器检测到后需要从拥有这个分片的复制组中删除分片）
+	GCing     = "GCing"     // 当前分片正在等待清除（监视器检测到后需要从拥有这个分片的复制组中删除分片）
 )
-
-// func (state ShardState) String() string {
-// 	switch state {
-// 	case Serving:
-// 		return "Serving"
-// 	case Pulling:
-// 		return "Pulling"
-// 	case BePulling:
-// 		return "BePulling"
-// 	case GCing:
-// 		return "GCing"
-// 	}
-// 	return ""
-// }
 
 type Shard struct {
 	ShardKVDB map[string]string
@@ -117,11 +85,6 @@ func (s *Shard) append(key string, value string) {
 	str := s.ShardKVDB[key]
 	s.ShardKVDB[key] = str + value
 }
-
-// func (s *Shard) hasKey(key string) bool {
-// 	_, ok := s.Data[key]
-// 	return ok
-// }
 
 func MakeShard(state ShardState) *Shard {
 	return &Shard{
@@ -159,7 +122,6 @@ func mapToString(umap map[string]string) string {
 func ToString(shards map[int]*Shard) string {
 	str := ""
 	for i := 0; i < shardctrler.NShards; i++ {
-		// str += strconv.Itoa(i) + ": " + mapToString(shards[i].ShardKVDB) + string(shards[i].State) + ", "
 		str += strconv.Itoa(i) + ": " + string(shards[i].State) + ", "
 	}
 	return str
@@ -170,8 +132,6 @@ func ToString(shards map[int]*Shard) string {
 func (kv *ShardKV) Get(args *GetPutAppendArgs, reply *GetReply) {
 	// Your code here.
 	kv.mu.Lock()
-	// id, gid := kv.me, kv.gid
-	// DPrintf("server [%d, %d] receives Get RPC, args [%+v]", id, gid, args)
 
 	// 检查是否由自己负责
 	shardId := key2shard(args.Key)
@@ -190,37 +150,6 @@ func (kv *ShardKV) Get(args *GetPutAppendArgs, reply *GetReply) {
 	response := &CommonReply{Err: OK}
 	kv.StartCommand(command, response)
 	reply.Value, reply.Err = response.Value, response.Err
-	// index, term, isLeader := kv.rf.Start(command)
-	// if !isLeader {
-	// 	reply.Err = ErrWrongLeader
-	// 	return
-	// }
-	// DPrintf("[%d] send Get to leader, log index [%d], log term [%d], args [%v]", id, index, term, args)
-	// kv.mu.Lock()
-	// waitChan, exist := kv.waitChMap[index]
-	// if !exist {
-	// 	kv.waitChMap[index] = make(chan *CommonReply, 1)
-	// 	waitChan = kv.waitChMap[index]
-	// }
-	// DPrintf("[%d] wait for timeout", id)
-	// kv.mu.Unlock()
-	// select {
-	// case res := <-waitChan:
-	// 	DPrintf("[%d] receive res from waitChan [%v]", id, res)
-	// 	// reply.Value, reply.Err = res.Value, OK
-	// 	reply.Value, reply.Err = res.Value, res.Err
-	// 	currentTerm, stillLeader := kv.rf.GetState()
-	// 	if !stillLeader || currentTerm != term {
-	// 		DPrintf("[%d] has accident, stillLeader [%t], term [%d], currentTerm [%d]", id, stillLeader, term, currentTerm)
-	// 		reply.Err = ErrWrongLeader
-	// 	}
-	// case <-time.After(ExecuteTimeout):
-	// 	DPrintf("[%d] timeout!", id)
-	// 	reply.Err = ErrWrongLeader
-	// }
-	// kv.mu.Lock()
-	// delete(kv.waitChMap, index)
-	// kv.mu.Unlock()
 }
 
 // 检查当前组是否仍负责管理该分片
@@ -261,36 +190,6 @@ func (kv *ShardKV) PutAppend(args *GetPutAppendArgs, reply *PutAppendReply) {
 	response := &CommonReply{Err: OK}
 	kv.StartCommand(command, response)
 	reply.Err = response.Err
-	// index, term, isLeader := kv.rf.Start(command)
-	// if !isLeader {
-	// 	reply.Err = ErrWrongLeader
-	// 	return
-	// }
-	// kv.mu.Lock()
-	// DPrintf("[%d] send PutAppend to leader, log index [%d], log term [%d], args [%v]", id, index, term, args)
-	// waitChan, exist := kv.waitChMap[index]
-	// if !exist {
-	// 	kv.waitChMap[index] = make(chan *CommonReply, 1)
-	// 	waitChan = kv.waitChMap[index]
-	// }
-	// DPrintf("[%d] wait for timeout", id)
-	// kv.mu.Unlock()
-	// select {
-	// case res := <-waitChan:
-	// 	DPrintf("[%d] receive res from notifyChan [%v]", id, res)
-	// 	reply.Err = res.Err
-	// 	currentTerm, stillLeader := kv.rf.GetState()
-	// 	if !stillLeader || currentTerm != term {
-	// 		DPrintf("[%d] has accident, stillLeader [%t], term [%d], currentTerm [%d]", id, stillLeader, term, currentTerm)
-	// 		reply.Err = ErrWrongLeader
-	// 	}
-	// case <-time.After(ExecuteTimeout):
-	// 	DPrintf("[%d] timeout!", id)
-	// 	reply.Err = ErrWrongLeader
-	// }
-	// kv.mu.Lock()
-	// delete(kv.waitChMap, index)
-	// kv.mu.Unlock()
 }
 
 func checkNotPutGetAppend(cmdType string) bool {
@@ -450,8 +349,6 @@ func (kv *ShardKV) execute(cmd interface{}) *CommonReply {
 	// DPrintf("[%d] apply command [%v]", kv.me, op)
 	command := cmd.(Command)
 
-	// 注意这个 reply, 其它情况目前并没有专门的 Err
-
 	reply := &CommonReply{
 		Err: OK,
 	}
@@ -471,7 +368,7 @@ func (kv *ShardKV) execute(cmd interface{}) *CommonReply {
 		kv.processDeleteShard(&args, reply)
 	case AdjustShardState:
 		args := command.Data.(AdjustShardArgs)
-		kv.adjustGCingShard(&args, reply)
+		kv.processAdjustGCingShard(&args, reply)
 	}
 	return reply
 }
@@ -530,9 +427,7 @@ func (kv *ShardKV) processAddConfig(newConfig *shardctrler.Config, reply *Common
 
 		reply.Err = OK
 	} else {
-		// 同理,该设置 reply.Err 为什么
 		reply.Err = OtherErr
-		// DPrintf("server [%d, %d] receive old processAddConfig request", kv.me, kv.gid)
 	}
 }
 
@@ -545,7 +440,6 @@ func (kv *ShardKV) processInsertShard(response *PullShardReply, reply *CommonRep
 	if response.ConfigNum == kv.currentCongig.Num {
 		Shards := response.Shards
 		for shardId, shard := range Shards {
-			// 深拷贝？？
 			oldShard := kv.shards[shardId]
 			if oldShard.State == Pulling {
 				for key, value := range shard.ShardKVDB {
@@ -563,10 +457,7 @@ func (kv *ShardKV) processInsertShard(response *PullShardReply, reply *CommonRep
 		// DPrintf("server [%d, %d] updates LastRequestMap [%+v]", kv.me, kv.gid, kv.LastRequestMap)
 		DPrintf("server [%d, %d] InsertShard over", kv.me, kv.gid)
 	} else {
-		// 同理,该设置 reply.Err 为什么
 		reply.Err = OtherErr
-
-		// DPrintf("server [%d, %d] receive old insert shards request", kv.me, kv.gid)
 	}
 }
 
@@ -595,27 +486,18 @@ func (kv *ShardKV) processDeleteShard(args *RemoveShardArgs, reply *CommonReply)
 	}
 }
 
-func (kv *ShardKV) adjustGCingShard(args *AdjustShardArgs, reply *CommonReply) {
+func (kv *ShardKV) processAdjustGCingShard(args *AdjustShardArgs, reply *CommonReply) {
 	DPrintf("server [%d, %d] adjustGCingShard, currentCongigNum [%d], args.ConfigNum [%d]", kv.me, kv.gid, kv.currentCongig.Num, args.ConfigNum)
 
 	if args.ConfigNum == kv.currentCongig.Num {
 		DPrintf("server [%d, %d] original shards [%s]", kv.me, kv.gid, ToString(kv.shards))
-		// for _, shardId := range args.ShardIds {
-		// 	_, ok := kv.shards[shardId]
-		// 	if ok && kv.shards[shardId].State == BePulling {
-		// 		kv.shards[shardId] = MakeShard(Serving)
-		// 	}
-		// }
 		for _, shardId := range args.ShardIds {
-			// 同理, 按理来说必定存在
 			if _, ok := kv.shards[shardId]; ok {
 				kv.shards[shardId].State = Serving
 			}
 		}
 		DPrintf("server [%d, %d] updates shards [%s]", kv.me, kv.gid, ToString(kv.shards))
 	} else {
-		// 同理,该设置 reply.Err 为什么 (后面需要根据返回值来确定是否更改状态为 Serving, 所以必须返回非 OK)
-		// reply.Err = ErrWrongLeader
 		reply.Err = OtherErr
 		if args.ConfigNum < kv.currentCongig.Num {
 			reply.Err = OK
@@ -627,7 +509,6 @@ func (kv *ShardKV) adjustGCingShard(args *AdjustShardArgs, reply *CommonReply) {
 // 给 waitCh 发送通知，让其生成响应。必须在发送前检查一下 waitCh 是否关闭
 func (kv *ShardKV) notifyWaitCh(index int, reply *CommonReply) {
 	if waitCh, ok := kv.waitChMap[index]; ok {
-		// DPrintf("server [%d, %d] notifyWaitCh [%d]", kv.me, kv.gid, index)
 		waitCh <- reply
 	}
 }
@@ -635,10 +516,6 @@ func (kv *ShardKV) notifyWaitCh(index int, reply *CommonReply) {
 // 检查当前分片是否仍由自己负责并且当前分片的状态正常
 func (kv *ShardKV) checkShardAndState(shardId int) bool {
 	shard, ok := kv.shards[shardId]
-	// if ok {
-	// 	DPrintf("server [%d, %d] shard [%d] gid [%d] kv.currentCongig.Shards[shardId] [%d] shard state [%v]",
-	// 		kv.me, kv.gid, shardId, kv.gid, kv.currentCongig.Shards[shardId], shard.State)
-	// }
 	if ok && kv.currentCongig.Shards[shardId] == kv.gid &&
 		(shard.State == Serving || shard.State == GCing) {
 		return true
@@ -864,15 +741,6 @@ func (kv *ShardKV) monitorGC() {
 						}
 						kv.StartCommand(command, &CommonReply{})
 						DPrintf("server [%d, %d] adjust shard state over!!", id, gid)
-						// kv.mu.Lock()
-						// for _, shardId := range shardIds {
-						// 	// 同理, 按理来说必定存在
-						// 	if _, ok := kv.shards[shardId]; ok {
-						// 		kv.shards[shardId].State = Serving
-						// 	}
-						// }
-						// DPrintf("server [%d, %d] adjust shard state over!!, shards [%s]", id, gid, ToString(kv.shards))
-						// kv.mu.Unlock()
 					}
 				}
 			}(oldGid, configNum, servers, shardIds)
