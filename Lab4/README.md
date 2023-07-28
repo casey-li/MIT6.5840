@@ -456,7 +456,7 @@ test_test.go:31: shard 9 -> invalid group -1
 
 ### :rainbow: 结果
 
-![4A 结果]()
+![4A 结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab4/Lab4A/result/pic/Lab4A%E7%BB%93%E6%9E%9C.png?raw=true)
 
 通过了 500 次的压力测试，结果保存在 `Lab4A/result/test_4A_500times.txt` 中
 
@@ -497,20 +497,813 @@ shardkv server 仅是单个副本组的成员, 给定副本组中的服务器集
 
 ### :dart: 思路
 
+每个服务器都维护所有分片的状态, 分片的状态根据配置的变化被划分为了以下四种
 
-#### 流程图
+```go
+type ShardState string
 
+const (
+    Serving   = "Serving"   // 当前分片正常服务中
+    Pulling   = "Pulling"   // 当前分片正在从其它复制组中拉取信息
+    BePulling = "BePulling" // 当前分片正在复制给其它复制组
+    GCing     = "GCing"     // 当前分片正在等待清除（监视器检测到后需要从拥有这个分片的复制组中删除分片）
+)
+```
+
+当监听配置时知道配置信息发生了变更后, 修改分片状态即可。具体的分片迁移工作则交由后台监听的协程处理, 本实验中后台监听的协程如下
+
+- :one: `kv.applier()`, 监听 Raft 提交的 applyMsg 并根据 applyMsg 的类别执行不同的操作
+- :two: `kv.monitorRequestConfig()`, 定期监听配置信息是否发生改变 (定期向 ShardCtrler 询问最新配置信息)
+- :three: `kv.monitorInsert()`, 定期检查是否需要向其它副本组拉取分片, 即检查是否有处于 Pulling 状态的分片
+- :four: `kv.monitorGC()`, 定期检查是否有需要等待清理的分片, 用于通知其他副本组自己已经收到了想要的分片, 让其他副本组完成清理工作, 即检查是否有处于 GCing 状态的分片
+- :five: `kv.monitorBePulling()`, 定期检查是否有需要被其他副本组拉取的分片, 即检查状态是否有处于 BePulling 状态的分片
+
+在有关分片迁移的函数中, 最重要的监听函数为 `kv.monitorInsert()`, 虽说 `kv.monitorBePulling()` 跟它是相对的, 但是 `kv.monitorBePulling()` 仅负责检查是否被拉取。 若被拉取了的话改变自身状态 (碰到了一个 bug 后新增的后台监听程序，记录在后序部分了), 该函数不会负责发送分片!!!
+
+总体有两套逻辑，其中之一是完成客户端发送的 Put, Get, Append 操作请求 (类似 Lab 3 的 KVRaft, 只不过现在是在分片上进行); 另一套逻辑则是分片迁移
+
+分片迁移过程中设计到了分片的请求, 删除, 新增了两个 RPC 调用
+
+- :one: `GetShards()`, 给调用者返回它们需要的并且当前副本组中分片状态为 BePulling 的fenpian
+- :two: `DeleteShards()`, 调用者收到了需要的分片, 调用该 RPC 通知当前副本组可以删除那些分片并更新状态了
+
+#### 分片迁移流程
+
+按照时间线进行划分的话，总体流程如下
+
+(1) `monitorRequestConfig()` 发现了新配置，提交到底层的 Raft 组, 等待达成共识后处理命令, 更新配置号并修改分片状态 (只要有一个分片的状态由 Serving 改成了 Pulling, 那么这个分片必定会在某个副本组中的状态由 Serving 转变为 BePulling)
+(2) `monitorInsert()` 在例行检查的过程中发现了当前副本组掌管的分片中有分片的状态转变为了 Pulling, 会跟上一个配置进行对比, 确定在上一个配置中, 该分片由哪个副本组管理 (即应该向哪个副本组发起拉取分片的请求)。确定好副本组后, 发送 `GetShards RPC` 请求
+(3) 其他副本组对当前 RPC 的合法性进行检验, 若检验成功则给予其需要的分片结果, 响应 RPC
+(4) 当前副本组获取到了需要的分片后, 生成 InsertShard 命令, 提交到底层 Raft 组, 等待达成共识
+(5) 达成共识后, 当前副本组的所有服务器会从 `applier()` 中收到命令, 更新分片数据, 并将更新完成的分片的状态改为 GCing
+(6) `monitorGC()` 在例行检查的过程中发现了当前副本组掌管的分片中有分片的状态转变为了 GCing, 给之前持有这些分片的副本组发送 `DeleteShard RPC`
+(7) 其他副本组执行 DeleteShard, 向底层的 Raft组 提交 DeleteShards 命令, 等待达成共识后处理命令, 将这些分片的状态由 BePulling 改回 Serving。生成响应 RPC
+(8) 当前副本组收到正确的响应 RPC (其他副本组完成了清除操作) 后,生成 AdjustShardState 命令并提交到底层 Raft 组, 等待达成共识后处理命令, 将分片状态由 GCing 改回 Serving 
 
 ### :pizza: 数据结构
 
+- :one: 各种命令
+
+很多是已经给了的, 为了方便起见将 GetPutAppend 合并到了一起 (GetPutAppendArgs) 并使用了通用的回复 (CommonReply); 
+
+因为有很多命令, 但是每个命令的流程都是一样的 (提交命令 (`StartCommand`), 等待达成共识, 从 `applier()` 中接收命令, 根据命令类别执行对应命令), 所以抽象出了一个共工的命令 Command, 其 data 字段保存对应的参数
+
+```go
+const (
+    OK             = "OK"
+    ErrNoKey       = "ErrNoKey"
+    ErrWrongGroup  = "ErrWrongGroup"
+    ErrWrongLeader = "ErrWrongLeader"
+    OtherErr       = "OtherErr"
+)
+
+type Err string
+
+type PutAppendArgs struct {
+    Key   string
+    Value string
+    Op    string // "Put" or "Append"
+    RequestId int64
+    ClientId  int64
+    Gid       int //请求的复制组 Id
+}
+
+type PutAppendReply struct {
+    Err Err
+}
+
+type GetArgs struct {
+    Key string
+    RequestId int64
+    ClientId  int64
+    Gid       int //请求的复制组 Id
+}
+
+type GetReply struct {
+    Err   Err
+    Value string
+}
+
+type PullShardArgs struct {
+    Gid       int   // 复制组ID
+    ShardIds  []int // 拉取的分片号
+    ConfigNum int   // 配置号
+}
+
+type PullShardReply struct {
+    Err            Err
+    ConfigNum      int
+    Shards         map[int]Shard   // 每个分片号对应的完整分片
+    LastRequestMap map[int64]int64 // 每个分片对应的最近一次的请求Id
+}
+
+type RemoveShardArgs struct {
+    ShardIds  []int // 需要删除的分片号
+    ConfigNum int
+}
+
+type RemoveShardReply struct {
+    Err Err
+}
+
+type AdjustShardArgs struct {
+    ShardIds  []int // 需要删除的分片号
+    ConfigNum int
+}
+
+type CheckArgs struct {
+    ShardIds  []int // 检查的分片号
+    ConfigNum int
+}
+
+type CheckReply struct {
+    Err Err
+}
+
+type Command struct {
+    CommandType string
+    Data        interface{}
+}
+
+const (
+    Get              = "Get"
+    Put              = "Put"
+    Append           = "Append"
+    AddConfig        = "AddConfig"
+    InsertShard      = "InsertShard"
+    DeleteShard      = "DeleteShard"
+    AdjustShardState = "AdjustShardState"
+)
+
+type CommonReply struct {
+    Err   Err
+    Value string
+}
+
+type GetPutAppendArgs struct {
+    Key       string
+    Value     string
+    OpType    string // "Put" or "Append" or "Get"
+    RequestId int64  // 客户端请求Id
+    ClientId  int64  // 访问的客户端Id
+    Gid       int    // 请求的复制组Id
+}
+```
+
+- :two: ShardKV 以及 分片
+
+Shard 底层维护的数据为键值对, 实现对 get, put, append 的封装
+
+```go
+type ShardKV struct {
+    mu           sync.Mutex
+    me           int
+    rf           *raft.Raft
+    applyCh      chan raft.ApplyMsg
+    make_end     func(string) *labrpc.ClientEnd
+    gid          int
+    ctrlers      []*labrpc.ClientEnd
+    maxraftstate int 
+
+    dead              int32
+    manager           *shardctrler.Clerk        // ShardCtrler 对应的管理者
+    currentCongig     shardctrler.Config        // 保存当前配置信息
+    lastConfig        shardctrler.Config        // 保存上一次的配置信息
+    shards            map[int]*Shard            // 状态机, 保存分片Id 到 分片数据的映射
+    waitChMap         map[int]chan *CommonReply // 通知 chan, key 为日志的下标，值为通道
+    LastRequestMap    map[int64]int64           // 保存每个客户端对应的最近一次请求的Id
+    persister         *raft.Persister           // 持久化
+    lastIncludedIndex int
+}
+
+type ShardState string
+
+const (
+    Serving   = "Serving"   // 当前分片正常服务中
+    Pulling   = "Pulling"   // 当前分片正在从其它复制组中拉取信息
+    BePulling = "BePulling" // 当前分片正在复制给其它复制组
+    GCing     = "GCing"     // 当前分片正在等待清除（监视器检测到后需要从拥有这个分片的复制组中删除分片）
+)
+
+type Shard struct {
+    ShardKVDB map[string]string
+    State     ShardState
+}
+
+func (s *Shard) get(key string) string {
+    return s.ShardKVDB[key]
+}
+
+func (s *Shard) put(key string, value string) {
+    s.ShardKVDB[key] = value
+}
+
+func (s *Shard) append(key string, value string) {
+    str := s.ShardKVDB[key]
+    s.ShardKVDB[key] = str + value
+}
+
+func (s *Shard) CopyShard() Shard {
+    newData := make(map[string]string, len(s.ShardKVDB))
+    for k, v := range s.ShardKVDB {
+        newData[k] = v
+    }
+
+    return Shard{
+        ShardKVDB: newData,
+        State:     Serving,
+    }
+}
+
+func MakeShard(state ShardState) *Shard {
+    return &Shard{
+        ShardKVDB: make(map[string]string),
+        State:     state,
+    }
+}
+```
+
 
 ### :beers: 实现
-#### :cherries: 
 
-#### :cherries: 
+#### :cherries: 客户端 Get, Put, Append 的请求
 
-### :rainbow: 结果
+跟之前的很类似, 给出 `Get()` 的实现
 
+```go
+func (ck *Clerk) Get(key string) string {
+    args := GetPutAppendArgs{
+        Key:       key,
+        OpType:    Get,
+        RequestId: ck.RequestId,
+        ClientId:  ck.ClientId,
+    }
+    shard := key2shard(key)
+    for {
+        gid := ck.config.Shards[shard]
+        if servers, ok := ck.config.Groups[gid]; ok {
+            for si := 0; si < len(servers); si++ {
+                srv := ck.make_end(servers[si])
+                var reply GetReply
+                ok := srv.Call("ShardKV.Get", &args, &reply)
+                if ok && (reply.Err == OK || reply.Err == ErrNoKey) {
+                    ck.RequestId++
+                    return reply.Value
+                }
+                if ok && (reply.Err == ErrWrongGroup) {
+                    break
+                }
+            }
+        }
+        time.Sleep(100 * time.Millisecond)
+        ck.config = ck.sm.Query(-1)
+    }
+}
+```
+
+#### :cherries: 服务端 Get, Put, Append 的响应
+
+跟之前 3A 的很类似, 不过凝练出了它们共有的部分 (提交命令等待底层 Raft 达成共识并执行命令, 若未能在规定时间内完成则返回), 因为分片迁移那部分的逻辑也要用到这部分逻辑
+
+此外, 新增了检查当前副本组是否负责管理所在分片的逻辑, 并且提交的命令是经过封装的命令, 即 Command
+
+```go
+// 检查当前组是否仍负责管理该分片
+// 其它流程同 3A
+func (kv *ShardKV) Get(args *GetPutAppendArgs, reply *GetReply) {
+    kv.mu.Lock()
+    shardId := key2shard(args.Key)
+    if !kv.checkShardAndState(shardId) {
+        reply.Err = ErrWrongGroup
+        kv.mu.Unlock()
+        return
+    }
+    kv.mu.Unlock()
+
+    command := Command{
+        CommandType: Get,
+        Data:        *args,
+    }
+    response := &CommonReply{Err: OK}
+    kv.StartCommand(command, response)
+    reply.Value, reply.Err = response.Value, response.Err
+}
+
+// 检查当前组是否仍负责管理该分片
+// Put 或 Append 还需要先检查是否为过期的 RPC 或已经执行过的命令，避免重复执行
+func (kv *ShardKV) PutAppend(args *GetPutAppendArgs, reply *PutAppendReply) {
+    kv.mu.Lock()
+    // 检查是否由自己负责
+    shardId := key2shard(args.Key)
+    if !kv.checkShardAndState(shardId) {
+        reply.Err = ErrWrongGroup
+        kv.mu.Unlock()
+        return
+    }
+    if kv.isInvalidRequest(args.ClientId, args.RequestId) {
+        reply.Err = OK
+        kv.mu.Unlock()
+        return
+    }
+    kv.mu.Unlock()
+    command := Command{
+        CommandType: args.OpType,
+        Data:        *args,
+    }
+    response := &CommonReply{Err: OK}
+    kv.StartCommand(command, response)
+    reply.Err = response.Err
+}
+
+// 提交命令并等待回复或超时
+func (kv *ShardKV) StartCommand(command Command, response *CommonReply) {
+    index, term, isLeader := kv.rf.Start(command)
+    if !isLeader {
+        response.Err = ErrWrongLeader
+        return
+    }
+    kv.mu.Lock()
+    id, gid := kv.me, kv.gid
+    waitChan, exist := kv.waitChMap[index]
+    if !exist {
+        kv.waitChMap[index] = make(chan *CommonReply, 1)
+        waitChan = kv.waitChMap[index]
+    }
+    kv.mu.Unlock()
+
+    select {
+    case res := <-waitChan:
+        response.Value, response.Err = res.Value, res.Err
+        currentTerm, stillLeader := kv.rf.GetState()
+        if !stillLeader || currentTerm != term {
+            response.Err = ErrWrongLeader
+        }
+    case <-time.After(ExecuteTimeout):
+        response.Err = ErrWrongLeader
+    }
+
+    kv.mu.Lock()
+    delete(kv.waitChMap, index)
+    kv.mu.Unlock()
+}
+```
+#### :cherries: 分片迁移逻辑
+
+这部分就是最难的, bug 都出自这部分 :sob:, 分为两块儿描述分块迁移的逻辑。总体流程已经在思路部分给出了
+
+- :one: 后台监听协程 (监听配置以及分片的状态信息)
+
+```go
+// Leader 节点需定期向 ShardCtrler 询问最新配置信息
+// 若当前正在更改自身配置则放弃本次询问
+// 若发现获取的配置为新配置则更新自身配置
+func (kv *ShardKV) monitorRequestConfig() {
+    for !kv.killed() {
+        // 不能直接退出, 因为不能保证 Leader 不做更改
+        if _, isLeader := kv.rf.GetState(); !isLeader {
+            time.Sleep(100 * time.Millisecond)
+            continue
+        }
+        kv.mu.Lock()
+        id, gid := kv.me, kv.gid
+        // 检查当前是否没有分片信息正在更改
+        isProcessShardCommand := false
+        for _, shard := range kv.shards {
+            if shard.State != Serving {
+                isProcessShardCommand = true
+                break
+            }
+        }
+        currentConfigNum := kv.currentCongig.Num
+        kv.mu.Unlock()
+        if !isProcessShardCommand {
+            // 注意这里不能请求最新的
+            newConfig := kv.manager.Query(currentConfigNum + 1)
+            if newConfig.Num == currentConfigNum+1 {
+                reply := &CommonReply{}
+                command := Command{
+                    CommandType: AddConfig,
+                    Data:        newConfig,
+                }
+                kv.StartCommand(command, reply)
+            }
+        }
+        time.Sleep(100 * time.Millisecond)
+    }
+}
+
+// 定期检查是否需要向其它副本组拉取分片
+// 若确定了需要向某个副本组拉取分片的话, 调用 RPC 获取回复 (包含分片以及每个分片对应的客户端最近一次的请求信息)
+// 得到这些信息后, 给 Raft 提交命令等待达成共识并执行
+func (kv *ShardKV) monitorInsert() {
+    for !kv.killed() {
+        if _, isLeader := kv.rf.GetState(); !isLeader {
+            time.Sleep(100 * time.Millisecond)
+            continue
+        }
+        kv.mu.Lock()
+        id, gid := kv.me, kv.gid
+        // 获取需要拉取的分片所在的组并将分片按组整合 (key 为 oldGid, Vaule 为 shardId[])
+        // 这样可以一次直接拉取某个组所有符合要求的分片
+        groups := kv.getShardIdsWithSpecifiedState(Pulling)
+        // 用于等待其他副本组回复
+        wg := &sync.WaitGroup{}
+        wg.Add(len(groups))
+        for oldGid, shardIds := range groups {
+            configNum, servers := kv.currentCongig.Num, kv.lastConfig.Groups[oldGid]
+            // 增加配置号以避免更改配置的请求被重复执行
+            go func(oldGid int, configNum int, servers []string, shardIds []int) {
+                defer wg.Done()
+                // 找 Leader
+                for _, server := range servers {
+                    args := &PullShardArgs{
+                        Gid:       oldGid,
+                        ShardIds:  shardIds,
+                        ConfigNum: configNum,
+                    }
+                    reply := &PullShardReply{}
+                    srv := kv.make_end(server)
+                    ok := srv.Call("ShardKV.GetShards", args, reply)
+                    if ok && reply.Err == OK {
+                        reply.ConfigNum = configNum
+                        command := Command{
+                            CommandType: InsertShard,
+                            Data:        *reply,
+                        }
+                        kv.StartCommand(command, &CommonReply{})
+                    }
+                }
+            }(oldGid, configNum, servers, shardIds)
+        }
+        kv.mu.Unlock()
+        wg.Wait()
+        time.Sleep(100 * time.Millisecond)
+    }
+}
+
+// 返回需要的分片数据
+// 只有 Leader 能进行回复
+func (kv *ShardKV) GetShards(args *PullShardArgs, reply *PullShardReply) {
+    if _, isLeader := kv.rf.GetState(); !isLeader {
+        reply.Err = ErrWrongLeader
+        return
+    }
+    kv.mu.Lock()
+    defer kv.mu.Unlock()
+    // 判断是否是合法的请求
+    if args.ConfigNum == kv.currentCongig.Num {
+        shards := make(map[int]Shard)
+        for _, shardId := range args.ShardIds {
+            _, ok := kv.shards[shardId]
+            if ok && kv.shards[shardId].State == BePulling {
+                shards[shardId] = kv.shards[shardId].CopyShard()
+            }
+        }
+        reply.Err, reply.Shards, reply.LastRequestMap = OK, shards, kv.copyLastRequestMap()
+    } else {
+        reply.Err = ErrWrongGroup
+    }
+}
+
+func (kv *ShardKV) copyLastRequestMap() map[int64]int64 {
+    lastRequestMap := make(map[int64]int64)
+    for clientId, requestId := range kv.LastRequestMap {
+        lastRequestMap[clientId] = requestId
+    }
+    return lastRequestMap
+}
+
+// 获取处于指定状态的分片之前所属的复制组, 得到复制组Id 到分片Id 的映射
+func (kv *ShardKV) getShardIdsWithSpecifiedState(state ShardState) map[int][]int {
+    tmp := make(map[int][]int)
+    // 当前复制组向其它复制组拉去分片 或 当前复制组拉取完分片后通知其它复制组删除分片
+    // 拉取分片以及请求其它组删除分配的请求复制组都在上一个配置中, 所以应检查上一个配置
+    for shardId, shard := range kv.shards {
+        if shard.State == state {
+            gid := kv.lastConfig.Shards[shardId]
+            if _, ok := tmp[gid]; !ok {
+                tmp[gid] = make([]int, 0)
+            }
+            tmp[gid] = append(tmp[gid], shardId)
+        }
+    }
+    return tmp
+}
+
+func (kv *ShardKV) monitorGC() {
+    for !kv.killed() {
+        if _, isLeader := kv.rf.GetState(); !isLeader {
+            time.Sleep(100 * time.Millisecond)
+            continue
+        }
+        kv.mu.Lock()
+        id, gid := kv.me, kv.gid
+        // 获取需要拉取的分片所在的组并将分片按组整合 (key 为 oldGid, Vaule 为 shardId[])
+        // 这样可以一次直接拉取某个组所有符合要求的分片
+        groups := kv.getShardIdsWithSpecifiedState(GCing)
+        wg := &sync.WaitGroup{}
+        wg.Add(len(groups))
+        for oldGid, shardIds := range groups {
+            configNum, servers := kv.currentCongig.Num, kv.lastConfig.Groups[oldGid]
+            // 增加配置号以避免更改配置的请求被重复执行
+            go func(oldGid int, configNum int, servers []string, shardIds []int) {
+                defer wg.Done()
+                for _, server := range servers {
+                    args := &RemoveShardArgs{
+                        ShardIds:  shardIds,
+                        ConfigNum: configNum,
+                    }
+                    reply := &RemoveShardReply{}
+                    srv := kv.make_end(server)
+                    ok := srv.Call("ShardKV.DeleteShards", args, reply)
+                    if ok && reply.Err == OK {
+                        adjargs := AdjustShardArgs {
+                            ShardIds:  shardIds,
+                            ConfigNum: configNum,
+                        }
+                        command := Command{
+                            CommandType: AdjustShardState,
+                            Data:        adjargs,
+                        }
+                        kv.StartCommand(command, &CommonReply{})
+                    }
+                }
+            }(oldGid, configNum, servers, shardIds)
+        }
+        kv.mu.Unlock()
+        wg.Wait()
+        time.Sleep(100 * time.Millisecond)
+    }
+}
+
+func (kv *ShardKV) DeleteShards(args *RemoveShardArgs, reply *RemoveShardReply) {
+    command := Command{
+        CommandType: DeleteShard,
+        Data:        *args,
+    }
+    response := &CommonReply{}
+    kv.StartCommand(command, response)
+    reply.Err = response.Err
+}
+
+// 为了解决 bug 而增加的一个监听协程
+// 检查当前分组是否有处于 BePulling 状态的分片, 如果有的话询问 Pulling 的副本组, 问他是否拉取成功, 若拉取成功则修改分片状态为 Serving
+func (kv *ShardKV) monitorBePulling() {
+    for !kv.killed() {
+        if _, isLeader := kv.rf.GetState(); !isLeader {
+            time.Sleep(100 * time.Millisecond)
+            continue
+        }
+        kv.mu.Lock()
+        id, gid := kv.me, kv.gid
+        groups := make(map[int][]int)
+        // 注意是看当前配置中的分片状态, 因为并不是给别人发送
+        for shardId, shard := range kv.shards {
+            if shard.State == BePulling {
+                gid := kv.currentCongig.Shards[shardId]
+                if _, ok := groups[gid]; !ok {
+                    groups[gid] = make([]int, 0)
+                }
+                groups[gid] = append(groups[gid], shardId)
+            }
+        }
+        wg := &sync.WaitGroup{}
+        wg.Add(len(groups))
+        for oldGid, shardIds := range groups {
+            configNum, servers := kv.currentCongig.Num, kv.lastConfig.Groups[oldGid]
+            // 增加配置号以避免更改配置的请求被重复执行
+            go func(oldGid int, configNum int, servers []string, shardIds []int) {
+                defer wg.Done()
+                for _, server := range servers {
+                    args := &CheckArgs{
+                        ShardIds:  shardIds,
+                        ConfigNum: configNum,
+                    }
+                    reply := &CheckReply{}
+                    srv := kv.make_end(server)
+                    ok := srv.Call("ShardKV.CheckShards", args, reply)
+                    if ok && reply.Err == OK {
+                        adjargs := AdjustShardArgs{
+                            ShardIds:  shardIds,
+                            ConfigNum: configNum,
+                        }
+                        command := Command{
+                            CommandType: AdjustShardState,
+                            Data:        adjargs,
+                        }
+                        kv.StartCommand(command, &CommonReply{})
+                    }
+                }
+            }(oldGid, configNum, servers, shardIds)
+        }
+        kv.mu.Unlock()
+        wg.Wait()
+        time.Sleep(100 * time.Millisecond)
+    }
+}
+
+func (kv *ShardKV) CheckShards(args *CheckArgs, reply *CheckReply) {
+    kv.mu.Lock()
+    if kv.currentCongig.Num > args.ConfigNum {
+        reply.Err = OK
+    } else {
+        reply.Err = OtherErr
+    }
+    kv.mu.Unlock()
+}
+
+```
+
+- :two: 处理函数
+
+本部分描述收到了命令后如何处理以修改分片的状态, 因为若要修改状态底层 Raft 组必须达成一致, 因此命令必定是在 applier 收到 Raft 提交的 ApplyMsg 后才能执行
+
+```go
+// 监听 Raft 提交的 applyMsg, 根据 applyMsg 的类别执行不同的操作
+// 为命令的话，必执行，执行完后检查是否需要给 waitCh 发通知
+// 为快照的话读快照，更新状态
+func (kv *ShardKV) applier() {
+    for !kv.killed() {
+        applyMsg := <-kv.applyCh
+        kv.mu.Lock()
+        id, gid := kv.me, kv.gid
+        if applyMsg.CommandValid {
+            if applyMsg.CommandIndex <= kv.lastIncludedIndex {
+                kv.mu.Unlock()
+                continue
+            }
+            reply := kv.execute(applyMsg.Command)
+            currentTerm, isLeader := kv.rf.GetState()
+            if isLeader && applyMsg.CommandTerm == currentTerm {
+                kv.notifyWaitCh(applyMsg.CommandIndex, reply)
+            }
+            if kv.maxraftstate != -1 && kv.persister.RaftStateSize() >= kv.maxraftstate {
+                kv.rf.Snapshot(applyMsg.CommandIndex, kv.encodeState())
+            }
+            kv.lastIncludedIndex = applyMsg.CommandIndex
+        } else if applyMsg.SnapshotValid {
+            if applyMsg.SnapshotIndex <= kv.lastIncludedIndex {
+                kv.mu.Unlock()
+                continue
+            }
+            kv.readPersist(applyMsg.Snapshot)
+            kv.lastIncludedIndex = applyMsg.SnapshotIndex
+        }
+        kv.mu.Unlock()
+    }
+}
+
+// 根据 OpType 选择操作执行
+// 跟之前的区别在于新增了不少命令类别并且把 GetPutAppend 放到一起处理了
+func (kv *ShardKV) execute(cmd interface{}) *CommonReply {
+    command := cmd.(Command)
+    reply := &CommonReply{
+        Err: OK,
+    }
+    switch command.CommandType {
+    case Get, Put, Append:
+        op := command.Data.(GetPutAppendArgs)
+        kv.processGetPutAppend(&op, reply)
+    case AddConfig:
+        config := command.Data.(shardctrler.Config)
+        kv.processAddConfig(&config, reply)
+    case InsertShard:
+        response := command.Data.(PullShardReply)
+        kv.processInsertShard(&response, reply)
+    case DeleteShard:
+        args := command.Data.(RemoveShardArgs)
+        kv.processDeleteShard(&args, reply)
+    case AdjustShardState:
+        args := command.Data.(AdjustShardArgs)
+        kv.processAdjustGCingShard(&args, reply)
+    }
+    return reply
+}
+
+// 先检查此时该 key 是否仍由自己负责
+// 执行命令，若为重复命令并且不是 Get 的话，直接返回即可
+// 否则根据 OpType 执行命令并更新该客户端最近一次请求的Id
+func (kv *ShardKV) processGetPutAppend(op *GetPutAppendArgs, reply *CommonReply) {
+    shardId := key2shard(op.Key)
+    if !kv.checkShardAndState(shardId) {
+        reply.Err = ErrWrongGroup
+        return
+    }
+    if op.OpType == Get || !kv.isInvalidRequest(op.ClientId, op.RequestId) {
+        switch op.OpType {
+        case Get:
+            reply.Value = kv.shards[shardId].get(op.Key)
+        case Put:
+            kv.shards[shardId].put(op.Key, op.Value)
+        case Append:
+            kv.shards[shardId].append(op.Key, op.Value)
+        }
+        kv.UpdateLastRequest(op)
+    }
+}
+
+// 检查是否是真的最新的配置 (配置号应该比自己的更大一号)
+// 检查所有分片的所属情况，若需要从其它副本组拉去分片信息或者给其它副本组发送分片信息的话修改分片状态
+func (kv *ShardKV) processAddConfig(newConfig *shardctrler.Config, reply *CommonReply) {
+    if newConfig.Num == kv.currentCongig.Num+1 {
+        for i := 0; i < shardctrler.NShards; i++ {
+            // 第 i 个分片从不由自己管理到由自己管理
+            if newConfig.Shards[i] == kv.gid && kv.currentCongig.Shards[i] != kv.gid {
+                // 若当前该分片由其它组管理的话，需要从其它组那里拉去信息
+                if kv.currentCongig.Shards[i] != 0 {
+                    kv.shards[i].State = Pulling
+                }
+            }
+            // 第 i 个分片从由自己管理到不由自己管理
+            if newConfig.Shards[i] != kv.gid && kv.currentCongig.Shards[i] == kv.gid {
+                // 若当前分片需要给其它组的话，设置状态为待拉取
+                if newConfig.Shards[i] != 0 {
+                    kv.shards[i].State = BePulling
+                }
+            }
+        }
+        kv.lastConfig = kv.currentCongig
+        kv.currentCongig = *newConfig
+        reply.Err = OK
+    } else {
+        reply.Err = OtherErr
+    }
+}
+
+// 先判断配置号是否相等
+// 依次更新每个分片中维护的键值数据库
+// 更新每个分片对应的客户端最近一次请求的Id, 避免重复执行命令
+func (kv *ShardKV) processInsertShard(response *PullShardReply, reply *CommonReply) {
+    if response.ConfigNum == kv.currentCongig.Num {
+        Shards := response.Shards
+        for shardId, shard := range Shards {
+            oldShard := kv.shards[shardId]
+            if oldShard.State == Pulling {
+                for key, value := range shard.ShardKVDB {
+                    oldShard.ShardKVDB[key] = value
+                }
+                oldShard.State = GCing
+            }
+        }
+        LastRequestMap := response.LastRequestMap
+        for clientId, requestId := range LastRequestMap {
+            kv.LastRequestMap[clientId] = max(requestId, kv.LastRequestMap[clientId])
+        }
+    } else {
+        reply.Err = OtherErr
+    }
+}
+
+// 先判断配置号是否相等
+// 若当前分片确实原本由自己负责并且状态为待拉取状态的话就重置该分片
+func (kv *ShardKV) processDeleteShard(args *RemoveShardArgs, reply *CommonReply) {
+    if args.ConfigNum == kv.currentCongig.Num {
+        for _, shardId := range args.ShardIds {
+            _, ok := kv.shards[shardId]
+            if ok && kv.shards[shardId].State == BePulling {
+                kv.shards[shardId] = MakeShard(Serving)
+            }
+        }
+    } else {
+        reply.Err = OtherErr
+        if args.ConfigNum < kv.currentCongig.Num {
+            reply.Err = OK
+        }
+    }
+}
+
+func (kv *ShardKV) processAdjustGCingShard(args *AdjustShardArgs, reply *CommonReply) {
+    if args.ConfigNum == kv.currentCongig.Num {
+        for _, shardId := range args.ShardIds {
+            if _, ok := kv.shards[shardId]; ok {
+                kv.shards[shardId].State = Serving
+            }
+        }
+    } else {
+        reply.Err = OtherErr
+        if args.ConfigNum < kv.currentCongig.Num {
+            reply.Err = OK
+        }
+    }
+}
+```
+
+### :sob: 遇到的一些问题
+
+#### :one: 死锁，分片无法迁移，彼此等待 (case1)
+
+检查日志后发现问题在于 `monitorRequestConfig()` 中自己请求新配置时直接请求的最新配置 (`kv.manager.Query(-1)`), 可能会跳过某些配置 (比如当前配置号为2, 最新的为 5), 而某个服务器处于配置 3, 正在等待当前服务器进入配置 3 并拉取分片。 在最新配置中可能当前服务器又要向其他服务器拉取分片, 但是其他服务器的配置号远远落后于当前服务器的配置号, 因此不会回应。服务器之间的配置信息变更产生了死锁现象，彼此都不能对外提供服务，最终超时。
+
+**:thought_balloon: 解决方案**
+
+每次请求的配置应该为当前配置的下一个配置, 这样就不会跳过一些配置
+> newConfig := kv.manager.Query(currentConfigNum + 1)
+
+#### :two: 死锁，分片无法迁移，彼此等待 (case2)
+
+检查日志后发现问题在于服务器重启后因为进度回退的不一致会造成死锁现象。即虽然某个配置下分片已经正常完成了迁移, 但是因为快照记录的时间点不同, 不同服务器回退到了不同的状态。比如当前服务器退回到了待拉取分片的状态, 那么不会有其他服务器拉取该服务器的分片, 该服务器的状态就得不到更新, 导致所有服务器的状态都停在那里。最后远远落后于客户端拉取到的配置号
+
+一个例子如下
 
 ```
 [id, gid]   reach agreement {Num:24 Shards:[100 102 102 102 102 100 102 100 100 100]}
@@ -589,17 +1382,37 @@ shardkv server 仅是单个副本组的成员, 给定副本组中的服务器集
 // 阻塞在这里直到超时
 ```
 
+**:thought_balloon: 解决方案**
+
 设置了一个新的主动检测 BePulling 的协程，注意应该给当前配置下 shardId 对应的服务器发送 RPC
 
+#### :three: 超时, 还是死锁了 :sob:
+
+检查日志后发现问题在于设置的管理分片迁移的监听函数, 因为只有 Leader 才应该去不断检查并做更改, 所以自己在最开始就先检查当前服务器是否为 Leader, 若不是 Leader 的话直接退出。但是这样有一个问题是可能一开始还没选出 Leader, 所有监听函数就都退出了; 或者之后 Leader 发生了变更, 然后也没有服务器监听了 
+
+**:thought_balloon: 解决方案**
+
+若当前服务器非 Leader 的话, 应该休眠一段时间再次检查而不是直接退出
+
+
+### :rainbow: 结果
+
+![4B 结果](https://github.com/casey-li/MIT6.5840/blob/main/Lab4/Lab4B/result/pic/Lab4B%E7%BB%93%E6%9E%9C.png?raw=true)
+
+通过了 500 次的压力测试，结果保存在 `Lab4B/result/test_4B_500times.txt` 中
+
 ---
 
-## 最终结果
+## :rainbow: 最终结果
 
-
----
+通过了 500 次的压力测试，结果保存在 Lab4/result/test_4_500times.txt 中
 
 # :rose: 参考
 
 :one: [MIT-6.824-lab4A-2022(万字讲解-代码构建)](https://blog.csdn.net/weixin_45938441/article/details/125386091?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522168925631216800180664720%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=168925631216800180664720&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-125386091-null-null.142^v88^control_2,239^v2^insert_chatgpt&utm_term=MIT%206.824%20Lab4&spm=1018.2226.3001.4187)
 
 :two: [MIT-6.824-lab4B-2022(万字思路讲解-代码构建)](https://blog.csdn.net/weixin_45938441/article/details/125566763?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522168925631216800180664720%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=168925631216800180664720&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-125566763-null-null.142^v88^control_2,239^v2^insert_chatgpt&utm_term=MIT%206.824%20Lab4&spm=1018.2226.3001.4187)
+
+:three: [MIT6.824-2021 Lab4 : MultiRaft](https://zhuanlan.zhihu.com/p/463146544)
+
+:four: [MIT 6.824 Lab4 AB 完成记录](https://blog.csdn.net/qq_40443651/article/details/118034894?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522168925631216800180664720%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=168925631216800180664720&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-4-118034894-null-null.142^v88^control_2,239^v2^insert_chatgpt&utm_term=MIT%206.824%20Lab4&spm=1018.2226.3001.4187)
