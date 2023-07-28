@@ -46,7 +46,7 @@ type KVServer struct {
 	// Your definitions here.
 	KVDB           map[string]string // 状态机，记录KV
 	waitChMap      map[int]chan *Op  // 通知 chan, key 为日志的下标，值为通道
-	LastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的内容（包括请求的Id 和 回复）
+	LastRequestMap map[int64]int64   // 保存每个客户端对应的最近一次请求的Id
 
 	// 3B
 	persister         *raft.Persister

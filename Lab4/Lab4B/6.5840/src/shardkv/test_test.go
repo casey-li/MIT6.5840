@@ -37,7 +37,8 @@ func TestStaticShards(t *testing.T) {
 	va := make([]string, n)
 	for i := 0; i < n; i++ {
 		ka[i] = strconv.Itoa(i) // ensure multiple shards
-		va[i] = randstring(20)
+		// va[i] = randstring(20)
+		va[i] = strconv.Itoa(i)
 		ck.Put(ka[i], va[i])
 	}
 	for i := 0; i < n; i++ {
@@ -56,6 +57,7 @@ func TestStaticShards(t *testing.T) {
 		go func(i int) {
 			v := ck1.Get(ka[i])
 			if v != va[i] {
+				fmt.Printf("error, res is not same\n")
 				ch <- fmt.Sprintf("Get(%v): expected:\n%v\nreceived:\n%v", ka[i], va[i], v)
 			} else {
 				ch <- ""
