@@ -532,13 +532,21 @@ const (
 按照时间线进行划分的话，总体流程如下
 
 (1) `monitorRequestConfig()` 发现了新配置，提交到底层的 Raft 组, 等待达成共识后处理命令, 更新配置号并修改分片状态 (只要有一个分片的状态由 Serving 改成了 Pulling, 那么这个分片必定会在某个副本组中的状态由 Serving 转变为 BePulling)
+
 (2) `monitorInsert()` 在例行检查的过程中发现了当前副本组掌管的分片中有分片的状态转变为了 Pulling, 会跟上一个配置进行对比, 确定在上一个配置中, 该分片由哪个副本组管理 (即应该向哪个副本组发起拉取分片的请求)。确定好副本组后, 发送 `GetShards RPC` 请求
+
 (3) 其他副本组对当前 RPC 的合法性进行检验, 若检验成功则给予其需要的分片结果, 响应 RPC
+
 (4) 当前副本组获取到了需要的分片后, 生成 InsertShard 命令, 提交到底层 Raft 组, 等待达成共识
+
 (5) 达成共识后, 当前副本组的所有服务器会从 `applier()` 中收到命令, 更新分片数据, 并将更新完成的分片的状态改为 GCing
+
 (6) `monitorGC()` 在例行检查的过程中发现了当前副本组掌管的分片中有分片的状态转变为了 GCing, 给之前持有这些分片的副本组发送 `DeleteShard RPC`
+
 (7) 其他副本组执行 DeleteShard, 向底层的 Raft组 提交 DeleteShards 命令, 等待达成共识后处理命令, 将这些分片的状态由 BePulling 改回 Serving。生成响应 RPC
+
 (8) 当前副本组收到正确的响应 RPC (其他副本组完成了清除操作) 后,生成 AdjustShardState 命令并提交到底层 Raft 组, 等待达成共识后处理命令, 将分片状态由 GCing 改回 Serving 
+
 
 ### :pizza: 数据结构
 
